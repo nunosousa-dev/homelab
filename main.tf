@@ -1,16 +1,17 @@
 resource "proxmox_vm_qemu" "control-plane" {
   vmid = 200
-  name = "control-plane"
+  name = "k8s-control-plane"
 
   target_node = "supernova"
 
   os_type   = "cloud-init"
   ipconfig0 = "ip=10.0.100.100/16,gw=10.0.0.1"
 
-  cores = "2"
+  cores  = "2"
   memory = "2048"
 
   network {
+    id        = 0
     bridge    = "vmbr0"
     firewall  = false
     link_down = false
@@ -37,17 +38,18 @@ resource "proxmox_vm_qemu" "control-plane" {
 
 resource "proxmox_vm_qemu" "node-1" {
   vmid = 201
-  name = "node-1"
+  name = "k8s-node-1"
 
   target_node = "supernova"
 
   os_type   = "cloud-init"
   ipconfig0 = "ip=10.0.100.101/16,gw=10.0.0.1"
 
-  cores    = "2"
+  cores  = "2"
   memory = "2048"
 
   network {
+    id        = 0
     bridge    = "vmbr0"
     firewall  = false
     link_down = false
@@ -74,17 +76,18 @@ resource "proxmox_vm_qemu" "node-1" {
 
 resource "proxmox_vm_qemu" "node-2" {
   vmid = 202
-  name = "node-2"
+  name = "k8s-node-2"
 
   target_node = "supernova"
 
   os_type   = "cloud-init"
   ipconfig0 = "ip=10.0.100.102/16,gw=10.0.0.1"
 
-  cores    = "2"
+  cores  = "2"
   memory = "2048"
 
   network {
+    id        = 0
     bridge    = "vmbr0"
     firewall  = false
     link_down = false
