@@ -22,6 +22,12 @@ resource "proxmox_vm_qemu" "control-plane" {
 
   disks {
     ide {
+      ide1 {
+        disk {
+          size    = "20G"
+          storage = "local-lvm"
+        }
+      }
       ide2 {
         cdrom {
           iso = "local:iso/nocloud-amd64.iso"
@@ -60,6 +66,12 @@ resource "proxmox_vm_qemu" "node-1" {
 
   disks {
     ide {
+      ide1 {
+        disk {
+          size    = "10G"
+          storage = "local-lvm"
+        }
+      }
       ide2 {
         cdrom {
           iso = "local:iso/nocloud-amd64.iso"
@@ -98,6 +110,12 @@ resource "proxmox_vm_qemu" "node-2" {
 
   disks {
     ide {
+      ide1 {
+        disk {
+          size    = "10G"
+          storage = "local-lvm"
+        }
+      }
       ide2 {
         cdrom {
           iso = "local:iso/nocloud-amd64.iso"
