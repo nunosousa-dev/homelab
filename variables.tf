@@ -8,17 +8,27 @@ variable "pm_api_token_secret" {
   type        = string
 }
 
-variable "control_plane_ip" {
+variable "control_plane1_ip" {
   description = "Control Plane IP"
   type        = string
 }
 
-variable "node_1_ip" {
+variable "control_plane2_ip" {
+  description = "Control Plane IP"
+  type        = string
+}
+
+variable "control_plane3_ip" {
+  description = "Control Plane IP"
+  type        = string
+}
+
+variable "node1_ip" {
   description = "Node 1 IP"
   type        = string
 }
 
-variable "node_2_ip" {
+variable "node2_ip" {
   description = "Node 2 IP"
   type        = string
 }
