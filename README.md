@@ -44,7 +44,7 @@ talosctl apply-config --insecure --nodes 10.0.101.101 \
   --config-patch @cluster-config/patches/worker2.yaml
 ```
 
-## Bootstrap cluster (we just do it for the first control plane, it will automate others)
+## Bootstrap cluster (we just do it for the first control plane)
 ```bash
 talosctl --nodes 10.0.100.100 bootstrap
 ```
