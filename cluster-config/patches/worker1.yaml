@@ -1,4 +1,7 @@
 machine:
+  kubelet:
+    extraArgs:
+      rotate-server-certificates: true
   network:
     interfaces:
     - interface: eth0
@@ -9,3 +12,4 @@ machine:
         gateway: 10.0.0.1
   install:
     disk: /dev/sda
+  files:

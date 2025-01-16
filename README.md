@@ -1,10 +1,8 @@
-# homelab
-
-This is the main setup for my personal homelab.
+# K8s cluster using Talos Linux
 
 ## Generate the base configuration
 ```bash
-talosctl gen config talos-cluster https://10.0.100.50:6443 \
+talosctl gen config casinha-cluster https://10.0.100.50:6443 \
     --output-dir cluster-config \
     --install-image factory.talos.dev/installer/ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515:v1.9.0
 ```
@@ -44,17 +42,17 @@ talosctl apply-config --insecure --nodes 10.0.101.101 \
   --config-patch @cluster-config/patches/worker2.yaml
 ```
 
-## Bootstrap cluster (we just do it for the first control plane)
-```bash
-talosctl --nodes 10.0.100.100 bootstrap
-```
-
 ## Configure talosctl to talk to our cluster
 ```bash
 talosctl config endpoint 10.0.100.100 10.0.100.101 10.0.100.102
 ```
 ```bash
 talosctl config node 10.0.100.100
+```
+
+## Bootstrap cluster (we just do it for the first control plane)
+```bash
+talosctl --nodes 10.0.100.100 bootstrap
 ```
 
 ## Check the cluster status
@@ -69,3 +67,10 @@ talosctl kubeconfig cluster-config/
 ```bash
 cp cluster-config/kubeconfig ~/.kube/config
 ```
+
+## Reset Talos cluster
+### Reset control planes
+talosctl reset --graceful=false --reboot --nodes 10.0.100.100,10.0.100.101,10.0.100.102
+
+### Reset worker nodes
+talosctl reset --graceful=false --reboot --nodes 10.0.101.100,10.0.101.101

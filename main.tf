@@ -140,7 +140,7 @@ resource "proxmox_vm_qemu" "node-1" {
   ipconfig0 = "ip=10.0.101.100/16,gw=10.0.0.1"
 
   cores  = "2"
-  memory = "2048"
+  memory = "4096"
 
   network {
     id        = 0
@@ -184,7 +184,7 @@ resource "proxmox_vm_qemu" "node-2" {
   ipconfig0 = "ip=10.0.101.101/16,gw=10.0.0.1"
 
   cores  = "2"
-  memory = "2048"
+  memory = "4096"
 
   network {
     id        = 0
