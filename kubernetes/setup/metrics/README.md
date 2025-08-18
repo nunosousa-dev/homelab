@@ -1,0 +1,1 @@
+> **Notice:**  Kubernetes Metrics Server is installed via Talos setup using *extraManifests* patch. 

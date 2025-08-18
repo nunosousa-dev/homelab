@@ -4,10 +4,10 @@ persist: true
 # Provides machine specific configuration options.
 machine:
     type: worker # Defines the role of the machine within the cluster.
-    token: ox4sn4.n6xmnde3hnwtvnhh # The `token` is used by a machine to join the PKI of the cluster.
+    token: votwxc.71pj4qi3oussvtrq # The `token` is used by a machine to join the PKI of the cluster.
     # The root certificate authority of the PKI.
     ca:
-        crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJQekNCOHFBREFnRUNBaEVBLzlpVU80ek50THAxTnRZU3c1aExrakFGQmdNclpYQXdFREVPTUF3R0ExVUUKQ2hNRmRHRnNiM013SGhjTk1qVXdNVEUyTURBeU9UQXlXaGNOTXpVd01URTBNREF5T1RBeVdqQVFNUTR3REFZRApWUVFLRXdWMFlXeHZjekFxTUFVR0F5dGxjQU1oQUhNei9zV2hIVktEU2hLTVcyalZrYzYraXMyZlpjMnFkQWUxCnJaMjJFb2phbzJFd1h6QU9CZ05WSFE4QkFmOEVCQU1DQW9Rd0hRWURWUjBsQkJZd0ZBWUlLd1lCQlFVSEF3RUcKQ0NzR0FRVUZCd01DTUE4R0ExVWRFd0VCL3dRRk1BTUJBZjh3SFFZRFZSME9CQllFRkxQRTh2cm5XMXlldG9LVgprNmM2Z09IcTBpcnRNQVVHQXl0bGNBTkJBTVV3M2haeVo1eU9ibFhEQkZ2V1p5cXByQlRQWFdsUHlhWUtvUmJhCnBLS05TY0V2dEZiTmQ3enFWdStCaU9Xei9iU21pUlNnQjR4dWxwV2VRWkh4K1FrPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+        crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJQakNCOGFBREFnRUNBaEFYL1NKL2M1bWxBbmNFRmhqQ3llc3BNQVVHQXl0bGNEQVFNUTR3REFZRFZRUUsKRXdWMFlXeHZjekFlRncweU5UQXhNamd5TWpRMU5UZGFGdzB6TlRBeE1qWXlNalExTlRkYU1CQXhEakFNQmdOVgpCQW9UQlhSaGJHOXpNQ293QlFZREsyVndBeUVBaUZYaW1ocDFTVDlZMTJSbGhjWkpLbWtweVVGUHkrQ0hFSDNkCkJPZG9nZFNqWVRCZk1BNEdBMVVkRHdFQi93UUVBd0lDaERBZEJnTlZIU1VFRmpBVUJnZ3JCZ0VGQlFjREFRWUkKS3dZQkJRVUhBd0l3RHdZRFZSMFRBUUgvQkFVd0F3RUIvekFkQmdOVkhRNEVGZ1FVdStZYm01TDRzNTZRVGNEQQpJWVVMSU5lcDRpQXdCUVlESzJWd0EwRUFjUTBoZ20va0JxeHBoNVhrTnEwNnRvbk9hTDlTRlVXYnVOeGx1c2dPCklEMXg1MkZtWXdXd0s4UGYva09vN3g0TkRtRVlkLzNBZW9YemhBUVl6RUNBRHc9PQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
         key: ""
     # Extra certificate subject alternative names for the machine's certificate.
     certSANs: []
@@ -189,7 +189,7 @@ machine:
     # Used to provide instructions for installations.
     install:
         disk: /dev/sda # The disk used for installations.
-        image: factory.talos.dev/installer/ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515:v1.9.0 # Allows for supplying the image used to perform the installation.
+        image: factory.talos.dev/installer/ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515:v1.9.3 # Allows for supplying the image used to perform the installation.
         wipe: false # Indicates if the installation disk should be wiped at installation time.
         
         # # Look up disk using disk attributes like model, size, serial and others.
@@ -425,8 +425,8 @@ machine:
     #     exampleTaint: exampleTaintValue:NoSchedule
 # Provides cluster specific configuration options.
 cluster:
-    id: kUY3INcC30ZAHx4ymENjMd5pFLFMVAirfbSLKuJj6bk= # Globally unique identifier for this cluster (base64 encoded random 32 bytes).
-    secret: Ll/z/nFXH4ZkBQef0YaQlLKufhmxSbbIxnEMCzzD9f8= # Shared secret of cluster (base64 encoded random 32 bytes).
+    id: 0wTHrj-B42yOw5J3gR1nziRS7DY_azgpLn5jwrV-wZo= # Globally unique identifier for this cluster (base64 encoded random 32 bytes).
+    secret: 6p0ihDc2lKk/gIkWeltgyfJU5eNXKQNb5Ob8cZNVnto= # Shared secret of cluster (base64 encoded random 32 bytes).
     # Provides control plane specific configuration options.
     controlPlane:
         endpoint: https://10.0.100.50:6443 # Endpoint is the canonical controlplane endpoint, which can be an IP address or a DNS hostname.
@@ -447,10 +447,10 @@ cluster:
         #     # URLs containing manifests to apply for the CNI.
         #     urls:
         #         - https://docs.projectcalico.org/archive/v3.20/manifests/canal.yaml
-    token: nr17jh.c1ts6wpc88d2pjn9 # The [bootstrap token](https://kubernetes.io/docs/reference/access-authn-authz/bootstrap-tokens/) used to join the cluster.
+    token: 7zp7ry.3k5ukmbn323pgcv4 # The [bootstrap token](https://kubernetes.io/docs/reference/access-authn-authz/bootstrap-tokens/) used to join the cluster.
     # The base64 encoded root certificate authority used by Kubernetes.
     ca:
-        crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJpakNDQVRDZ0F3SUJBZ0lSQU00anhTc0tFcndMSHE3ZE9tbFM3OWt3Q2dZSUtvWkl6ajBFQXdJd0ZURVQKTUJFR0ExVUVDaE1LYTNWaVpYSnVaWFJsY3pBZUZ3MHlOVEF4TVRZd01ESTVNREphRncwek5UQXhNVFF3TURJNQpNREphTUJVeEV6QVJCZ05WQkFvVENtdDFZbVZ5Ym1WMFpYTXdXVEFUQmdjcWhrak9QUUlCQmdncWhrak9QUU1CCkJ3TkNBQVR0R1RyWkFsQXc1eXhFYkVDY3hpcS9ydWNMbXo4L2Q0a1kvRUgyaDN2UjFrTU03V1NBR2NEL2pwLysKaUpaMm5laDBPTW5XUnhNY25YVUlsVW5tU0FIUW8yRXdYekFPQmdOVkhROEJBZjhFQkFNQ0FvUXdIUVlEVlIwbApCQll3RkFZSUt3WUJCUVVIQXdFR0NDc0dBUVVGQndNQ01BOEdBMVVkRXdFQi93UUZNQU1CQWY4d0hRWURWUjBPCkJCWUVGS0wxaU5ON2FNWGFTbk5Ocmt4WXpDajhCL0JmTUFvR0NDcUdTTTQ5QkFNQ0EwZ0FNRVVDSUVZUDN2OXUKL21ZT2VvS05pOUc5UHZDUXR1TkMxVGtGTXBXc3dxSUEzZCtKQWlFQS9qWVpINWl5d0RDVWVkTTNXUWdoZXNEQwppY1hDWVFpSkNoMmVEbFVlSTlFPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+        crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJpakNDQVRDZ0F3SUJBZ0lSQUxLd3ZMa2pVRlFJc2pRNldJcERKQ3d3Q2dZSUtvWkl6ajBFQXdJd0ZURVQKTUJFR0ExVUVDaE1LYTNWaVpYSnVaWFJsY3pBZUZ3MHlOVEF4TWpneU1qUTFOVGRhRncwek5UQXhNall5TWpRMQpOVGRhTUJVeEV6QVJCZ05WQkFvVENtdDFZbVZ5Ym1WMFpYTXdXVEFUQmdjcWhrak9QUUlCQmdncWhrak9QUU1CCkJ3TkNBQVMyUFo1bDA1QWx3aDZEK0lydjVsT0dGNUpJZkpxbHJTMzRwL1dQMFExdTlZY3dYak5YNEJpYjE5dWoKdllyMExEYU5QY3JnS0dHRVZua2lHaTQzZFRMTm8yRXdYekFPQmdOVkhROEJBZjhFQkFNQ0FvUXdIUVlEVlIwbApCQll3RkFZSUt3WUJCUVVIQXdFR0NDc0dBUVVGQndNQ01BOEdBMVVkRXdFQi93UUZNQU1CQWY4d0hRWURWUjBPCkJCWUVGSmZ0WjY3ZUoyOVdSbVN6NjhNZ2JaYk5Zc1dqTUFvR0NDcUdTTTQ5QkFNQ0EwZ0FNRVVDSUNmTzVtVDAKSi9DcG5WV3RMUlNESWhzMUlOWWhvcnFZVnk0MlpyUzBPWldkQWlFQWlLT2lwQ3h1QmJOYnh5WS9ZNnZtZVNJWAo5OUZzejgrdlZJOTdtbXFDbG1JPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
         key: ""
     # Configures cluster member discovery.
     discovery:

@@ -1,0 +1,7 @@
+controller:
+  config:
+    hsts-include-subdomains: "false"
+    hsts-max-age: "0"
+    hsts-preload: "false"
+  extraArgs:
+    enable-ssl-passthrough: true

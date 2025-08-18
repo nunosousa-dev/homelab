@@ -5,7 +5,7 @@ resource "proxmox_vm_qemu" "control-plane-1" {
   target_node = "supernova"
 
   os_type   = "cloud-init"
-  ipconfig0 = "ip=10.0.100.100/16,gw=10.0.0.1"
+  ipconfig0 = "ip=${var.control_plane1_cidr},gw=${var.gateway}"
 
   cores  = "2"
   memory = "2048"
@@ -49,7 +49,7 @@ resource "proxmox_vm_qemu" "control-plane-2" {
   target_node = "supernova"
 
   os_type   = "cloud-init"
-  ipconfig0 = "ip=10.0.100.101/16,gw=10.0.0.1"
+  ipconfig0 = "ip=${var.control_plane2_cidr},gw=${var.gateway}"
 
   cores  = "2"
   memory = "2048"
@@ -93,7 +93,7 @@ resource "proxmox_vm_qemu" "control-plane-3" {
   target_node = "supernova"
 
   os_type   = "cloud-init"
-  ipconfig0 = "ip=10.0.100.102/16,gw=10.0.0.1"
+  ipconfig0 = "ip=${var.control_plane3_cidr}/16,gw=${var.gateway}"
 
   cores  = "2"
   memory = "2048"
@@ -137,7 +137,7 @@ resource "proxmox_vm_qemu" "node-1" {
   target_node = "supernova"
 
   os_type   = "cloud-init"
-  ipconfig0 = "ip=10.0.101.100/16,gw=10.0.0.1"
+  ipconfig0 = "ip=${var.node1_cidr},gw=${var.gateway}"
 
   cores  = "2"
   memory = "4096"
@@ -181,7 +181,7 @@ resource "proxmox_vm_qemu" "node-2" {
   target_node = "supernova"
 
   os_type   = "cloud-init"
-  ipconfig0 = "ip=10.0.101.101/16,gw=10.0.0.1"
+  ipconfig0 = "ip=${var.node2_cidr},gw=${var.gateway}"
 
   cores  = "2"
   memory = "4096"

@@ -21,7 +21,7 @@ Default route (assuming gateway is 10.0.0.1)
 ```bash
 talosctl gen config casinha-cluster https://10.0.100.50:6443 \
     --output-dir cluster-config \
-    --install-image factory.talos.dev/installer/ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515:v1.9.0
+    --install-image factory.talos.dev/installer/ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515:v1.9.3
 ```
 
 ### Control Plane 1
@@ -61,6 +61,7 @@ talosctl apply-config --insecure --nodes 10.0.101.101 \
 
 ### Configure talosctl to talk to our cluster
 ```bash
+export TALOSCONFIG="cluster-config/talosconfig"
 talosctl config endpoint 10.0.100.100 10.0.100.101 10.0.100.102
 ```
 ```bash

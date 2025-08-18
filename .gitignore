@@ -13,3 +13,8 @@
 *.tfvars.json
 
 **/_out/*
+
+credentials.auto.tfvars
+
+cluster-config/kubeconfig
+cluster-config/talosconfig
