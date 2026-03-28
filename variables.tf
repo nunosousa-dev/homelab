@@ -8,28 +8,18 @@ variable "pm_api_token_secret" {
   type        = string
 }
 
-variable "control_plane1_cidr" {
-  description = "Control Plane IP"
+variable "control_plane_vip" {
+  description = "Control Plane VIP"
   type        = string
 }
 
-variable "control_plane2_cidr" {
-  description = "Control Plane IP"
-  type        = string
-}
-
-variable "control_plane3_cidr" {
+variable "control_plane_cidr" {
   description = "Control Plane IP"
   type        = string
 }
 
 variable "node1_cidr" {
   description = "Node 1 IP"
-  type        = string
-}
-
-variable "node2_cidr" {
-  description = "Node 2 IP"
   type        = string
 }
 

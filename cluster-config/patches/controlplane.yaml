@@ -5,17 +5,18 @@ machine:
   network:
     interfaces:
     - interface: eth0
-      dhcp: true
+      dhcp: false
       addresses:
-      - 10.0.100.100/16
+      - 10.0.0.21/24
       routes:
       - network: 0.0.0.0/0
         gateway: 10.0.0.1
       vip:
-        ip: 10.0.100.50
+        ip: 10.0.0.20
   install:
     disk: /dev/sda
 cluster:
   extraManifests:
   - https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml
   - https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+  allowSchedulingOnControlPlanes: true

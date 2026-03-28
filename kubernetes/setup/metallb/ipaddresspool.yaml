@@ -5,5 +5,5 @@ metadata:
   namespace: metallb-system
 spec:
   addresses:
-  - 10.0.102.1-10.0.102.250
+  - 10.0.0.30-10.0.0.49
   autoAssign: true

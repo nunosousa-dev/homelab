@@ -19,58 +19,38 @@ Default route (assuming gateway is 10.0.0.1)
 
 ### Generate the base configuration
 ```bash
-talosctl gen config casinha-cluster https://10.0.100.50:6443 \
+talosctl gen config casinha-cluster https://10.0.0.20:6443 \
     --output-dir cluster-config \
-    --install-image factory.talos.dev/installer/ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515:v1.9.3
+    --install-image factory.talos.dev/nocloud-installer/07fe29582dc9bf9c1b8bf07294b8c62e6a0fe231c7a8107d3cf52f38486436c9:v1.12.6 \
+    --force
 ```
 
-### Control Plane 1
+### Control Plane
 ```bash
-talosctl apply-config --insecure --nodes 10.0.100.100 \
+talosctl apply-config --insecure --nodes 10.0.0.21 \
   --file cluster-config/controlplane.yaml \
   --config-patch @cluster-config/patches/controlplane1.yaml
 ```
 
-### Control Plane 2
+### Worker Node
 ```bash
-talosctl apply-config --insecure --nodes 10.0.100.101 \
-  --file cluster-config/controlplane.yaml \
-  --config-patch @cluster-config/patches/controlplane2.yaml
-```
-
-### Control Plane 3
-```bash
-talosctl apply-config --insecure --nodes 10.0.100.102 \
-  --file cluster-config/controlplane.yaml \
-  --config-patch @cluster-config/patches/controlplane3.yaml
-```
-
-### Worker Node 1
-```bash
-talosctl apply-config --insecure --nodes 10.0.101.100 \
+talosctl apply-config --insecure --nodes 10.0.0.30 \
   --file cluster-config/worker.yaml \
   --config-patch @cluster-config/patches/worker1.yaml
-```
-
-### Worker Node 2
-```bash
-talosctl apply-config --insecure --nodes 10.0.101.101 \
-  --file cluster-config/worker.yaml \
-  --config-patch @cluster-config/patches/worker2.yaml
 ```
 
 ### Configure talosctl to talk to our cluster
 ```bash
 export TALOSCONFIG="cluster-config/talosconfig"
-talosctl config endpoint 10.0.100.100 10.0.100.101 10.0.100.102
+talosctl config endpoint 10.0.0.21 10.0.0.22 10.0.0.23
 ```
 ```bash
-talosctl config node 10.0.100.100
+talosctl config node 10.0.0.30
 ```
 
 ### Bootstrap cluster (we just do it for the first control plane)
 ```bash
-talosctl --nodes 10.0.100.100 bootstrap
+talosctl --nodes 10.0.0.21 bootstrap
 ```
 
 ### Check the cluster status
@@ -98,4 +78,14 @@ talosctl reset --graceful=false --reboot --nodes 10.0.100.100,10.0.100.101,10.0.
 #### Reset worker nodes
 ```bash
 talosctl reset --graceful=false --reboot --nodes 10.0.101.100,10.0.101.101
+```
+
+## Troubleshooting
+### Fix PVE API access
+```bash
+pveum role add TerraformProv -privs "Datastore.AllocateSpace Datastore.AllocateTemplate Datastore.Audit Pool.Allocate Sys.Audit Sys.Console Sys.Modify VM.Allocate VM.Audit VM.Clone VM.Config.CDROM VM.Config.Cloudinit VM.Config.CPU VM.Config.Disk VM.Config.HWType VM.Config.Memory VM.Config.Network VM.Config.Options VM.Migrate VM.Monitor VM.PowerMgmt SDN.Use"
+pveum user add terraform-prov@pve
+pveum aclmod / -user terraform-prov@pve -role TerraformProv # Apply permission to the user
+pveum user token add terraform-prov@pve api
+pveum aclmod / --tokens 'terraform-prov@pve!api' -role TerraformProv # Apply permission to the token
 ```
