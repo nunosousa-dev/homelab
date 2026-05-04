@@ -4,9 +4,9 @@ terraform {
       source  = "Telmate/proxmox"
       version = "3.0.2-rc07"
     }
-    null = {
-      source  = "hashicorp/null"
-      version = "3.2.2"
+    talos = {
+      source  = "siderolabs/talos"
+      version = "0.11.0"
     }
   }
 }
@@ -17,3 +17,5 @@ provider "proxmox" {
   pm_api_token_secret = "c7996046-12c3-4ad1-a9d7-dd4941905754"
   pm_tls_insecure     = true
 }
+
+provider "talos" {}

@@ -8,22 +8,50 @@ variable "pm_api_token_secret" {
   type        = string
 }
 
+variable "gateway" {
+  description = "Network gateway IP address"
+  type        = string
+}
+
 variable "control_plane_vip" {
   description = "Control Plane VIP"
   type        = string
 }
 
-variable "control_plane_cidr" {
-  description = "Control Plane IP"
+variable "control_plane_ips" {
+  description = "List of control plane node IPs"
+  type        = list(string)
+}
+
+variable "worker_ips" {
+  description = "List of worker node IPs"
+  type        = list(string)
+}
+
+variable "cluster_name" {
+  description = "Talos cluster name"
   type        = string
 }
 
-variable "node1_cidr" {
-  description = "Node 1 IP"
+variable "talos_install_image" {
+  description = "Talos install image URL (factory image)"
   type        = string
 }
 
-variable "gateway" {
-  description = "Network gateway IP address"
-  type = string
+variable "cidr_prefix" {
+  description = "CIDR prefix length for node IPs"
+  type        = string
+  default     = "24"
+}
+
+variable "control_plane_disk_size" {
+  description = "Disk size for control plane VMs"
+  type        = string
+  default     = "20G"
+}
+
+variable "worker_disk_size" {
+  description = "Disk size for worker VMs"
+  type        = string
+  default     = "10G"
 }
