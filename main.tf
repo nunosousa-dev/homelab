@@ -1,11 +1,11 @@
-
 resource "proxmox_vm_qemu" "control-plane" {
   count = length(var.control_plane_ips)
 
   vmid = 200 + count.index
   name = "k8s-control-plane-${count.index}"
 
-  target_node = "supernova"
+  target_node = var.proxmox_node
+  scsihw      = "virtio-scsi-single"
 
   os_type   = "cloud-init"
   ipconfig0 = "ip=${var.control_plane_ips[count.index]}/${var.cidr_prefix},gw=${var.gateway}"
@@ -14,7 +14,7 @@ resource "proxmox_vm_qemu" "control-plane" {
     cores = "4"
   }
 
-  memory = "8192"
+  memory = "4096"
 
   network {
     id        = 0
@@ -25,19 +25,21 @@ resource "proxmox_vm_qemu" "control-plane" {
   }
 
   disks {
-    ide {
-      ide1 {
+    scsi {
+      scsi0 {
         disk {
           size    = var.control_plane_disk_size
           storage = "local-lvm"
         }
       }
-      ide2 {
+    }
+    ide {
+      ide0 {
         cdrom {
-          iso = "truenas_data:iso/nocloud-amd64.iso"
+          iso = var.talos_iso
         }
       }
-      ide3 {
+      ide1 {
         cloudinit {
           storage = "local-lvm"
         }
@@ -52,7 +54,8 @@ resource "proxmox_vm_qemu" "worker" {
   vmid = 210 + count.index
   name = "k8s-worker-${count.index}"
 
-  target_node = "supernova"
+  target_node = var.proxmox_node
+  scsihw      = "virtio-scsi-single"
 
   os_type   = "cloud-init"
   ipconfig0 = "ip=${var.worker_ips[count.index]}/${var.cidr_prefix},gw=${var.gateway}"
@@ -61,7 +64,7 @@ resource "proxmox_vm_qemu" "worker" {
     cores = "4"
   }
 
-  memory = "8192"
+  memory = "12288"
 
   network {
     id        = 0
@@ -72,19 +75,21 @@ resource "proxmox_vm_qemu" "worker" {
   }
 
   disks {
-    ide {
-      ide1 {
+    scsi {
+      scsi0 {
         disk {
           size    = var.worker_disk_size
           storage = "local-lvm"
         }
       }
-      ide2 {
+    }
+    ide {
+      ide0 {
         cdrom {
-          iso = "truenas_data:iso/nocloud-amd64.iso"
+          iso = var.talos_iso
         }
       }
-      ide3 {
+      ide1 {
         cloudinit {
           storage = "local-lvm"
         }

@@ -1,91 +1,124 @@
-# K8s cluster using Talos Linux
+# Homelab - K8s cluster using Talos Linux on Proxmox
+
+## Architecture
+
+| VM | CPU | RAM | Disk | Role |
+|---|---|---|---|---|
+| Control Plane | 4 cores | 4GB | 20G | etcd, API server, scheduler, workloads |
+| Worker | 4 cores | 12GB | 10G | Heavy workloads (Immich, Prometheus, etc.) |
+| TrueNAS *(manual)* | - | ~10GB | - | NAS / storage backend |
 
 ### Cluster Network
 
-#### Control plane nodes:
+| Component | IP |
+|---|---|
+| Gateway | 10.0.0.1 |
+| Control Plane VIP | 10.0.0.20 |
+| Control Plane Node | 10.0.0.21 |
+| Worker Node | 10.0.0.30 |
 
-Starting IP: 10.0.100.100/16 <br>
-Added to certSANs for API server certificate <br>
-Updated cluster endpoint to use this IP <br>
+## Prerequisites
 
-#### Worker nodes:
+1. Proxmox VE with API token configured (see [Troubleshooting](#troubleshooting))
+2. Talos Linux nocloud ISO uploaded to Proxmox storage (`truenas_data:iso/nocloud-amd64.iso`)
+3. Terraform installed locally
 
-Starting IP: 10.0.101.100/16
+## Deploy
 
-#### Added network configuration for both node types:
-
-Interface configuration (assuming eth0)
-Default route (assuming gateway is 10.0.0.1)
-
-### Generate the base configuration
+### 1. Initialize Terraform
 ```bash
-talosctl gen config casinha-cluster https://10.0.0.20:6443 \
-    --output-dir cluster-config \
-    --install-image factory.talos.dev/nocloud-installer/07fe29582dc9bf9c1b8bf07294b8c62e6a0fe231c7a8107d3cf52f38486436c9:v1.12.6 \
-    --force
+terraform init
 ```
 
-### Control Plane
+### 2. Review the plan
 ```bash
-talosctl apply-config --insecure --nodes 10.0.0.21 \
-  --file cluster-config/controlplane.yaml \
-  --config-patch @cluster-config/patches/controlplane1.yaml
+terraform plan -var-file="inputs.tfvars"
 ```
 
-### Worker Node
+### 3. Apply
 ```bash
-talosctl apply-config --insecure --nodes 10.0.0.30 \
-  --file cluster-config/worker.yaml \
-  --config-patch @cluster-config/patches/worker1.yaml
+terraform apply -var-file="inputs.tfvars"
 ```
 
-### Configure talosctl to talk to our cluster
+This will:
+- Create Proxmox VMs (control plane + worker)
+- Generate Talos machine secrets
+- Apply Talos machine configuration to all nodes
+- Bootstrap the cluster
+- Retrieve kubeconfig
+
+### 4. Get cluster credentials
 ```bash
-export TALOSCONFIG="cluster-config/talosconfig"
-talosctl config endpoint 10.0.0.21 10.0.0.22 10.0.0.23
-```
-```bash
-talosctl config node 10.0.0.30
+terraform output -raw kubeconfig > ~/.kube/config
+terraform output -raw talosconfig > ~/.talos/config
 ```
 
-### Bootstrap cluster (we just do it for the first control plane)
+### 5. Verify
 ```bash
-talosctl --nodes 10.0.0.21 bootstrap
-```
-
-### Check the cluster status
-```bash
+kubectl get nodes
 talosctl health
 ```
 
-### Generate kubeconfig and copy to kube folder
+## Day 2 Operations
+
+### Check cluster status
 ```bash
-talosctl kubeconfig cluster-config/
-```
-```bash
-cp cluster-config/kubeconfig ~/.kube/config
+talosctl health
+kubectl get nodes -o wide
 ```
 
 ### Reset Talos cluster (DANGER ZONE)
 
-This is helpful because we don't need to re-create Proxmox VMs, just reset Talos Linux :)
+Reset nodes without re-creating Proxmox VMs:
 
-#### Reset control planes
 ```bash
-talosctl reset --graceful=false --reboot --nodes 10.0.100.100,10.0.100.101,10.0.100.102
+talosctl reset --graceful=false --reboot --nodes 10.0.0.21
+talosctl reset --graceful=false --reboot --nodes 10.0.0.30
 ```
 
-#### Reset worker nodes
+After reset, delete Terraform state and re-apply:
 ```bash
-talosctl reset --graceful=false --reboot --nodes 10.0.101.100,10.0.101.101
+rm terraform.tfstate terraform.tfstate.backup
+terraform apply -var-file="inputs.tfvars"
+```
+
+### Destroy everything
+```bash
+terraform destroy -var-file="inputs.tfvars"
+```
+
+## Configuration
+
+All configuration is managed via variable files:
+
+- `inputs.tfvars` — cluster settings (IPs, names, versions)
+- `credentials.auto.tfvars` — Proxmox API credentials (gitignored)
+
+### Scaling
+
+Add nodes by extending the IP lists in `inputs.tfvars`:
+```terraform
+control_plane_ips = ["10.0.0.21", "10.0.0.22", "10.0.0.23"]
+worker_ips        = ["10.0.0.30", "10.0.0.31"]
 ```
 
 ## Troubleshooting
+
 ### Fix PVE API access
 ```bash
 pveum role add TerraformProv -privs "Datastore.AllocateSpace Datastore.AllocateTemplate Datastore.Audit Pool.Allocate Sys.Audit Sys.Console Sys.Modify VM.Allocate VM.Audit VM.Clone VM.Config.CDROM VM.Config.Cloudinit VM.Config.CPU VM.Config.Disk VM.Config.HWType VM.Config.Memory VM.Config.Network VM.Config.Options VM.Migrate VM.Monitor VM.PowerMgmt SDN.Use"
 pveum user add terraform-prov@pve
-pveum aclmod / -user terraform-prov@pve -role TerraformProv # Apply permission to the user
+pveum aclmod / -user terraform-prov@pve -role TerraformProv
 pveum user token add terraform-prov@pve api
-pveum aclmod / --tokens 'terraform-prov@pve!api' -role TerraformProv # Apply permission to the token
+pveum aclmod / --tokens 'terraform-prov@pve!api' -role TerraformProv
 ```
+
+### Talos install disk not found
+Ensure `scsihw = "virtio-scsi-single"` is set on VMs. The disk appears as `/dev/sda`.
+
+### Update Talos version
+1. Generate a new image at [factory.talos.dev](https://factory.talos.dev) with desired extensions
+2. Update `talos_version` and `talos_install_image` in `inputs.tfvars`
+3. Upload new ISO to Proxmox and update `talos_iso` if needed
+4. Run `terraform apply -var-file="inputs.tfvars"`
+

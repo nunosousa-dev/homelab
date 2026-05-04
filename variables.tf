@@ -1,10 +1,22 @@
+variable "pm_api_url" {
+  description = "Proxmox API URL"
+  type        = string
+}
+
 variable "pm_api_token_id" {
   description = "Proxmox API token ID"
   type        = string
+  sensitive   = true
 }
 
 variable "pm_api_token_secret" {
   description = "Proxmox API token secret"
+  type        = string
+  sensitive   = true
+}
+
+variable "proxmox_node" {
+  description = "Proxmox target node name"
   type        = string
 }
 
@@ -33,8 +45,18 @@ variable "cluster_name" {
   type        = string
 }
 
+variable "talos_version" {
+  description = "Talos version for machine configuration"
+  type        = string
+}
+
 variable "talos_install_image" {
   description = "Talos install image URL (factory image)"
+  type        = string
+}
+
+variable "talos_iso" {
+  description = "Proxmox ISO path for Talos (storage:content/filename)"
   type        = string
 }
 

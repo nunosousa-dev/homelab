@@ -5,7 +5,7 @@ data "talos_machine_configuration" "controlplane" {
   machine_type     = "controlplane"
   cluster_endpoint = "https://${var.control_plane_vip}:6443"
   machine_secrets  = talos_machine_secrets.this.machine_secrets
-  talos_version    = "v1.13.0"
+  talos_version    = var.talos_version
 }
 
 data "talos_machine_configuration" "worker" {
@@ -13,7 +13,7 @@ data "talos_machine_configuration" "worker" {
   machine_type     = "worker"
   cluster_endpoint = "https://${var.control_plane_vip}:6443"
   machine_secrets  = talos_machine_secrets.this.machine_secrets
-  talos_version    = "v1.13.0"
+  talos_version    = var.talos_version
 }
 
 resource "talos_machine_configuration_apply" "controlplane" {
@@ -55,6 +55,12 @@ resource "talos_machine_configuration_apply" "controlplane" {
         }
       }
       cluster = {
+        apiServer = {
+          certSANs = concat(
+            [var.control_plane_vip],
+            var.control_plane_ips
+          )
+        }
         extraManifests = [
           "https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml",
           "https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml"
