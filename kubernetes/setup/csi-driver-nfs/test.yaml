@@ -1,0 +1,82 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-nginx
+  namespace: test-nfs
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: nfs
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-nfs-example
+  namespace: test-nfs
+spec:
+  containers:
+    - image: nginx
+      name: nginx
+      ports:
+        - containerPort: 80
+          protocol: TCP
+      volumeMounts:
+        - mountPath: /var/www
+          name: pvc-nginx
+          readOnly: false
+      resources:
+        requests:
+          memory: "64Mi"
+          cpu: "250m"
+        limits:
+          memory: "128Mi"
+          cpu: "500m"
+  volumes:
+    - name: pvc-nginx
+      persistentVolumeClaim:
+        claimName: pvc-nginx
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-nginx-retain
+  namespace: test-nfs
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: nfs-retain
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-nfs-example-retain
+  namespace: test-nfs
+spec:
+  containers:
+    - image: nginx
+      name: nginx
+      ports:
+        - containerPort: 80
+          protocol: TCP
+      volumeMounts:
+        - mountPath: /var/www
+          name: pvc-nginx-retain
+          readOnly: false
+      resources:
+        requests:
+          memory: "64Mi"
+          cpu: "250m"
+        limits:
+          memory: "128Mi"
+          cpu: "500m"
+  volumes:
+    - name: pvc-nginx-retain
+      persistentVolumeClaim:
+        claimName: pvc-nginx-retain

@@ -36,6 +36,13 @@ spec:
           name: actual-budget
           ports:
             - containerPort: 5006
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
 ---
 apiVersion: v1
 kind: Service
