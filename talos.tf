@@ -55,6 +55,11 @@ resource "talos_machine_configuration_apply" "controlplane" {
         }
       }
       cluster = {
+        network = {
+          cni = {
+            name = "none"
+          }
+        }
         apiServer = {
           certSANs = concat(
             [var.control_plane_vip],
