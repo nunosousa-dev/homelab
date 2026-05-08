@@ -5,7 +5,6 @@ kube-prometheus-stack:
   prometheus:
     prometheusSpec:
       storageSpec:
-        retention: 30d
         volumeClaimTemplate:
           spec:
             storageClassName: nfs-retain
