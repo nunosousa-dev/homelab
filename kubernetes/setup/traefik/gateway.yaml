@@ -12,3 +12,13 @@ spec:
       allowedRoutes:
         namespaces:
           from: All
+    - name: websecure
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: all-local-nunosousa-dev
+      allowedRoutes:
+        namespaces:
+          from: All

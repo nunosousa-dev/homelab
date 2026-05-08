@@ -7,8 +7,9 @@ spec:
   parentRefs:
     - name: homelab
       namespace: traefik
+      sectionName: websecure
   hostnames:
-    - "nginx.home.lab"
+    - "nginx.local.nunosousa.dev"
   rules:
     - matches:
         - path:
