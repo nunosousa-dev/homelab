@@ -4,20 +4,7 @@ kube-prometheus-stack:
 
   prometheus:
     prometheusSpec:
-      securityContext:
-        runAsUser: 1000
-        runAsGroup: 2000
-        fsGroup: 2000
-        runAsNonRoot: true
-      storageSpec:
-        volumeClaimTemplate:
-          spec:
-            storageClassName: nfs-retain
-            accessModes:
-              - ReadWriteOnce
-            resources:
-              requests:
-                storage: 50Gi
+      retention: 30d
 
 grafana:
   hostname: grafana.local.nunosousa.dev
