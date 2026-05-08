@@ -1,0 +1,6 @@
+kube-prometheus-stack:
+  grafana:
+    enabled: true
+
+grafana:
+  hostname: grafana.local.nunosousa.dev
