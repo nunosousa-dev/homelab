@@ -12,14 +12,14 @@ helm repo add csi-driver-nfs https://raw.githubusercontent.com/kubernetes-csi/cs
 2. Install chart using custom `values.yaml`:
 
 ````
-helm install csi-driver-nfs csi-driver-nfs/csi-driver-nfs --namespace kube-system --version 4.13.2 --values values.yaml
+helm install csi-driver-nfs csi-driver-nfs/csi-driver-nfs --namespace kube-system --version 4.13.2 --values kubernetes/setup/csi-driver-nfs/values.yaml
 ````
 Make sure `--version X.Y.Z` is the one.
 
 To update chart with new values:
 
 ```
-helm upgrade csi-driver-nfs csi-driver-nfs/csi-driver-nfs --namespace kube-system -f values.yaml
+helm upgrade csi-driver-nfs csi-driver-nfs/csi-driver-nfs --namespace kube-system -f kubernetes/setup/csi-driver-nfs/values.yaml
 ```
 
 ## Testing

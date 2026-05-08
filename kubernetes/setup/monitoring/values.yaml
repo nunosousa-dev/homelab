@@ -2,5 +2,18 @@ kube-prometheus-stack:
   grafana:
     enabled: true
 
+  prometheus:
+    prometheusSpec:
+      storageSpec:
+        retention: 30d
+        volumeClaimTemplate:
+          spec:
+            storageClassName: nfs-retain
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 50Gi
+
 grafana:
   hostname: grafana.local.nunosousa.dev
