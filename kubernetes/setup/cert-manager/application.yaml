@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   sources:
-    - repoURL: oci://quay.io/jetstack/charts
+    - repoURL: https://charts.jetstack.io
       chart: cert-manager
-      targetRevision: v1.20.2
+      targetRevision: 1.20.2
       helm:
         valueFiles:
           - $values/kubernetes/setup/cert-manager/values.yaml
