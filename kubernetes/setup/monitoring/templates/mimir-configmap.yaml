@@ -1,0 +1,59 @@
+{{- if .Values.mimir.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mimir-config
+  labels:
+    app.kubernetes.io/name: mimir
+    app.kubernetes.io/part-of: monitoring
+data:
+  mimir.yaml: |
+    multitenancy_enabled: true
+
+    usage_stats:
+      enabled: false
+
+    blocks_storage:
+      backend: filesystem
+      bucket_store:
+        sync_dir: /data/tsdb-sync
+      filesystem:
+        dir: /data/blocks
+      tsdb:
+        dir: /data/tsdb
+
+    compactor:
+      data_dir: /data/compactor
+      sharding_ring:
+        kvstore:
+          store: memberlist
+
+    distributor:
+      ring:
+        instance_addr: 127.0.0.1
+        kvstore:
+          store: memberlist
+
+    ingester:
+      ring:
+        instance_addr: 127.0.0.1
+        kvstore:
+          store: memberlist
+        replication_factor: 1
+
+    limits:
+      compactor_blocks_retention_period: {{ .Values.mimir.retention | quote }}
+
+    ruler_storage:
+      backend: filesystem
+      filesystem:
+        dir: /data/rules
+
+    server:
+      http_listen_port: 9009
+      grpc_listen_port: 9095
+
+    store_gateway:
+      sharding_ring:
+        replication_factor: 1
+{{- end }}
