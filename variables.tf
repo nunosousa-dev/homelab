@@ -75,5 +75,5 @@ variable "control_plane_disk_size" {
 variable "worker_disk_size" {
   description = "Disk size for worker VMs"
   type        = string
-  default     = "10G"
+  default     = "50G"
 }
