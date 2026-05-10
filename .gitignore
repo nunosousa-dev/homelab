@@ -18,3 +18,5 @@ credentials.auto.tfvars
 
 cluster-config/kubeconfig
 cluster-config/talosconfig
+
+kubernetes/apps/immich/secrets.yaml
