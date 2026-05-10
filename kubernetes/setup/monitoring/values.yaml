@@ -3,6 +3,7 @@ kube-prometheus-stack:
     enabled: true
     additionalDataSources:
       - name: Mimir Long Term
+        uid: mimir-long-term
         type: prometheus
         access: proxy
         url: http://mimir:9009/prometheus
