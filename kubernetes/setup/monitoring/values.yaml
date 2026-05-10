@@ -17,6 +17,9 @@ kube-prometheus-stack:
   prometheus:
     prometheusSpec:
       retention: 30d
+      serviceMonitorSelectorNilUsesHelmValues: false
+      serviceMonitorSelector: {}
+      serviceMonitorNamespaceSelector: {}
       remoteWrite:
         - url: http://mimir.monitoring.svc.cluster.local:9009/api/v1/push
           headers:
