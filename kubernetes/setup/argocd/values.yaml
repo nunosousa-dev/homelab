@@ -6,20 +6,20 @@ server:
     serviceMonitor:
       enabled: true
 
-controller:
-  metrics:
-    enabled: true
-    serviceMonitor:
-      enabled: true
+# controller:
+#   metrics:
+#     enabled: true
+#     serviceMonitor:
+#       enabled: true
 
-repoServer:
-  metrics:
-    enabled: true
-    serviceMonitor:
-      enabled: true
+# repoServer:
+#   metrics:
+#     enabled: true
+#     serviceMonitor:
+#       enabled: true
 
-applicationSet:
-  metrics:
-    enabled: true
-    serviceMonitor:
-      enabled: true
+# applicationSet:
+#   metrics:
+#     enabled: true
+#     serviceMonitor:
+#       enabled: true
