@@ -42,33 +42,7 @@ nfs:
   volumeSnapshotClasses: []
 
   driver:
-    config:
-      driver: freenas-api-nfs
-      instance_id: homelab-nfs
-      httpConnection:
-        protocol: https
-        host: 10.0.0.3
-        port: 443
-        # apiKey is read from the truenas-api-secret Secret (see templates/truenas-secret.yaml)
-        apiKey: 2-NJZ2WlPLmgIGwSMESKaCYukyCDxistwvjMgaa7p75rXJddWE3goC7bQ4miy0K6YF
-        allowInsecure: true
-      zfs:
-        datasetParentName: data/k8s-nfs/vols
-        detachedSnapshotsDatasetParentName: data/k8s-nfs/snaps
-        datasetEnableQuotas: true
-        datasetEnableReservation: false
-        datasetPermissionsMode: "0777"
-        datasetPermissionsUser: 0
-        datasetPermissionsGroup: 0
-      nfs:
-        shareHost: 10.0.0.3
-        shareAlldirs: false
-        shareAllowedHosts: []
-        shareAllowedNetworks: []
-        shareMaprootUser: root
-        shareMaprootGroup: root
-        shareMapallUser: ""
-        shareMapallGroup: ""
+    existingConfigSecret: truenas-nfs-config
 
 # iSCSI driver (alias: iscsi)
 iscsi:
@@ -105,35 +79,4 @@ iscsi:
       iscsiDirHostPathType: ""
 
   driver:
-    config:
-      driver: freenas-api-iscsi
-      instance_id: homelab-iscsi
-      httpConnection:
-        protocol: https
-        host: 10.0.0.3
-        port: 443
-        # apiKey is read from the truenas-api-secret Secret (see templates/truenas-secret.yaml)
-        apiKey: 2-NJZ2WlPLmgIGwSMESKaCYukyCDxistwvjMgaa7p75rXJddWE3goC7bQ4miy0K6YF
-        allowInsecure: true
-      zfs:
-        datasetParentName: data/k8s-iscsi/vols
-        detachedSnapshotsDatasetParentName: data/k8s-iscsi/snaps
-        zvolCompression: ""
-        zvolDedup: ""
-        zvolEnableReservation: false
-        zvolBlocksize: "16K"
-      iscsi:
-        targetPortal: "10.0.0.3:3260"
-        interface: ""
-        namePrefix: csi-
-        nameSuffix: "-homelab"
-        targetGroups:
-          - targetGroupPortalGroup: 1
-            targetGroupInitiatorGroup: 1
-            targetGroupAuthType: None
-        extentInsecureTpc: true
-        extentXenCompat: false
-        extentDisablePhysicalBlocksize: true
-        extentBlocksize: 512
-        extentRpm: "SSD"
-        extentAvailThreshold: 0
+    existingConfigSecret: truenas-iscsi-config
