@@ -30,6 +30,10 @@ kube-prometheus-stack:
                 - long_term_metrics
               regex: "true"
 
+  prometheus-node-exporter:
+    hostNetwork: true
+    hostPID: true
+
 grafana:
   hostname: grafana.local.nunosousa.dev
 
