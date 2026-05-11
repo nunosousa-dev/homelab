@@ -48,5 +48,5 @@ redis:
 
 library:
   nfsServer: 10.0.0.3
-  nfsPath: /mnt/data/photos
+  nfsPath: /mnt/data/immich-library
   size: 500Gi
