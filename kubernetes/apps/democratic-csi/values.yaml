@@ -43,6 +43,8 @@ nfs:
 
   driver:
     existingConfigSecret: truenas-nfs-config
+    config:
+      driver: freenas-api-nfs
 
 # iSCSI driver (alias: iscsi)
 iscsi:
@@ -80,3 +82,5 @@ iscsi:
 
   driver:
     existingConfigSecret: truenas-iscsi-config
+    config:
+      driver: freenas-api-iscsi
