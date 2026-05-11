@@ -1,0 +1,5 @@
+apiVersion: v2
+name: actual-budget
+description: Actual Budget self-hosted personal finance app
+version: 1.0.0
+type: application

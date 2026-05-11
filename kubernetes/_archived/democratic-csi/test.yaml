@@ -1,0 +1,122 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test-democratic-csi
+---
+# Test 1: truenas-nfs (Delete reclaim policy)
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: test-nfs
+  namespace: test-democratic-csi
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: truenas-nfs
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-nfs
+  namespace: test-democratic-csi
+spec:
+  containers:
+    - name: busybox
+      image: busybox:1.37.0
+      command: ["sh", "-c", "echo 'nfs write test' > /data/test.txt && cat /data/test.txt && sleep 3600"]
+      volumeMounts:
+        - mountPath: /data
+          name: data
+      resources:
+        requests:
+          memory: "32Mi"
+          cpu: "10m"
+        limits:
+          memory: "64Mi"
+          cpu: "100m"
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: test-nfs
+---
+# Test 2: truenas-nfs-retain (Retain reclaim policy)
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: test-nfs-retain
+  namespace: test-democratic-csi
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: truenas-nfs-retain
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-nfs-retain
+  namespace: test-democratic-csi
+spec:
+  containers:
+    - name: busybox
+      image: busybox:1.37.0
+      command: ["sh", "-c", "echo 'nfs-retain write test' > /data/test.txt && cat /data/test.txt && sleep 3600"]
+      volumeMounts:
+        - mountPath: /data
+          name: data
+      resources:
+        requests:
+          memory: "32Mi"
+          cpu: "10m"
+        limits:
+          memory: "64Mi"
+          cpu: "100m"
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: test-nfs-retain
+---
+# Test 3: truenas-iscsi-retain (iSCSI block storage)
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: test-iscsi-retain
+  namespace: test-democratic-csi
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: truenas-iscsi-retain
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-iscsi-retain
+  namespace: test-democratic-csi
+spec:
+  containers:
+    - name: busybox
+      image: busybox:1.37.0
+      command: ["sh", "-c", "echo 'iscsi write test' > /data/test.txt && cat /data/test.txt && sleep 3600"]
+      volumeMounts:
+        - mountPath: /data
+          name: data
+      resources:
+        requests:
+          memory: "32Mi"
+          cpu: "10m"
+        limits:
+          memory: "64Mi"
+          cpu: "100m"
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: test-iscsi-retain

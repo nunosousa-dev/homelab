@@ -1,0 +1,14 @@
+apiVersion: v2
+name: democratic-csi
+description: TrueNAS CSI drivers — NFS and iSCSI via democratic-csi
+version: 1.0.0
+type: application
+dependencies:
+  - name: democratic-csi
+    alias: nfs
+    version: ">=0.14.0"
+    repository: https://democratic-csi.github.io/charts/
+  - name: democratic-csi
+    alias: iscsi
+    version: ">=0.14.0"
+    repository: https://democratic-csi.github.io/charts/

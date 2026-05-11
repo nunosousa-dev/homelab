@@ -6,7 +6,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: nfs-retain
+  storageClassName: truenas-nfs-retain
   resources:
     requests:
       storage: 10Gi

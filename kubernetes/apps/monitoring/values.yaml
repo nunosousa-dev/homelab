@@ -1,0 +1,51 @@
+kube-prometheus-stack:
+  grafana:
+    enabled: true
+    additionalDataSources:
+      - name: Mimir Long Term
+        uid: mimir-long-term
+        type: prometheus
+        access: proxy
+        url: http://mimir:9009/prometheus
+        isDefault: false
+        jsonData:
+          httpMethod: POST
+          httpHeaderName1: X-Scope-OrgID
+        secureJsonData:
+          httpHeaderValue1: homelab
+
+  prometheus:
+    prometheusSpec:
+      retention: 30d
+      serviceMonitorSelectorNilUsesHelmValues: false
+      serviceMonitorSelector: {}
+      serviceMonitorNamespaceSelector: {}
+      remoteWrite:
+        - url: http://mimir.monitoring.svc.cluster.local:9009/api/v1/push
+          headers:
+            X-Scope-OrgID: homelab
+          writeRelabelConfigs:
+            - action: keep
+              sourceLabels:
+                - long_term_metrics
+              regex: "true"
+
+grafana:
+  hostname: grafana.local.nunosousa.dev
+
+mimir:
+  enabled: true
+  image:
+    repository: grafana/mimir
+    tag: 2.17.3
+    pullPolicy: IfNotPresent
+  retention: 1y
+  storage:
+    storageClassName: truenas-nfs-retain
+    size: 20Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      memory: 2Gi

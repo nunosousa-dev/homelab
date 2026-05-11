@@ -1,0 +1,11 @@
+hostname: actual.local.nunosousa.dev
+
+image: actualbudget/actual-server:latest
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "100m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"

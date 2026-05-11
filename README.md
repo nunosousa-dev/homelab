@@ -59,6 +59,131 @@ kubectl get nodes
 talosctl health
 ```
 
+## Kubernetes Bootstrap
+
+After the cluster is running, bootstrap the core infrastructure layer. These steps are **one-time manual installs** — ArgoCD takes over everything afterwards.
+
+### 6. Install Cilium (CNI)
+```bash
+helm repo add cilium https://helm.cilium.io
+helm upgrade --install cilium cilium/cilium \
+  --namespace kube-system \
+  -f kubernetes/bootstrap/cilium/values.yaml
+```
+
+### 7. Install Sealed Secrets controller
+```bash
+helm repo add sealed-secrets https://bitnami-labs.github.io/sealed-secrets
+helm upgrade --install sealed-secrets sealed-secrets/sealed-secrets \
+  --namespace kube-system \
+  --set fullnameOverride=sealed-secrets-controller
+```
+
+Install the `kubeseal` CLI:
+```bash
+brew install kubeseal   # macOS
+```
+
+### 8. Seal all secrets
+
+Sealed Secrets encrypts secrets against your specific cluster. Run the following to generate each sealed secret and write it into the chart templates. **Do this before committing to Git.**
+
+#### Cloudflare API token (cert-manager)
+```bash
+kubectl create secret generic cloudflare-api-token-secret \
+  --namespace cert-manager \
+  --from-literal=api-token=<CLOUDFLARE_API_TOKEN> \
+  --dry-run=client -o yaml \
+  | kubeseal --controller-name sealed-secrets-controller \
+             --controller-namespace kube-system \
+             --format yaml \
+  > kubernetes/apps/cert-manager/templates/cloudflare-secret.yaml
+```
+
+#### TrueNAS API key (democratic-csi)
+```bash
+kubectl create secret generic truenas-api-secret \
+  --namespace democratic-csi \
+  --from-literal=apiKey=<TRUENAS_API_KEY> \
+  --dry-run=client -o yaml \
+  | kubeseal --controller-name sealed-secrets-controller \
+             --controller-namespace kube-system \
+             --format yaml \
+  > kubernetes/apps/democratic-csi/templates/truenas-secret.yaml
+```
+
+#### Immich credentials
+```bash
+kubectl create secret generic immich-secret \
+  --namespace immich \
+  --from-literal=DB_PASSWORD=<DB_PASSWORD> \
+  --from-literal=SECRET_KEY=<SECRET_KEY> \
+  --dry-run=client -o yaml \
+  | kubeseal --controller-name sealed-secrets-controller \
+             --controller-namespace kube-system \
+             --format yaml \
+  > kubernetes/apps/immich/templates/immich-secret.yaml
+```
+
+### 9. Build Helm chart dependencies
+
+Charts with upstream dependencies need a `charts/` directory before ArgoCD can sync them:
+```bash
+helm dependency update kubernetes/apps/cert-manager
+helm dependency update kubernetes/apps/traefik
+helm dependency update kubernetes/apps/reflector
+helm dependency update kubernetes/apps/democratic-csi
+helm dependency update kubernetes/apps/monitoring
+```
+
+### 10. Install ArgoCD
+```bash
+helm repo add argo https://argoproj.github.io/argo-helm
+helm upgrade --install argocd argo/argo-cd \
+  --namespace argocd --create-namespace \
+  -f kubernetes/bootstrap/argocd/values.yaml
+```
+
+Wait for ArgoCD to be ready:
+```bash
+kubectl wait --for=condition=Available deployment/argocd-server -n argocd --timeout=120s
+```
+
+### 11. Apply the App of Apps
+
+This single manifest registers every application with ArgoCD. After this, ArgoCD owns all further reconciliation.
+```bash
+kubectl apply -f kubernetes/apps/_apps.yaml
+```
+
+Verify all Applications are syncing:
+```bash
+kubectl get applications -n argocd
+```
+
+## GitOps Structure
+
+All cluster state lives under `kubernetes/`:
+
+```
+kubernetes/
+  bootstrap/          # One-time manual Helm installs (Cilium, ArgoCD)
+    cilium/
+    argocd/
+  apps/               # GitOps-managed umbrella Helm charts
+    _apps.yaml        # App of Apps — apply once to seed ArgoCD
+    cilium-config/    # LB IP pool + L2 announcement (wave 0)
+    cert-manager/     # cert-manager + ClusterIssuer + wildcard cert (wave 0)
+    democratic-csi/   # TrueNAS NFS + iSCSI drivers (wave 0)
+    traefik/          # Traefik + Gateway API gateway (wave 1)
+    reflector/        # Secret reflection across namespaces (wave 1)
+    monitoring/       # kube-prometheus-stack + Mimir (wave 2)
+    immich/           # Immich photo server (wave 2)
+    actual-budget/    # Actual Budget finance app (wave 2)
+```
+
+Sync waves control deployment order: wave 0 (infra) → wave 1 (ingress) → wave 2 (apps).
+
 ## Day 2 Operations
 
 ### Check cluster status
@@ -115,6 +240,17 @@ pveum aclmod / --tokens 'terraform-prov@pve!api' -role TerraformProv
 
 ### Talos install disk not found
 Ensure `scsihw = "virtio-scsi-single"` is set on VMs. The disk appears as `/dev/sda`.
+
+### Upgrade Talos nodes after changing factory image
+When `talos_install_image` in `inputs.tfvars` is updated (e.g. to add system extensions), nodes must be upgraded:
+```bash
+# Apply new machine config first
+terraform apply -var-file="inputs.tfvars"
+
+# Upgrade each node (uses the new installer image from the updated machine config)
+talosctl upgrade --nodes 10.0.0.21 --image factory.talos.dev/nocloud-installer/$(grep talos_install_image inputs.tfvars | grep -oP '(?<=nocloud-installer/)[^:]+'):v1.13.0
+talosctl upgrade --nodes 10.0.0.30 --image factory.talos.dev/nocloud-installer/$(grep talos_install_image inputs.tfvars | grep -oP '(?<=nocloud-installer/)[^:]+'):v1.13.0
+```
 
 ### Update Talos version
 1. Generate a new image at [factory.talos.dev](https://factory.talos.dev) with desired extensions

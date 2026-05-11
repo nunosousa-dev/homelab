@@ -6,5 +6,5 @@ helm repo update
 helm install argocd argo/argo-cd \
   --namespace argocd \
   --create-namespace \
-  -f values.yaml
+  -f kubernetes/setup/argocd/values.yaml
 ```

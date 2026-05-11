@@ -1,0 +1,52 @@
+hostname: immich.local.nunosousa.dev
+
+server:
+  image: ghcr.io/immich-app/immich-server:release
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"
+
+machineLearning:
+  image: ghcr.io/immich-app/immich-machine-learning:release
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "4Gi"
+      cpu: "2000m"
+  modelCache:
+    storageClassName: truenas-nfs-retain
+    size: 10Gi
+
+postgres:
+  image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+  storage:
+    storageClassName: truenas-iscsi-retain
+    size: 10Gi
+
+redis:
+  image: valkey/valkey:8-bookworm
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "50m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+
+library:
+  nfsServer: 10.0.0.3
+  nfsPath: /mnt/data/photos
+  size: 500Gi

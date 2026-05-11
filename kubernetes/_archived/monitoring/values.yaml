@@ -41,7 +41,7 @@ mimir:
     pullPolicy: IfNotPresent
   retention: 1y
   storage:
-    storageClassName: nfs-retain
+    storageClassName: truenas-nfs-retain
     size: 20Gi
   resources:
     requests:

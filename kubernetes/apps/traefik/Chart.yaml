@@ -1,0 +1,9 @@
+apiVersion: v2
+name: traefik
+description: Traefik ingress controller with Gateway API and homelab Gateway
+version: 1.0.0
+type: application
+dependencies:
+  - name: traefik
+    version: ">=30.0.0"
+    repository: https://traefik.github.io/charts

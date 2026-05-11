@@ -1,0 +1,5 @@
+apiVersion: v2
+name: cilium-config
+description: Cilium custom resources (LB IP pool + L2 announcement policy)
+version: 1.0.0
+type: application

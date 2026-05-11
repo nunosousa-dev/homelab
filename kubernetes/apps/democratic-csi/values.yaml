@@ -1,0 +1,139 @@
+# NFS driver (alias: nfs)
+nfs:
+  csiDriver:
+    name: "org.democratic-csi.truenas-nfs"
+    fsGroupPolicy: File
+
+  storageClasses:
+    - name: truenas-nfs-retain
+      defaultClass: false
+      reclaimPolicy: Retain
+      volumeBindingMode: Immediate
+      allowVolumeExpansion: true
+      parameters:
+        fsType: nfs
+      mountOptions:
+        - nfsvers=4.1
+        - noatime
+      secrets:
+        provisioner-secret:
+        controller-publish-secret:
+        node-stage-secret:
+        node-publish-secret:
+        controller-expand-secret:
+
+    - name: truenas-nfs
+      defaultClass: false
+      reclaimPolicy: Delete
+      volumeBindingMode: Immediate
+      allowVolumeExpansion: true
+      parameters:
+        fsType: nfs
+      mountOptions:
+        - nfsvers=4.1
+        - noatime
+      secrets:
+        provisioner-secret:
+        controller-publish-secret:
+        node-stage-secret:
+        node-publish-secret:
+        controller-expand-secret:
+
+  volumeSnapshotClasses: []
+
+  driver:
+    config:
+      driver: freenas-api-nfs
+      instance_id: homelab-nfs
+      httpConnection:
+        protocol: https
+        host: 10.0.0.3
+        port: 443
+        # apiKey is read from the truenas-api-secret Secret (see templates/truenas-secret.yaml)
+        apiKey: REPLACE_WITH_SEALED_SECRET
+        allowInsecure: true
+      zfs:
+        datasetParentName: data/k8s-nfs/vols
+        detachedSnapshotsDatasetParentName: data/k8s-nfs/snaps
+        datasetEnableQuotas: true
+        datasetEnableReservation: false
+        datasetPermissionsMode: "0777"
+        datasetPermissionsUser: 0
+        datasetPermissionsGroup: 0
+      nfs:
+        shareHost: 10.0.0.3
+        shareAlldirs: false
+        shareAllowedHosts: []
+        shareAllowedNetworks: []
+        shareMaprootUser: root
+        shareMaprootGroup: root
+        shareMapallUser: ""
+        shareMapallGroup: ""
+
+# iSCSI driver (alias: iscsi)
+iscsi:
+  csiDriver:
+    name: "org.democratic-csi.truenas-iscsi"
+
+  storageClasses:
+    - name: truenas-iscsi-retain
+      defaultClass: false
+      reclaimPolicy: Retain
+      volumeBindingMode: Immediate
+      allowVolumeExpansion: true
+      parameters:
+        fsType: ext4
+      mountOptions: []
+      secrets:
+        provisioner-secret:
+        controller-publish-secret:
+        node-stage-secret:
+        node-publish-secret:
+        controller-expand-secret:
+
+  volumeSnapshotClasses: []
+
+  node:
+    hostPID: true
+    driver:
+      extraEnv:
+        - name: ISCSIADM_HOST_STRATEGY
+          value: nsenter
+        - name: ISCSIADM_HOST_PATH
+          value: /usr/local/sbin/iscsiadm
+      iscsiDirHostPath: /etc/iscsi
+      iscsiDirHostPathType: ""
+
+  driver:
+    config:
+      driver: freenas-api-iscsi
+      instance_id: homelab-iscsi
+      httpConnection:
+        protocol: https
+        host: 10.0.0.3
+        port: 443
+        # apiKey is read from the truenas-api-secret Secret (see templates/truenas-secret.yaml)
+        apiKey: REPLACE_WITH_SEALED_SECRET
+        allowInsecure: true
+      zfs:
+        datasetParentName: data/k8s-iscsi/vols
+        detachedSnapshotsDatasetParentName: data/k8s-iscsi/snaps
+        zvolCompression: ""
+        zvolDedup: ""
+        zvolEnableReservation: false
+        zvolBlocksize: "16K"
+      iscsi:
+        targetPortal: "10.0.0.3:3260"
+        interface: ""
+        namePrefix: csi-
+        nameSuffix: "-homelab"
+        targetGroups:
+          - targetGroupPortalGroup: 1
+            targetGroupInitiatorGroup: 1
+            targetGroupAuthType: None
+        extentInsecureTpc: true
+        extentXenCompat: false
+        extentDisablePhysicalBlocksize: true
+        extentBlocksize: 512
+        extentRpm: "SSD"
+        extentAvailThreshold: 0
