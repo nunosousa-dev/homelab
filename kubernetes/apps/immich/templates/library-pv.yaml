@@ -6,7 +6,7 @@ spec:
   capacity:
     storage: {{ .Values.library.size }}
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
   storageClassName: ""
   mountOptions:
@@ -22,7 +22,7 @@ metadata:
   namespace: immich
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   storageClassName: ""
   volumeName: immich-photos-pv
   resources:

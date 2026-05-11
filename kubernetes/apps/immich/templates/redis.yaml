@@ -20,7 +20,7 @@ spec:
             - containerPort: 6379
           livenessProbe:
             exec:
-              command: ["redis-cli", "ping"]
+              command: ["valkey-cli", "ping"]
             initialDelaySeconds: 10
             periodSeconds: 10
           resources:
