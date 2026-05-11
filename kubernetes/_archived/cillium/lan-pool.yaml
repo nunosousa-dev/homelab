@@ -1,8 +1,0 @@
-apiVersion: cilium.io/v2
-kind: CiliumLoadBalancerIPPool
-metadata:
-  name: homelab-pool
-spec:
-  blocks:
-    - start: 10.0.0.31
-      stop: 10.0.0.50
