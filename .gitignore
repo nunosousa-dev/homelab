@@ -20,3 +20,6 @@ cluster-config/kubeconfig
 cluster-config/talosconfig
 
 kubernetes/apps/immich/secrets.yaml
+
+# Sealed secrets master key backup — store in password manager, never commit
+sealed-secrets-master-key.yaml

@@ -86,43 +86,39 @@ brew install kubeseal   # macOS
 
 ### 8. Seal all secrets
 
-Sealed Secrets encrypts secrets against your specific cluster. Run the following to generate each sealed secret and write it into the chart templates. **Do this before committing to Git.**
+Sealed Secrets encrypts secrets against your specific cluster. A helper script `seal-secrets.sh` automates all sealing in one step. **The script is gitignored — never commit it with real values filled in.**
 
-#### Cloudflare API token (cert-manager)
+Pass values from your password manager as environment variables:
 ```bash
-kubectl create secret generic cloudflare-api-token-secret \
-  --namespace cert-manager \
-  --from-literal=api-token=<CLOUDFLARE_API_TOKEN> \
-  --dry-run=client -o yaml \
-  | kubeseal --controller-name sealed-secrets-controller \
-             --controller-namespace kube-system \
-             --format yaml \
-  > kubernetes/apps/cert-manager/templates/cloudflare-secret.yaml
+TRUENAS_API_KEY=<key> \
+CLOUDFLARE_API_TOKEN=<token> \
+IMMICH_DB_PASSWORD=<pw> \
+IMMICH_SECRET_KEY=<key> \
+./seal-secrets.sh
 ```
 
-#### TrueNAS API key (democratic-csi)
+No keys are stored in the script — it is committed to Git and safe to share. Values are passed at runtime only.
+
+This seals and writes all four secrets:
+- `kubernetes/apps/democratic-csi/templates/truenas-nfs-config.yaml`
+- `kubernetes/apps/democratic-csi/templates/truenas-iscsi-config.yaml`
+- `kubernetes/apps/cert-manager/templates/cloudflare-secret.yaml`
+- `kubernetes/apps/immich/templates/immich-secret.yaml`
+
+Then commit the updated sealed secret files (safe to push — encrypted):
 ```bash
-kubectl create secret generic truenas-api-secret \
-  --namespace democratic-csi \
-  --from-literal=apiKey=<TRUENAS_API_KEY> \
-  --dry-run=client -o yaml \
-  | kubeseal --controller-name sealed-secrets-controller \
-             --controller-namespace kube-system \
-             --format yaml \
-  > kubernetes/apps/democratic-csi/templates/truenas-secret.yaml
+git add kubernetes/apps/
+git commit -m "chore: rotate sealed secrets"
 ```
 
-#### Immich credentials
+#### Back up the master decryption key
+
+Store this outside Git (password manager or encrypted vault). Without it you cannot re-seal after a cluster reset.
 ```bash
-kubectl create secret generic immich-secret \
-  --namespace immich \
-  --from-literal=DB_PASSWORD=<DB_PASSWORD> \
-  --from-literal=SECRET_KEY=<SECRET_KEY> \
-  --dry-run=client -o yaml \
-  | kubeseal --controller-name sealed-secrets-controller \
-             --controller-namespace kube-system \
-             --format yaml \
-  > kubernetes/apps/immich/templates/immich-secret.yaml
+kubectl get secret -n kube-system \
+  -l sealedsecrets.bitnami.com/sealed-secrets-key \
+  -o yaml > sealed-secrets-master-key.yaml
+# sealed-secrets-master-key.yaml is gitignored — store it somewhere safe
 ```
 
 ### 9. Build Helm chart dependencies
