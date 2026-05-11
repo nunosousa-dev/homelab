@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: immich-photos-pv
+  name: immich-library-pv
 spec:
   capacity:
     storage: {{ .Values.library.size }}
@@ -24,7 +24,7 @@ spec:
   accessModes:
     - ReadWriteMany
   storageClassName: ""
-  volumeName: immich-photos-pv
+  volumeName: immich-library-pv
   resources:
     requests:
       storage: {{ .Values.library.size }}
