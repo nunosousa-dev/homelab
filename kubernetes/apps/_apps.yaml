@@ -2,7 +2,7 @@
 # Apply once manually: kubectl apply -f kubernetes/apps/_apps.yaml
 #
 # Deployment order is managed by ArgoCD sync waves (wave annotation).
-# Wave 0: infrastructure (cilium-config, cert-manager, democratic-csi)
+# Wave 0: infrastructure (cilium-config, cert-manager, democratic-csi, metrics-server)
 # Wave 1: ingress (traefik, reflector)
 # Wave 2: applications (monitoring, immich, actual-budget)
 ---
@@ -81,6 +81,30 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: metrics-server
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/nunosousa-dev/homelab.git
+    targetRevision: HEAD
+    path: kubernetes/apps/metrics-server
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
