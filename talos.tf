@@ -60,6 +60,9 @@ resource "talos_machine_configuration_apply" "controlplane" {
             name = "none"
           }
         }
+        proxy = {
+          disabled = true
+        }
         apiServer = {
           certSANs = concat(
             [var.control_plane_vip],
