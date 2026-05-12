@@ -1,11 +1,11 @@
 ipam:
   mode: kubernetes
-kubeProxyReplacement: false
+kubeProxyReplacement: true
 securityContext:
   capabilities:
     ciliumAgent:
       - CHOWN
-      - KILL,
+      - KILL
       - NET_ADMIN
       - NET_RAW
       - IPC_LOCK

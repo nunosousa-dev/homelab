@@ -70,7 +70,7 @@ resource "talos_machine_configuration_apply" "controlplane" {
           "https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml",
           "https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml"
         ]
-        allowSchedulingOnControlPlanes = true
+        allowSchedulingOnControlPlanes = false
       }
     })
   ]
