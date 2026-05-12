@@ -1,10 +1,7 @@
 ipam:
   mode: kubernetes
 
-kubeProxyReplacement: true
-
-ingressController:
-  enabled: true
+kubeProxyReplacement: false
 
 securityContext:
   capabilities:

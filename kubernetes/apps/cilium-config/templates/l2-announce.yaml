@@ -5,5 +5,3 @@ metadata:
 spec:
   interfaces:
     - en*
-  externalIPs: true
-  loadBalancerIPs: true

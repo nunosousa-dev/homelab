@@ -60,9 +60,6 @@ resource "talos_machine_configuration_apply" "controlplane" {
             name = "none"
           }
         }
-        proxy = {
-          disabled = true
-        }
         apiServer = {
           certSANs = concat(
             [var.control_plane_vip],
@@ -98,6 +95,7 @@ resource "talos_machine_configuration_apply" "worker" {
           interfaces = [
             {
               interface = "eth0"
+              dhcp      = false
               addresses = ["${var.worker_ips[count.index]}/${var.cidr_prefix}"]
               routes = [
                 {

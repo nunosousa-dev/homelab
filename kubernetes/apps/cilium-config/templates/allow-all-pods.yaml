@@ -5,8 +5,6 @@ metadata:
 spec:
   endpointSelector: {}
   ingress:
-    - fromEndpoints:
-        - {}
+    - {}
   egress:
-    - toEndpoints:
-        - {}
+    - {}
