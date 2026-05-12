@@ -59,9 +59,9 @@ resource "talos_machine_configuration_apply" "controlplane" {
           cni = {
             name = "none"
           }
-          proxy = {
-            disabled = true
-          }
+        }
+        proxy = {
+          disabled = true
         }
         apiServer = {
           certSANs = concat(
