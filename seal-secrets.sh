@@ -7,6 +7,8 @@
 # Usage:
 #   TRUENAS_API_KEY=<key> CLOUDFLARE_API_TOKEN=<token> \
 #   IMMICH_DB_PASSWORD=<pw> IMMICH_SECRET_KEY=<key> \
+#   GITHUB_APP_ID=<id> GITHUB_APP_INSTALLATION_ID=<id> \
+#   GITHUB_APP_PRIVATE_KEY_FILE=<path-to-pem> \
 #   ./seal-secrets.sh
 
 set -euo pipefail
@@ -15,6 +17,9 @@ set -euo pipefail
 : "${CLOUDFLARE_API_TOKEN:?CLOUDFLARE_API_TOKEN is required}"
 : "${IMMICH_DB_PASSWORD:?IMMICH_DB_PASSWORD is required}"
 : "${IMMICH_SECRET_KEY:?IMMICH_SECRET_KEY is required}"
+: "${GITHUB_APP_ID:?GITHUB_APP_ID is required}"
+: "${GITHUB_APP_INSTALLATION_ID:?GITHUB_APP_INSTALLATION_ID is required}"
+: "${GITHUB_APP_PRIVATE_KEY_FILE:?GITHUB_APP_PRIVATE_KEY_FILE is required}"
 
 KUBESEAL="kubeseal --controller-name sealed-secrets-controller --controller-namespace kube-system --format yaml"
 
@@ -134,6 +139,20 @@ kubectl create secret generic immich-secret \
   | $KUBESEAL \
   > kubernetes/apps/immich/templates/immich-secret.yaml
 echo "    -> kubernetes/apps/immich/templates/immich-secret.yaml"
+
+echo "==> Sealing argocd-repo-secret..."
+kubectl create secret generic argocd-repo-secret \
+  --namespace argocd \
+  --from-literal=type=git \
+  --from-literal=url=https://github.com/nunosousa-dev/homelab.git \
+  --from-literal=githubAppID="${GITHUB_APP_ID}" \
+  --from-literal=githubAppInstallationID="${GITHUB_APP_INSTALLATION_ID}" \
+  --from-file=githubAppPrivateKey="${GITHUB_APP_PRIVATE_KEY_FILE}" \
+  --dry-run=client -o yaml \
+  | kubectl label --local -f - argocd.argoproj.io/secret-type=repository --dry-run=client -o yaml \
+  | $KUBESEAL \
+  > kubernetes/bootstrap/argocd/repo-secret.yaml
+echo "    -> kubernetes/bootstrap/argocd/repo-secret.yaml"
 
 echo ""
 echo "==> Done. Commit the updated sealed secret files:"
