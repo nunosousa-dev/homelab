@@ -9,30 +9,6 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: cilium-config
-  namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "0"
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/nunosousa-dev/homelab.git
-    targetRevision: HEAD
-    path: kubernetes/apps/cilium-config
-    helm:
-      valueFiles:
-        - values.yaml
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: kube-system
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
   name: cert-manager
   namespace: argocd
   annotations:
@@ -211,29 +187,29 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-# ---
-# apiVersion: argoproj.io/v1alpha1
-# kind: Application
-# metadata:
-#   name: actual-budget
-#   namespace: argocd
-#   annotations:
-#     argocd.argoproj.io/sync-wave: "2"
-# spec:
-#   project: default
-#   source:
-#     repoURL: https://github.com/nunosousa-dev/homelab.git
-#     targetRevision: HEAD
-#     path: kubernetes/apps/actual-budget
-#     helm:
-#       valueFiles:
-#         - values.yaml
-#   destination:
-#     server: https://kubernetes.default.svc
-#     namespace: actual-budget
-#   syncPolicy:
-#     automated:
-#       prune: true
-#       selfHeal: true
-#     syncOptions:
-#       - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: actual-budget
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/nunosousa-dev/homelab.git
+    targetRevision: HEAD
+    path: kubernetes/apps/actual-budget
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: actual-budget
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

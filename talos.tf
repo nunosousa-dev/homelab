@@ -59,6 +59,9 @@ resource "talos_machine_configuration_apply" "controlplane" {
           cni = {
             name = "none"
           }
+          proxy = {
+            disabled = true
+          }
         }
         apiServer = {
           certSANs = concat(
@@ -67,7 +70,8 @@ resource "talos_machine_configuration_apply" "controlplane" {
           )
         }
         extraManifests = [
-          "https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml"
+          "https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml",
+          "https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml"
         ]
         allowSchedulingOnControlPlanes = false
       }
