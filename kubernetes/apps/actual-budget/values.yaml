@@ -1,4 +1,4 @@
-hostname: actual.local.nunosousa.dev
+hostname: budget.local.nunosousa.dev
 
 image: actualbudget/actual-server:latest
 
