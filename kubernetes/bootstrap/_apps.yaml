@@ -27,6 +27,9 @@ spec:
           - name: monitoring
             namespace: monitoring
             wave: "2"
+          - name: argocd
+            namespace: argocd
+            wave: "3"
   template:
     metadata:
       name: "{{ .name }}"

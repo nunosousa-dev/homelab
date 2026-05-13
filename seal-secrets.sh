@@ -165,8 +165,8 @@ kubectl create secret generic argocd-repo-secret \
   --dry-run=client -o yaml \
   | kubectl label --local -f - argocd.argoproj.io/secret-type=repository --dry-run=client -o yaml \
   | $KUBESEAL \
-  > kubernetes/bootstrap/argocd/repo-secret.yaml
-echo "    -> kubernetes/bootstrap/argocd/repo-secret.yaml"
+  > kubernetes/bootstrap/argocd/templates/repo-secret.yaml
+echo "    -> kubernetes/bootstrap/argocd/templates/repo-secret.yaml"
 
 echo ""
 echo "==> Done. Commit the updated sealed secret files:"
