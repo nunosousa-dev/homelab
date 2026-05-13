@@ -3,6 +3,9 @@ kind: Certificate
 metadata:
   name: all-local-nunosousa-dev
   namespace: traefik
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    argocd.argoproj.io/sync-wave: "3"
 spec:
   secretName: all-local-nunosousa-dev
   issuerRef:

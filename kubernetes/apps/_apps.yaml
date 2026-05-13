@@ -1,4 +1,4 @@
-# App of Apps — root ArgoCD Application
+# App of Apps — ArgoCD ApplicationSet
 # Apply once manually: kubectl apply -f kubernetes/apps/_apps.yaml
 #
 # Deployment order is managed by ArgoCD sync waves (wave annotation).
@@ -7,211 +7,62 @@
 # Wave 2: applications (monitoring, immich, actual-budget, nextcloud-aio)
 ---
 apiVersion: argoproj.io/v1alpha1
-kind: Application
+kind: ApplicationSet
 metadata:
-  name: cert-manager
+  name: apps
   namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "0"
 spec:
-  project: default
-  source:
-    repoURL: https://github.com/nunosousa-dev/homelab.git
-    targetRevision: HEAD
-    path: kubernetes/apps/cert-manager
-    helm:
-      valueFiles:
-        - values.yaml
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: cert-manager
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: democratic-csi
-  namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "0"
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/nunosousa-dev/homelab.git
-    targetRevision: HEAD
-    path: kubernetes/apps/democratic-csi
-    helm:
-      valueFiles:
-        - values.yaml
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: democratic-csi
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: traefik
-  namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/nunosousa-dev/homelab.git
-    targetRevision: HEAD
-    path: kubernetes/apps/traefik
-    helm:
-      valueFiles:
-        - values.yaml
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: traefik
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: reflector
-  namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/nunosousa-dev/homelab.git
-    targetRevision: HEAD
-    path: kubernetes/apps/reflector
-    helm:
-      valueFiles:
-        - values.yaml
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: reflector
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: monitoring
-  namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/nunosousa-dev/homelab.git
-    targetRevision: HEAD
-    path: kubernetes/apps/monitoring
-    helm:
-      valueFiles:
-        - values.yaml
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: monitoring
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-      - ReplaceCRDs=true
-      - ServerSideApply=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: immich
-  namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/nunosousa-dev/homelab.git
-    targetRevision: HEAD
-    path: kubernetes/apps/immich
-    helm:
-      valueFiles:
-        - values.yaml
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: immich
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: actual-budget
-  namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/nunosousa-dev/homelab.git
-    targetRevision: HEAD
-    path: kubernetes/apps/actual-budget
-    helm:
-      valueFiles:
-        - values.yaml
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: actual-budget
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: nextcloud-aio
-  namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/nunosousa-dev/homelab.git
-    targetRevision: HEAD
-    path: kubernetes/apps/nextcloud-aio
-    helm:
-      valueFiles:
-        - values.yaml
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: nextcloud
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - list:
+        elements:
+          - name: cert-manager
+            namespace: cert-manager
+            wave: "0"
+          - name: democratic-csi
+            namespace: democratic-csi
+            wave: "0"
+          - name: traefik
+            namespace: traefik
+            wave: "1"
+          - name: reflector
+            namespace: reflector
+            wave: "1"
+          - name: monitoring
+            namespace: monitoring
+            wave: "2"
+          - name: immich
+            namespace: immich
+            wave: "2"
+          - name: actual-budget
+            namespace: actual-budget
+            wave: "2"
+          - name: nextcloud-aio
+            namespace: nextcloud
+            wave: "2"
+  template:
+    metadata:
+      name: "{{ .name }}"
+      annotations:
+        argocd.argoproj.io/sync-wave: "{{ .wave }}"
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/nunosousa-dev/homelab.git
+        targetRevision: HEAD
+        path: "kubernetes/apps/{{ .name }}"
+        helm:
+          valueFiles:
+            - values.yaml
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "{{ .namespace }}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - ReplaceCRDs=true
+          - ServerSideApply=true

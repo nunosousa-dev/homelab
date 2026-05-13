@@ -20,7 +20,7 @@
       - [Back up the master decryption key](#back-up-the-master-decryption-key)
     - [9. Build Helm chart dependencies](#9-build-helm-chart-dependencies)
     - [10. Install ArgoCD](#10-install-argocd)
-    - [11. Apply the App of Apps](#11-apply-the-app-of-apps)
+    - [11. Apply the ApplicationSet](#11-apply-the-applicationset)
   - [GitOps Structure](#gitops-structure)
   - [Storage](#storage)
     - [NFS](#nfs)
@@ -214,15 +214,22 @@ Wait for ArgoCD to be ready:
 kubectl wait --for=condition=Available deployment/argocd-server -n argocd --timeout=120s
 ```
 
-### 11. Apply the App of Apps
+Apply the ArgoCD repo secret and HTTP route:
+```bash
+kubectl apply -f kubernetes/bootstrap/argocd/repo-secret.yaml
+kubectl apply -f kubernetes/bootstrap/argocd/httproute.yaml
+```
 
-This single manifest registers every application with ArgoCD. After this, ArgoCD owns all further reconciliation.
+### 11. Apply the ApplicationSet
+
+This single `ApplicationSet` resource auto-generates an ArgoCD `Application` for every app in the list generator. After this, ArgoCD owns all further reconciliation.
 ```bash
 kubectl apply -f kubernetes/apps/_apps.yaml
 ```
 
-Verify all Applications are syncing:
+Verify the ApplicationSet and generated Applications:
 ```bash
+kubectl get applicationsets -n argocd
 kubectl get applications -n argocd
 ```
 
