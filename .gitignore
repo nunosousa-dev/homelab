@@ -28,3 +28,6 @@ sealed-secrets-master-key.yaml
 
 # Private keys
 *.pem
+
+# Helm dependency charts
+**/charts/*.tgz

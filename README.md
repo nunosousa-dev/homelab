@@ -112,7 +112,14 @@ talosctl health
 
 ## Kubernetes Bootstrap
 
-After the cluster is running, bootstrap the core infrastructure layer. These steps are **one-time manual installs** — ArgoCD takes over everything afterwards.
+After the cluster is running, bootstrap the core infrastructure layer.
+
+Manual installs are limited to:
+- Cilium (CNI)
+- Sealed Secrets controller
+- ArgoCD
+
+After applying the ApplicationSet, ArgoCD manages cert-manager, traefik, and the remaining bootstrap components.
 
 ### 6. Install Cilium (CNI)
 ```bash
@@ -124,8 +131,8 @@ helm upgrade --install cilium cilium/cilium \
 
 Apply Cilium L2 announcement policy and IP pool:
 ```bash
-kubectl apply -f kubernetes/bootstrap/cilium/lan-pool.yaml
 kubectl apply -f kubernetes/bootstrap/cilium/l2-announce.yaml
+kubectl apply -f kubernetes/bootstrap/cilium/lb-ip-pool.yaml
 ```
 
 ### 7. Install Sealed Secrets controller
@@ -171,7 +178,7 @@ This seals and writes all five secrets:
 - `kubernetes/bootstrap/democratic-csi/templates/truenas-iscsi-config.yaml`
 - `kubernetes/bootstrap/cert-manager/templates/cloudflare-secret.yaml`
 - `kubernetes/apps/immich/templates/immich-secret.yaml`
-- `kubernetes/bootstrap/argocd/repo-secret.yaml` (GitHub App credentials for ArgoCD)
+- `kubernetes/bootstrap/argocd/templates/repo-secret.yaml` (GitHub App credentials for ArgoCD)
 
 Then commit the updated sealed secret files (safe to push — encrypted):
 ```bash
@@ -203,10 +210,9 @@ helm dependency update kubernetes/apps/nextcloud-aio
 
 ### 10. Install ArgoCD
 ```bash
-helm repo add argo https://argoproj.github.io/argo-helm
-helm upgrade --install argocd argo/argo-cd \
-  --namespace argocd --create-namespace \
-  -f kubernetes/bootstrap/argocd/values.yaml
+helm dependency build kubernetes/bootstrap/argocd
+helm upgrade --install argocd kubernetes/bootstrap/argocd \
+  --namespace argocd --create-namespace
 ```
 
 Wait for ArgoCD to be ready:
@@ -214,18 +220,21 @@ Wait for ArgoCD to be ready:
 kubectl wait --for=condition=Available deployment/argocd-server -n argocd --timeout=120s
 ```
 
-Apply the ArgoCD repo secret:
-```bash
-kubectl apply -f kubernetes/bootstrap/argocd/repo-secret.yaml
-```
-
-> **Note:** The ArgoCD HTTPRoute is deployed automatically by ArgoCD at sync wave "3", after cert-manager and Traefik are healthy. No manual apply needed.
+> **Note:** The ArgoCD repo secret and HTTPRoute are deployed by ArgoCD from chart templates after the ApplicationSet is applied. No separate manual apply needed.
 
 ### 11. Apply the ApplicationSet
 
 This single `ApplicationSet` resource auto-generates an ArgoCD `Application` for every app in the list generator. After this, ArgoCD owns all further reconciliation.
 ```bash
 kubectl apply -f kubernetes/bootstrap/_apps.yaml
+```
+
+Preflight checks after initial sync:
+```bash
+kubectl get crd | grep cert-manager.io
+kubectl get crd | grep gateway.networking.k8s.io
+kubectl get pods -n cert-manager
+kubectl get pods -n traefik
 ```
 
 Verify the ApplicationSet and generated Applications:
@@ -240,7 +249,7 @@ All cluster state lives under `kubernetes/`:
 
 ```
 kubernetes/
-  bootstrap/          # GitOps-managed via ApplicationSet + one-time manual installs
+  bootstrap/          # GitOps-managed via ApplicationSet + manual prerequisites
     _apps.yaml        # App of Apps — apply once to seed ArgoCD
     cilium/           # CNI — manual install only (not in ApplicationSet)
     argocd/           # ArgoCD values, repo secret + HTTPRoute (wave 3)
@@ -339,9 +348,9 @@ helm upgrade sealed-secrets sealed-secrets/sealed-secrets \
   --set fullnameOverride=sealed-secrets-controller
 
 # ArgoCD
-helm upgrade argocd argo/argo-cd \
-  --namespace argocd \
-  -f kubernetes/bootstrap/argocd/values.yaml
+helm dependency build kubernetes/bootstrap/argocd
+helm upgrade argocd kubernetes/bootstrap/argocd \
+  --namespace argocd
 ```
 
 > **Note:** If Sealed Secrets is reinstalled (not just upgraded), back up the master key first and restore it after reinstall — otherwise existing sealed secrets cannot be decrypted.

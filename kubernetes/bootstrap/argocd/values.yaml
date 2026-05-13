@@ -1,7 +1,8 @@
-server:
-  extraArgs:
-    - --insecure
-  metrics:
-    enabled: true
-    serviceMonitor:
-      enabled: false
+argo-cd:
+  server:
+    extraArgs:
+      - --insecure
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: false
