@@ -18,7 +18,9 @@ spec:
       tls:
         mode: Terminate
         certificateRefs:
-          - name: all-local-nunosousa-dev
+          - group: ""
+            kind: Secret
+            name: all-local-nunosousa-dev
       allowedRoutes:
         namespaces:
           from: All
