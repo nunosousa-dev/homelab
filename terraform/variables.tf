@@ -50,6 +50,11 @@ variable "talos_version" {
   type        = string
 }
 
+variable "kubernetes_version" {
+  description = "Kubernetes version for the cluster"
+  type        = string
+}
+
 variable "talos_iso" {
   description = "Proxmox ISO path for Talos (storage:content/filename)"
   type        = string

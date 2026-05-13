@@ -1,4 +1,4 @@
-data "talos_image_factory_schematic" "this" {
+resource "talos_image_factory_schematic" "this" {
   schematic = yamlencode({
     customization = {
       systemExtensions = {
@@ -14,25 +14,27 @@ data "talos_image_factory_schematic" "this" {
 }
 
 locals {
-  talos_install_image = "factory.talos.dev/installer/${data.talos_image_factory_schematic.this.id}:${var.talos_version}"
+  talos_install_image = "factory.talos.dev/installer/${talos_image_factory_schematic.this.id}:${var.talos_version}"
 }
 
 resource "talos_machine_secrets" "this" {}
 
 data "talos_machine_configuration" "controlplane" {
-  cluster_name     = var.cluster_name
-  machine_type     = "controlplane"
-  cluster_endpoint = "https://${var.control_plane_vip}:6443"
-  machine_secrets  = talos_machine_secrets.this.machine_secrets
-  talos_version    = var.talos_version
+  cluster_name       = var.cluster_name
+  machine_type       = "controlplane"
+  cluster_endpoint   = "https://${var.control_plane_vip}:6443"
+  machine_secrets    = talos_machine_secrets.this.machine_secrets
+  talos_version      = var.talos_version
+  kubernetes_version = var.kubernetes_version
 }
 
 data "talos_machine_configuration" "worker" {
-  cluster_name     = var.cluster_name
-  machine_type     = "worker"
-  cluster_endpoint = "https://${var.control_plane_vip}:6443"
-  machine_secrets  = talos_machine_secrets.this.machine_secrets
-  talos_version    = var.talos_version
+  cluster_name       = var.cluster_name
+  machine_type       = "worker"
+  cluster_endpoint   = "https://${var.control_plane_vip}:6443"
+  machine_secrets    = talos_machine_secrets.this.machine_secrets
+  talos_version      = var.talos_version
+  kubernetes_version = var.kubernetes_version
 }
 
 resource "talos_machine_configuration_apply" "controlplane" {
