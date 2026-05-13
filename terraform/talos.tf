@@ -42,6 +42,8 @@ resource "talos_machine_configuration_apply" "controlplane" {
   machine_configuration_input = data.talos_machine_configuration.controlplane.machine_configuration
   node                        = var.control_plane_ips[count.index]
 
+  depends_on = [proxmox_vm_qemu.control-plane]
+
   config_patches = [
     yamlencode({
       machine = {
@@ -91,7 +93,7 @@ resource "talos_machine_configuration_apply" "controlplane" {
         }
         extraManifests = [
           "https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml",
-          "https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml"
+          "https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.7.2/components.yaml"
         ]
         allowSchedulingOnControlPlanes = false
       }
@@ -105,6 +107,8 @@ resource "talos_machine_configuration_apply" "worker" {
   client_configuration        = talos_machine_secrets.this.client_configuration
   machine_configuration_input = data.talos_machine_configuration.worker.machine_configuration
   node                        = var.worker_ips[count.index]
+
+  depends_on = [proxmox_vm_qemu.worker]
 
   config_patches = [
     yamlencode({

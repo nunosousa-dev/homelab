@@ -4,6 +4,6 @@ description: Nextcloud All-in-One self-hosted cloud
 version: 1.0.0
 type: application
 dependencies:
-  - name: nextcloud-aio
+  - name: nextcloud-aio-helm-chart
     version: ">=0.1.0"
     repository: https://nextcloud.github.io/all-in-one/

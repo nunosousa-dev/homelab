@@ -5,6 +5,19 @@ metadata:
   labels:
     pod-security.kubernetes.io/enforce: privileged
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: actual-budget-data
+  namespace: actual-budget
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: {{ .Values.storageClass }}
+  resources:
+    requests:
+      storage: {{ .Values.storageSize }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -26,8 +39,15 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 5006
+          volumeMounts:
+            - name: data
+              mountPath: /data
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: actual-budget-data
 ---
 apiVersion: v1
 kind: Service

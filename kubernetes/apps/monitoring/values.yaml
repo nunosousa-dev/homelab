@@ -25,7 +25,7 @@ kube-prometheus-stack:
       serviceMonitorSelector: {}
       serviceMonitorNamespaceSelector: {}
       remoteWrite:
-        - url: http://mimir.monitoring.svc.cluster.local:9009/api/v1/push
+        - url: http://mimir:9009/api/v1/push
           headers:
             X-Scope-OrgID: homelab
           writeRelabelConfigs:

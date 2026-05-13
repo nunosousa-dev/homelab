@@ -2,9 +2,9 @@
 # Apply once manually: kubectl apply -f kubernetes/apps/_apps.yaml
 #
 # Deployment order is managed by ArgoCD sync waves (wave annotation).
-# Wave 0: infrastructure (cilium-config, cert-manager, democratic-csi, metrics-server)
+# Wave 0: infrastructure (cert-manager, democratic-csi)
 # Wave 1: ingress (traefik, reflector)
-# Wave 2: applications (monitoring, immich, actual-budget)
+# Wave 2: applications (monitoring, immich, actual-budget, nextcloud-aio)
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application

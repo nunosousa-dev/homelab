@@ -7,9 +7,7 @@ resource "proxmox_vm_qemu" "control-plane" {
   target_node = var.proxmox_node
   scsihw      = "virtio-scsi-single"
 
-  os_type   = "cloud-init"
-  ipconfig0 = "ip=${var.control_plane_ips[count.index]}/${var.cidr_prefix},gw=${var.gateway}"
-  agent     = 1
+  agent = 1
 
   cpu {
     cores = "4"
@@ -40,11 +38,6 @@ resource "proxmox_vm_qemu" "control-plane" {
           iso = var.talos_iso
         }
       }
-      ide1 {
-        cloudinit {
-          storage = "local-lvm"
-        }
-      }
     }
   }
 }
@@ -58,9 +51,7 @@ resource "proxmox_vm_qemu" "worker" {
   target_node = var.proxmox_node
   scsihw      = "virtio-scsi-single"
 
-  os_type   = "cloud-init"
-  ipconfig0 = "ip=${var.worker_ips[count.index]}/${var.cidr_prefix},gw=${var.gateway}"
-  agent     = 1
+  agent = 1
 
   cpu {
     cores = "4"
@@ -89,11 +80,6 @@ resource "proxmox_vm_qemu" "worker" {
       ide0 {
         cdrom {
           iso = var.talos_iso
-        }
-      }
-      ide1 {
-        cloudinit {
-          storage = "local-lvm"
         }
       }
     }

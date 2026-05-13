@@ -2,6 +2,9 @@ hostname: actual.local.nunosousa.dev
 
 image: actualbudget/actual-server:latest
 
+storageClass: truenas-nfs-retain
+storageSize: 1Gi
+
 resources:
   requests:
     memory: "256Mi"

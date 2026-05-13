@@ -11,7 +11,7 @@ spec:
       namespace: traefik
       sectionName: websecure
   hostnames:
-    - "nextcloud.local.nunosousa.dev"
+    - {{ .Values.NC_DOMAIN | quote }}
   rules:
     - matches:
         - path:
