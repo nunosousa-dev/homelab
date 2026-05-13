@@ -35,12 +35,12 @@ spec:
           - name: immich
             namespace: immich
             wave: "2"
-          - name: actual-budget
-            namespace: actual-budget
-            wave: "2"
-          - name: nextcloud-aio
-            namespace: nextcloud
-            wave: "2"
+          # - name: actual-budget
+          #   namespace: actual-budget
+          #   wave: "2"
+          # - name: nextcloud-aio
+          #   namespace: nextcloud
+          #   wave: "2"
   template:
     metadata:
       name: "{{ .name }}"
