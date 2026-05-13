@@ -50,11 +50,6 @@ variable "talos_version" {
   type        = string
 }
 
-variable "talos_install_image" {
-  description = "Talos install image URL (factory image)"
-  type        = string
-}
-
 variable "talos_iso" {
   description = "Proxmox ISO path for Talos (storage:content/filename)"
   type        = string

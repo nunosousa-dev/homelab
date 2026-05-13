@@ -1,3 +1,22 @@
+data "talos_image_factory_schematic" "this" {
+  schematic = yamlencode({
+    customization = {
+      systemExtensions = {
+        officialExtensions = [
+          "siderolabs/iscsi-tools",
+          "siderolabs/util-linux-tools",
+          "siderolabs/qemu-guest-agent",
+          "siderolabs/nfs-mount",
+        ]
+      }
+    }
+  })
+}
+
+locals {
+  talos_install_image = "factory.talos.dev/installer/${data.talos_image_factory_schematic.this.id}:${var.talos_version}"
+}
+
 resource "talos_machine_secrets" "this" {}
 
 data "talos_machine_configuration" "controlplane" {
@@ -52,7 +71,7 @@ resource "talos_machine_configuration_apply" "controlplane" {
         }
         install = {
           disk  = "/dev/sda"
-          image = var.talos_install_image
+          image = local.talos_install_image
         }
       }
       cluster = {
@@ -113,7 +132,7 @@ resource "talos_machine_configuration_apply" "worker" {
         }
         install = {
           disk  = "/dev/sda"
-          image = var.talos_install_image
+          image = local.talos_install_image
         }
       }
     })
