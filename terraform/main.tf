@@ -7,6 +7,10 @@ resource "proxmox_vm_qemu" "control-plane" {
   target_node = var.proxmox_node
   scsihw      = "virtio-scsi-single"
 
+  os_type    = "cloud-init"
+  ipconfig0  = "ip=${var.control_plane_ips[count.index]}/${var.cidr_prefix},gw=${var.gateway}"
+  nameserver = join(" ", var.nameservers)
+
   agent = 1
 
   cpu {
@@ -35,11 +39,18 @@ resource "proxmox_vm_qemu" "control-plane" {
     ide {
       ide0 {
         cdrom {
-          iso = var.talos_iso
+          iso = local.talos_iso
+        }
+      }
+      ide1 {
+        cloudinit {
+          storage = "local-lvm"
         }
       }
     }
   }
+
+  depends_on = [null_resource.talos_iso_download]
 }
 
 resource "proxmox_vm_qemu" "worker" {
@@ -50,6 +61,10 @@ resource "proxmox_vm_qemu" "worker" {
 
   target_node = var.proxmox_node
   scsihw      = "virtio-scsi-single"
+
+  os_type    = "cloud-init"
+  ipconfig0  = "ip=${var.worker_ips[count.index]}/${var.cidr_prefix},gw=${var.gateway}"
+  nameserver = join(" ", var.nameservers)
 
   agent = 1
 
@@ -79,9 +94,16 @@ resource "proxmox_vm_qemu" "worker" {
     ide {
       ide0 {
         cdrom {
-          iso = var.talos_iso
+          iso = local.talos_iso
+        }
+      }
+      ide1 {
+        cloudinit {
+          storage = "local-lvm"
         }
       }
     }
   }
+
+  depends_on = [null_resource.talos_iso_download]
 }

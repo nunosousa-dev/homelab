@@ -43,6 +43,7 @@
     - [Talos install disk not found](#talos-install-disk-not-found)
     - [Upgrade Talos nodes after changing factory image](#upgrade-talos-nodes-after-changing-factory-image)
     - [Update Talos version](#update-talos-version)
+    - [Approve pending kubelet CSRs](#approve-pending-kubelet-csrs)
 
 ## Architecture
 
@@ -417,4 +418,10 @@ talosctl upgrade --nodes 10.0.0.30 --image factory.talos.dev/nocloud-installer/$
 2. Update `talos_version` and `talos_install_image` in `terraform/inputs.tfvars`
 3. Upload new ISO to Proxmox and update `talos_iso` if needed
 4. Run `cd terraform && terraform apply -var-file="inputs.tfvars"`
+
+### Approve pending kubelet CSRs
+After bootstrapping or adding nodes, kubelet serving certificates may be pending approval:
+```bash
+kubectl get csr --no-headers | awk '/Pending/ {print $1}' | xargs kubectl certificate approve
+```
 

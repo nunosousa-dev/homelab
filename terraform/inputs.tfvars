@@ -8,6 +8,7 @@ worker_ips        = ["10.0.0.25"]
 cluster_name       = "homelab"
 talos_version      = "v1.13.2"
 kubernetes_version = "1.35.5"
-talos_iso          = "truenas:iso/nocloud-amd64.iso"
 
-nameservers = ["10.0.0.1"]
+nameservers = ["10.0.0.10", "10.0.0.11"]
+
+metrics_server_version = "v0.8.1"

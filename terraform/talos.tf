@@ -6,15 +6,44 @@ resource "talos_image_factory_schematic" "this" {
           "siderolabs/iscsi-tools",
           "siderolabs/util-linux-tools",
           "siderolabs/qemu-guest-agent",
-          "siderolabs/nfs-mount",
+          "siderolabs/nfs-utils",
         ]
       }
     }
   })
 }
 
+data "talos_image_factory_urls" "this" {
+  talos_version = var.talos_version
+  schematic_id  = talos_image_factory_schematic.this.id
+  platform      = "nocloud"
+}
+
 locals {
   talos_install_image = "factory.talos.dev/installer/${talos_image_factory_schematic.this.id}:${var.talos_version}"
+  talos_iso_filename  = "talos-nocloud-amd64-${var.talos_version}.iso"
+  talos_iso           = "${var.iso_storage}:iso/${local.talos_iso_filename}"
+}
+
+resource "null_resource" "talos_iso_download" {
+  triggers = {
+    schematic_id  = talos_image_factory_schematic.this.id
+    talos_version = var.talos_version
+  }
+
+  provisioner "local-exec" {
+    command = "${path.module}/scripts/download-talos-iso.sh"
+
+    environment = {
+      PM_API_URL       = var.pm_api_url
+      PM_TOKEN_ID      = var.pm_api_token_id
+      PM_TOKEN_SECRET  = var.pm_api_token_secret
+      NODE             = var.proxmox_node
+      STORAGE          = var.iso_storage
+      FILENAME         = local.talos_iso_filename
+      ISO_URL          = data.talos_image_factory_urls.this.urls.iso
+    }
+  }
 }
 
 resource "talos_machine_secrets" "this" {}
@@ -58,7 +87,9 @@ resource "talos_machine_configuration_apply" "controlplane" {
           nameservers = var.nameservers
           interfaces = [
             {
-              interface = "eth0"
+              deviceSelector = {
+                driver = "virtio_net"
+              }
               dhcp      = false
               addresses = ["${var.control_plane_ips[count.index]}/${var.cidr_prefix}"]
               routes = [
@@ -95,7 +126,7 @@ resource "talos_machine_configuration_apply" "controlplane" {
         }
         extraManifests = [
           "https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml",
-          "https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.7.2/components.yaml"
+          "https://github.com/kubernetes-sigs/metrics-server/releases/download/${var.metrics_server_version}/components.yaml"
         ]
         allowSchedulingOnControlPlanes = false
       }
@@ -124,7 +155,9 @@ resource "talos_machine_configuration_apply" "worker" {
           nameservers = var.nameservers
           interfaces = [
             {
-              interface = "eth0"
+              deviceSelector = {
+                driver = "virtio_net"
+              }
               dhcp      = false
               addresses = ["${var.worker_ips[count.index]}/${var.cidr_prefix}"]
               routes = [

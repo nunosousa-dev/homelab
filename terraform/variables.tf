@@ -55,9 +55,10 @@ variable "kubernetes_version" {
   type        = string
 }
 
-variable "talos_iso" {
-  description = "Proxmox ISO path for Talos (storage:content/filename)"
+variable "iso_storage" {
+  description = "Proxmox storage ID for ISO images"
   type        = string
+  default     = "truenas"
 }
 
 variable "cidr_prefix" {
@@ -82,4 +83,9 @@ variable "nameservers" {
   description = "DNS nameservers for Talos nodes"
   type        = list(string)
   default     = ["1.1.1.1", "8.8.8.8"]
+}
+
+variable "metrics_server_version" {
+  description = "metrics-server version to be installed during talos bootstrap"
+  type        = string
 }
