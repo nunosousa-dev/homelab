@@ -39,8 +39,5 @@ operator:
 l2announcements:
   enabled: true
 
-devices:
-  - en+
-
 socketLB:
   hostNamespaceOnly: true

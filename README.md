@@ -58,7 +58,6 @@
 | Component | IP |
 |---|---|
 | Gateway | 10.0.0.1 |
-| Control Plane VIP | 10.0.0.20 |
 | Control Plane Node | 10.0.0.21 |
 | Worker Node | 10.0.0.30 |
 

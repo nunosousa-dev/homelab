@@ -51,7 +51,7 @@ resource "talos_machine_secrets" "this" {}
 data "talos_machine_configuration" "controlplane" {
   cluster_name       = var.cluster_name
   machine_type       = "controlplane"
-  cluster_endpoint   = "https://${var.control_plane_vip}:6443"
+  cluster_endpoint   = "https://${var.control_plane_ips[0]}:6443"
   machine_secrets    = talos_machine_secrets.this.machine_secrets
   talos_version      = var.talos_version
   kubernetes_version = var.kubernetes_version
@@ -60,7 +60,7 @@ data "talos_machine_configuration" "controlplane" {
 data "talos_machine_configuration" "worker" {
   cluster_name       = var.cluster_name
   machine_type       = "worker"
-  cluster_endpoint   = "https://${var.control_plane_vip}:6443"
+  cluster_endpoint   = "https://${var.control_plane_ips[0]}:6443"
   machine_secrets    = talos_machine_secrets.this.machine_secrets
   talos_version      = var.talos_version
   kubernetes_version = var.kubernetes_version
@@ -98,9 +98,6 @@ resource "talos_machine_configuration_apply" "controlplane" {
                   gateway = var.gateway
                 }
               ]
-              vip = {
-                ip = var.control_plane_vip
-              }
             }
           ]
         }
@@ -119,10 +116,7 @@ resource "talos_machine_configuration_apply" "controlplane" {
           disabled = true
         }
         apiServer = {
-          certSANs = concat(
-            [var.control_plane_vip],
-            var.control_plane_ips
-          )
+          certSANs = var.control_plane_ips
         }
         extraManifests = [
           "https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml",

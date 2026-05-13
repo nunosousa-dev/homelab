@@ -25,11 +25,6 @@ variable "gateway" {
   type        = string
 }
 
-variable "control_plane_vip" {
-  description = "Control Plane VIP"
-  type        = string
-}
-
 variable "control_plane_ips" {
   description = "List of control plane node IPs"
   type        = list(string)

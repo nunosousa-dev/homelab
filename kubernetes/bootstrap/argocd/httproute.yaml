@@ -5,9 +5,9 @@ metadata:
   namespace: argocd
 spec:
   parentRefs:
-    - group: ""	
+    - group: gateway.networking.k8s.io
       kind: Gateway
-    - name: homelab
+      name: homelab
       namespace: traefik
       sectionName: websecure
   hostnames:
@@ -18,7 +18,7 @@ spec:
             type: PathPrefix
             value: /
       backendRefs:
-        - group: ""
+        - group: gateway.networking.k8s.io
           kind: Service
-        - name: argocd-server
+          name: argocd-server
           port: 80

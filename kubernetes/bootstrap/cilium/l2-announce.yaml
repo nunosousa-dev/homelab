@@ -4,5 +4,3 @@ metadata:
   name: homelab-l2
 spec:
   loadBalancerIPs: true
-  interfaces:
-    - eth0
