@@ -5,7 +5,7 @@ metadata:
   namespace: immich
 spec:
   parentRefs:
-    - group: ""
+    - group: gateway.networking.k8s.io
       kind: Gateway
       name: homelab
       namespace: traefik

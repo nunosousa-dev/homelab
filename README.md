@@ -385,7 +385,7 @@ terraform destroy -var-file="inputs.tfvars"
 
 ### Remove an app from the ApplicationSet
 
-The ApplicationSet has `prune: true`, so ArgoCD automatically deletes the `Application` and all its resources when an entry is removed.
+The `_apps.yaml` ApplicationSet is manually managed — it is **not** auto-synced from Git by ArgoCD. After editing the file in Git you must re-apply it to the cluster, which triggers the ApplicationSet controller to prune the removed `Application` and its resources (`prune: true`).
 
 **1.** Remove the element from [kubernetes/apps/_apps.yaml](kubernetes/apps/_apps.yaml):
 ```yaml
@@ -406,7 +406,12 @@ git commit -m "chore: remove <app-name>"
 git push
 ```
 
-ArgoCD will detect the change and prune the `Application` and its owned resources automatically.
+**4.** Re-apply the ApplicationSet to the cluster:
+```bash
+kubectl apply -f kubernetes/apps/_apps.yaml
+```
+
+ArgoCD will detect the updated list and prune the `Application` and its owned resources.
 
 > **Note:** PersistentVolumeClaims are not pruned automatically. Delete them manually if needed:
 > ```bash

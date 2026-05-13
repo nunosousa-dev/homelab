@@ -1,10 +1,5 @@
 # App of Apps — ArgoCD ApplicationSet
 # Apply once manually: kubectl apply -f kubernetes/apps/_apps.yaml
-#
-# Deployment order is managed by ArgoCD sync waves (wave annotation).
-# Wave 0: infrastructure (cert-manager, democratic-csi)
-# Wave 1: ingress (traefik, reflector)
-# Wave 2: applications (monitoring, immich, actual-budget, nextcloud-aio)
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
@@ -32,15 +27,6 @@ spec:
           - name: monitoring
             namespace: monitoring
             wave: "2"
-          - name: immich
-            namespace: immich
-            wave: "2"
-          # - name: actual-budget
-          #   namespace: actual-budget
-          #   wave: "2"
-          # - name: nextcloud-aio
-          #   namespace: nextcloud
-          #   wave: "2"
   template:
     metadata:
       name: "{{ .name }}"

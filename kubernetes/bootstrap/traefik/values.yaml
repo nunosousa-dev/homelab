@@ -1,4 +1,6 @@
 traefik:
+  api:
+    insecure: true
   providers:
     kubernetesGateway:
       enabled: true
