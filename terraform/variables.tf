@@ -77,3 +77,9 @@ variable "worker_disk_size" {
   type        = string
   default     = "50G"
 }
+
+variable "nameservers" {
+  description = "DNS nameservers for Talos nodes"
+  type        = list(string)
+  default     = ["1.1.1.1", "8.8.8.8"]
+}

@@ -23,3 +23,9 @@ kubernetes/apps/immich/secrets.yaml
 
 # Sealed secrets master key backup — store in password manager, never commit
 sealed-secrets-master-key.yaml
+
+# Local secrets env file for seal-secrets.sh — never commit
+.env
+
+# Private keys
+*.pem

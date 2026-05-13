@@ -32,6 +32,7 @@ resource "talos_machine_configuration_apply" "controlplane" {
           }
         }
         network = {
+          nameservers = var.nameservers
           interfaces = [
             {
               interface = "eth0"
@@ -95,6 +96,7 @@ resource "talos_machine_configuration_apply" "worker" {
           }
         }
         network = {
+          nameservers = var.nameservers
           interfaces = [
             {
               interface = "eth0"

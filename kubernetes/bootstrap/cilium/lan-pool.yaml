@@ -4,5 +4,5 @@ metadata:
   name: homelab-pool
 spec:
   blocks:
-    - start: 10.0.0.30
+    - start: 10.0.0.31
       stop: 10.0.0.50

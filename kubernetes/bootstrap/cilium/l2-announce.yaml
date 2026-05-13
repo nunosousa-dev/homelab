@@ -3,5 +3,6 @@ kind: CiliumL2AnnouncementPolicy
 metadata:
   name: homelab-l2
 spec:
+  loadBalancerIPs: true
   interfaces:
-    - en*
+    - eth0

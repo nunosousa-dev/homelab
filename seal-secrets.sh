@@ -2,9 +2,14 @@
 # seal-secrets.sh — Re-seal all cluster secrets
 #
 # Run from repo root when the cluster is reachable.
-# Pass values via environment variables — never hardcode keys in this file.
+# Values can be provided via a .env file (recommended) or inline environment variables.
+# Inline env vars take precedence over .env.
 #
-# Usage:
+# Usage (recommended):
+#   cp .env.example .env   # fill in values
+#   ./seal-secrets.sh
+#
+# Usage (inline):
 #   TRUENAS_API_KEY=<key> CLOUDFLARE_API_TOKEN=<token> \
 #   IMMICH_DB_PASSWORD=<pw> IMMICH_SECRET_KEY=<key> \
 #   GITHUB_APP_ID=<id> GITHUB_APP_INSTALLATION_ID=<id> \
@@ -12,6 +17,15 @@
 #   ./seal-secrets.sh
 
 set -euo pipefail
+
+# Load .env file if present (inline env vars already set will not be overwritten)
+if [[ -f ".env" ]]; then
+  echo "==> Loading environment from .env"
+  set -a
+  # shellcheck source=/dev/null
+  source ".env"
+  set +a
+fi
 
 : "${TRUENAS_API_KEY:?TRUENAS_API_KEY is required}"
 : "${CLOUDFLARE_API_TOKEN:?CLOUDFLARE_API_TOKEN is required}"
