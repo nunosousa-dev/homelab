@@ -79,8 +79,8 @@ kubectl create secret generic truenas-nfs-config \
   --from-literal=driver-config-file.yaml="${NFS_DRIVER_CONFIG}" \
   --dry-run=client -o yaml \
   | $KUBESEAL \
-  > kubernetes/apps/democratic-csi/templates/truenas-nfs-config.yaml
-echo "    -> kubernetes/apps/democratic-csi/templates/truenas-nfs-config.yaml"
+  > kubernetes/bootstrap/democratic-csi/templates/truenas-nfs-config.yaml
+echo "    -> kubernetes/bootstrap/democratic-csi/templates/truenas-nfs-config.yaml"
 
 echo "==> Sealing truenas-iscsi-config..."
 ISCSI_DRIVER_CONFIG=$(cat <<EOF
@@ -132,8 +132,8 @@ kubectl create secret generic truenas-iscsi-config \
   --from-literal=driver-config-file.yaml="${ISCSI_DRIVER_CONFIG}" \
   --dry-run=client -o yaml \
   | $KUBESEAL \
-  > kubernetes/apps/democratic-csi/templates/truenas-iscsi-config.yaml
-echo "    -> kubernetes/apps/democratic-csi/templates/truenas-iscsi-config.yaml"
+  > kubernetes/bootstrap/democratic-csi/templates/truenas-iscsi-config.yaml
+echo "    -> kubernetes/bootstrap/democratic-csi/templates/truenas-iscsi-config.yaml"
 
 echo "==> Sealing cloudflare-api-token-secret..."
 kubectl create secret generic cloudflare-api-token-secret \
@@ -141,8 +141,8 @@ kubectl create secret generic cloudflare-api-token-secret \
   --from-literal=api-token="${CLOUDFLARE_API_TOKEN}" \
   --dry-run=client -o yaml \
   | $KUBESEAL \
-  > kubernetes/apps/cert-manager/templates/cloudflare-secret.yaml
-echo "    -> kubernetes/apps/cert-manager/templates/cloudflare-secret.yaml"
+  > kubernetes/bootstrap/cert-manager/templates/cloudflare-secret.yaml
+echo "    -> kubernetes/bootstrap/cert-manager/templates/cloudflare-secret.yaml"
 
 echo "==> Sealing immich-secret..."
 kubectl create secret generic immich-secret \
