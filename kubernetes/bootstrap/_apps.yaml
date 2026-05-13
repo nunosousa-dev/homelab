@@ -37,7 +37,7 @@ spec:
       source:
         repoURL: https://github.com/nunosousa-dev/homelab.git
         targetRevision: HEAD
-        path: "kubernetes/apps/{{ .name }}"
+        path: "kubernetes/bootstrap/{{ .name }}"
         helm:
           valueFiles:
             - values.yaml

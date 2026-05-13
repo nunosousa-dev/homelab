@@ -193,11 +193,11 @@ kubectl get secret -n kube-system \
 
 Charts with upstream dependencies need a `charts/` directory before ArgoCD can sync them:
 ```bash
-helm dependency update kubernetes/apps/cert-manager
-helm dependency update kubernetes/apps/traefik
-helm dependency update kubernetes/apps/reflector
-helm dependency update kubernetes/apps/democratic-csi
-helm dependency update kubernetes/apps/monitoring
+helm dependency update kubernetes/bootstrap/cert-manager
+helm dependency update kubernetes/bootstrap/traefik
+helm dependency update kubernetes/bootstrap/reflector
+helm dependency update kubernetes/bootstrap/democratic-csi
+helm dependency update kubernetes/bootstrap/monitoring
 helm dependency update kubernetes/apps/nextcloud-aio
 ```
 
@@ -224,7 +224,7 @@ kubectl apply -f kubernetes/bootstrap/argocd/httproute.yaml
 
 This single `ApplicationSet` resource auto-generates an ArgoCD `Application` for every app in the list generator. After this, ArgoCD owns all further reconciliation.
 ```bash
-kubectl apply -f kubernetes/apps/_apps.yaml
+kubectl apply -f kubernetes/bootstrap/_apps.yaml
 ```
 
 Verify the ApplicationSet and generated Applications:
