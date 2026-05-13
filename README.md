@@ -34,6 +34,7 @@
     - [Node maintenance (cordon/drain)](#node-maintenance-cordondrain)
     - [Reset Talos cluster (DANGER ZONE)](#reset-talos-cluster-danger-zone)
     - [Destroy everything](#destroy-everything)
+    - [Remove an app from the ApplicationSet](#remove-an-app-from-the-applicationset)
   - [Configuration](#configuration)
     - [Scaling](#scaling)
   - [Troubleshooting](#troubleshooting)
@@ -381,6 +382,37 @@ Then re-run the full [Kubernetes Bootstrap](#kubernetes-bootstrap) sequence from
 cd terraform/
 terraform destroy -var-file="inputs.tfvars"
 ```
+
+### Remove an app from the ApplicationSet
+
+The ApplicationSet has `prune: true`, so ArgoCD automatically deletes the `Application` and all its resources when an entry is removed.
+
+**1.** Remove the element from [kubernetes/apps/_apps.yaml](kubernetes/apps/_apps.yaml):
+```yaml
+          - name: <app-name>
+            namespace: <namespace>
+            wave: "<wave>"
+```
+
+**2.** Optionally remove the chart directory:
+```bash
+git rm -r kubernetes/apps/<app-name>
+```
+
+**3.** Commit and push:
+```bash
+git add kubernetes/apps/
+git commit -m "chore: remove <app-name>"
+git push
+```
+
+ArgoCD will detect the change and prune the `Application` and its owned resources automatically.
+
+> **Note:** PersistentVolumeClaims are not pruned automatically. Delete them manually if needed:
+> ```bash
+> kubectl delete pvc -n <namespace> --all
+> kubectl delete namespace <namespace>
+> ```
 
 ## Configuration
 
