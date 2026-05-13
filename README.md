@@ -167,15 +167,15 @@ GITHUB_APP_PRIVATE_KEY_FILE=<path-to-pem> \
 > **Note:** The `.env` file is gitignored — never commit it. The script itself is safe to commit.
 
 This seals and writes all five secrets:
-- `kubernetes/apps/democratic-csi/templates/truenas-nfs-config.yaml`
-- `kubernetes/apps/democratic-csi/templates/truenas-iscsi-config.yaml`
-- `kubernetes/apps/cert-manager/templates/cloudflare-secret.yaml`
+- `kubernetes/bootstrap/democratic-csi/templates/truenas-nfs-config.yaml`
+- `kubernetes/bootstrap/democratic-csi/templates/truenas-iscsi-config.yaml`
+- `kubernetes/bootstrap/cert-manager/templates/cloudflare-secret.yaml`
 - `kubernetes/apps/immich/templates/immich-secret.yaml`
 - `kubernetes/bootstrap/argocd/repo-secret.yaml` (GitHub App credentials for ArgoCD)
 
 Then commit the updated sealed secret files (safe to push — encrypted):
 ```bash
-git add kubernetes/apps/
+git add kubernetes/bootstrap/ kubernetes/apps/
 git commit -m "chore: rotate sealed secrets"
 ```
 
@@ -214,11 +214,12 @@ Wait for ArgoCD to be ready:
 kubectl wait --for=condition=Available deployment/argocd-server -n argocd --timeout=120s
 ```
 
-Apply the ArgoCD repo secret and HTTP route:
+Apply the ArgoCD repo secret:
 ```bash
 kubectl apply -f kubernetes/bootstrap/argocd/repo-secret.yaml
-kubectl apply -f kubernetes/bootstrap/argocd/httproute.yaml
 ```
+
+> **Note:** The ArgoCD HTTPRoute is deployed automatically by ArgoCD at sync wave "3", after cert-manager and Traefik are healthy. No manual apply needed.
 
 ### 11. Apply the ApplicationSet
 
@@ -239,22 +240,22 @@ All cluster state lives under `kubernetes/`:
 
 ```
 kubernetes/
-  bootstrap/          # One-time manual Helm installs (Cilium, ArgoCD)
-    cilium/
-    argocd/
-  apps/               # GitOps-managed umbrella Helm charts
+  bootstrap/          # GitOps-managed via ApplicationSet + one-time manual installs
     _apps.yaml        # App of Apps — apply once to seed ArgoCD
+    cilium/           # CNI — manual install only (not in ApplicationSet)
+    argocd/           # ArgoCD values, repo secret + HTTPRoute (wave 3)
     cert-manager/     # cert-manager + ClusterIssuer + wildcard cert (wave 0)
     democratic-csi/   # TrueNAS NFS + iSCSI drivers (wave 0)
-    traefik/          # Traefik + Gateway API gateway (wave 1)
+    traefik/          # Traefik + Gateway API (wave 1)
     reflector/        # Secret reflection across namespaces (wave 1)
     monitoring/       # kube-prometheus-stack + Mimir (wave 2)
-    immich/           # Immich photo server (wave 2)
-    actual-budget/    # Actual Budget finance app (wave 2)
-    nextcloud-aio/    # Nextcloud All-in-One (wave 2)
+  apps/               # User-facing application Helm charts
+    immich/           # Immich photo server
+    actual-budget/    # Actual Budget finance app
+    nextcloud-aio/    # Nextcloud All-in-One
 ```
 
-Sync waves control deployment order: wave 0 (infra) → wave 1 (ingress) → wave 2 (apps).
+Sync waves control deployment order: wave 0 (infra) → wave 1 (ingress) → wave 2 (apps) → wave 3 (ArgoCD HTTPRoute).
 
 ## Storage
 
@@ -316,7 +317,7 @@ GITHUB_APP_INSTALLATION_ID=<id> \
 GITHUB_APP_PRIVATE_KEY_FILE=<path-to-pem> \
 ./seal-secrets.sh
 
-git add kubernetes/apps/ kubernetes/bootstrap/argocd/repo-secret.yaml
+git add kubernetes/bootstrap/ kubernetes/apps/
 git commit -m "chore: rotate sealed secrets"
 git push
 ```
@@ -387,28 +388,29 @@ terraform destroy -var-file="inputs.tfvars"
 
 The `_apps.yaml` ApplicationSet is manually managed — it is **not** auto-synced from Git by ArgoCD. After editing the file in Git you must re-apply it to the cluster, which triggers the ApplicationSet controller to prune the removed `Application` and its resources (`prune: true`).
 
-**1.** Remove the element from [kubernetes/apps/_apps.yaml](kubernetes/apps/_apps.yaml):
+**1.** Remove the element from [kubernetes/bootstrap/_apps.yaml](kubernetes/bootstrap/_apps.yaml):
 ```yaml
           - name: <app-name>
             namespace: <namespace>
             wave: "<wave>"
 ```
 
-**2.** Optionally remove the chart directory:
+**2.** Optionally remove the chart directory (path depends on whether it is a bootstrap or user app):
 ```bash
-git rm -r kubernetes/apps/<app-name>
+git rm -r kubernetes/bootstrap/<app-name>   # bootstrap apps
+git rm -r kubernetes/apps/<app-name>        # user apps
 ```
 
 **3.** Commit and push:
 ```bash
-git add kubernetes/apps/
+git add kubernetes/
 git commit -m "chore: remove <app-name>"
 git push
 ```
 
 **4.** Re-apply the ApplicationSet to the cluster:
 ```bash
-kubectl apply -f kubernetes/apps/_apps.yaml
+kubectl apply -f kubernetes/bootstrap/_apps.yaml
 ```
 
 ArgoCD will detect the updated list and prune the `Application` and its owned resources.
