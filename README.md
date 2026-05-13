@@ -144,9 +144,16 @@ brew install kubeseal   # macOS
 
 ### 8. Seal all secrets
 
-Sealed Secrets encrypts secrets against your specific cluster. A helper script `seal-secrets.sh` automates all sealing in one step. **The script is gitignored — never commit it with real values filled in.**
+Sealed Secrets encrypts secrets against your specific cluster. A helper script `seal-secrets.sh` automates all sealing in one step.
 
-Pass values from your password manager as environment variables:
+Create a `.env` file from the example and fill in your values:
+```bash
+cp .env.example .env
+# Edit .env with your secrets
+./seal-secrets.sh
+```
+
+Alternatively, pass values inline (these take precedence over `.env`):
 ```bash
 TRUENAS_API_KEY=<key> \
 CLOUDFLARE_API_TOKEN=<token> \
@@ -158,7 +165,7 @@ GITHUB_APP_PRIVATE_KEY_FILE=<path-to-pem> \
 ./seal-secrets.sh
 ```
 
-No keys are stored in the script — it is committed to Git and safe to share. Values are passed at runtime only.
+> **Note:** The `.env` file is gitignored — never commit it. The script itself is safe to commit.
 
 This seals and writes all five secrets:
 - `kubernetes/apps/democratic-csi/templates/truenas-nfs-config.yaml`

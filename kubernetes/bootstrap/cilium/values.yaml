@@ -40,7 +40,7 @@ l2announcements:
   enabled: true
 
 devices:
-  - eth0
+  - en+
 
 socketLB:
   hostNamespaceOnly: true
