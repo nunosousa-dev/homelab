@@ -17,9 +17,6 @@ cluster-config/talosconfig
 
 kubernetes/apps/immich/secrets.yaml
 
-# Nextcloud AIO values contain plaintext passwords — never commit
-kubernetes/apps/nextcloud-aio/values.yaml
-
 # Sealed secrets master key backup — store in password manager, never commit
 sealed-secrets-master-key.yaml
 
