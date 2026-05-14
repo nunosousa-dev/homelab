@@ -11,7 +11,7 @@ spec:
       namespace: traefik
       sectionName: websecure
   hostnames:
-    - {{ .Values.NC_DOMAIN | quote }}
+    - {{ .Values.hostname | quote }}
   rules:
     - matches:
         - path:
@@ -20,6 +20,6 @@ spec:
       backendRefs:
         - group: ""
           kind: Service
-          name: nextcloud-aio-apache
-          port: 11000
+          name: nextcloud
+          port: 80
           weight: 1

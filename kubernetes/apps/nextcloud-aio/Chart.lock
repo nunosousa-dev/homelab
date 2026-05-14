@@ -1,6 +1,0 @@
-dependencies:
-- name: nextcloud-aio-helm-chart
-  repository: https://nextcloud.github.io/all-in-one/
-  version: 12.9.2
-digest: sha256:2d80d851eab2e6e9acbf0d40d09a6cc354bdae05d0e65c4639fd0afda78c1d7d
-generated: "2026-05-13T09:14:43.730091+01:00"
