@@ -1,7 +1,7 @@
 hostname: cloud.local.nunosousa.dev
 
 nextcloud:
-  image: nextcloud:30-apache
+  image: nextcloud:31-apache
   adminUser: admin
   resources:
     requests:
