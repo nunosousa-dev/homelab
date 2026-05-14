@@ -10,8 +10,8 @@ nextcloud:
       memory: "512Mi"
       cpu: "250m"
     limits:
-      memory: "2Gi"
-      cpu: "1000m"
+      memory: "4Gi"
+      cpu: "2000m"
   data:
     storageClassName: truenas-nfs-retain
     size: 100Gi
