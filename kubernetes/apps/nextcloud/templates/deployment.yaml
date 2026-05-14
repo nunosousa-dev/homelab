@@ -61,6 +61,9 @@ spec:
             httpGet:
               path: /status.php
               port: 80
+              httpHeaders:
+                - name: Host
+                  value: {{ .Values.hostname }}
             initialDelaySeconds: 30
             periodSeconds: 15
             timeoutSeconds: 10
@@ -69,6 +72,9 @@ spec:
             httpGet:
               path: /status.php
               port: 80
+              httpHeaders:
+                - name: Host
+                  value: {{ .Values.hostname }}
             periodSeconds: 15
             timeoutSeconds: 10
             failureThreshold: 3
@@ -76,6 +82,9 @@ spec:
             httpGet:
               path: /status.php
               port: 80
+              httpHeaders:
+                - name: Host
+                  value: {{ .Values.hostname }}
             periodSeconds: 30
             timeoutSeconds: 10
             failureThreshold: 3
