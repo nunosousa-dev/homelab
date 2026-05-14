@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nextcloud-occ-setup
+  namespace: nextcloud
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  template:
+    spec:
+      securityContext:
+        runAsUser: 33
+        runAsGroup: 33
+        fsGroup: 33
+        fsGroupChangePolicy: OnRootMismatch
+      containers:
+        - name: occ
+          image: {{ .Values.nextcloud.image }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              php /var/www/html/occ maintenance:repair --include-expensive --no-interaction
+              php /var/www/html/occ db:add-missing-indices --no-interaction
+              php /var/www/html/occ config:system:set maintenance_window_start \
+                --value={{ .Values.nextcloud.maintenanceWindowStart }} --type=integer
+              php /var/www/html/occ config:system:set default_phone_region \
+                --value={{ .Values.nextcloud.defaultPhoneRegion }}
+          volumeMounts:
+            - name: nextcloud-data
+              mountPath: /var/www/html
+      volumes:
+        - name: nextcloud-data
+          persistentVolumeClaim:
+            claimName: nextcloud-data
+      restartPolicy: OnFailure

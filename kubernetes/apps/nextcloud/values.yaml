@@ -3,6 +3,8 @@ hostname: cloud.local.nunosousa.dev
 nextcloud:
   image: nextcloud:31-apache
   adminUser: admin
+  defaultPhoneRegion: PT
+  maintenanceWindowStart: 1
   resources:
     requests:
       memory: "512Mi"
