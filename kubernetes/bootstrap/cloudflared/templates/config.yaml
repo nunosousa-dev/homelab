@@ -7,7 +7,5 @@ data:
   config.yaml: |
     ingress:
       - hostname: cloud.nunosousa.dev
-        service: https://traefik.traefik.svc.cluster.local:443
-        originRequest:
-          noTLSVerify: true
+        service: http://traefik.traefik.svc.cluster.local:443
       - service: http_status:404
