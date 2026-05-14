@@ -1,4 +1,11 @@
 traefik:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 96Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
   api:
     insecure: true
   providers:

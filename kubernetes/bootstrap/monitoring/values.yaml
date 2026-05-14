@@ -3,8 +3,43 @@ kube-prometheus-stack:
     hostNetwork: true
     hostPID: true
 
+  alertmanager:
+    alertmanagerSpec:
+      resources:
+        requests:
+          cpu: 5m
+          memory: 64Mi
+        limits:
+          cpu: 100m
+          memory: 128Mi
+
+  prometheusOperator:
+    resources:
+      requests:
+        cpu: 5m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
+
+  kube-state-metrics:
+    resources:
+      requests:
+        cpu: 5m
+        memory: 48Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
+
   grafana:
     enabled: true
+    resources:
+      requests:
+        cpu: 25m
+        memory: 512Mi
+      limits:
+        cpu: 500m
+        memory: 1Gi
     additionalDataSources:
       - name: Mimir Long Term
         uid: mimir-long-term
@@ -21,6 +56,13 @@ kube-prometheus-stack:
   prometheus:
     prometheusSpec:
       retention: 30d
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+        limits:
+          cpu: 1000m
+          memory: 2Gi
       serviceMonitorSelectorNilUsesHelmValues: false
       serviceMonitorSelector: {}
       serviceMonitorNamespaceSelector: {}
@@ -49,7 +91,8 @@ mimir:
     size: 20Gi
   resources:
     requests:
-      cpu: 100m
-      memory: 512Mi
+      cpu: 25m
+      memory: 128Mi
     limits:
-      memory: 2Gi
+      cpu: 500m
+      memory: 512Mi

@@ -1,4 +1,13 @@
 argo-cd:
+  controller:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 384Mi
+      limits:
+        cpu: 500m
+        memory: 768Mi
+
   server:
     extraArgs:
       - --insecure
@@ -6,3 +15,55 @@ argo-cd:
       enabled: true
       serviceMonitor:
         enabled: false
+    resources:
+      requests:
+        cpu: 5m
+        memory: 48Mi
+      limits:
+        cpu: 200m
+        memory: 128Mi
+
+  repoServer:
+    resources:
+      requests:
+        cpu: 5m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+
+  redis:
+    resources:
+      requests:
+        cpu: 5m
+        memory: 32Mi
+      limits:
+        cpu: 100m
+        memory: 64Mi
+
+  dex:
+    resources:
+      requests:
+        cpu: 5m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
+
+  notifications:
+    resources:
+      requests:
+        cpu: 5m
+        memory: 32Mi
+      limits:
+        cpu: 100m
+        memory: 64Mi
+
+  applicationSet:
+    resources:
+      requests:
+        cpu: 5m
+        memory: 32Mi
+      limits:
+        cpu: 100m
+        memory: 64Mi

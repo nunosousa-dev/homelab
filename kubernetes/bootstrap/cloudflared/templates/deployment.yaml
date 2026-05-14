@@ -43,11 +43,11 @@ spec:
             readOnlyRootFilesystem: true
           resources:
             requests:
-              cpu: 10m
-              memory: 64Mi
+              cpu: 5m
+              memory: 32Mi
             limits:
-              cpu: 200m
-              memory: 128Mi
+              cpu: 100m
+              memory: 64Mi
           volumeMounts:
             - name: config
               mountPath: /etc/cloudflared/config.yaml

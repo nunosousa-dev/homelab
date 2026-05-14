@@ -21,6 +21,13 @@ spec:
           initContainers:
             - name: maintenance-on
               image: {{ .Values.nextcloud.image }}
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 64Mi
+                limits:
+                  cpu: 100m
+                  memory: 128Mi
               command:
                 - php
                 - /var/www/html/occ
@@ -33,6 +40,13 @@ spec:
                   mountPath: /var/www/html/data
             - name: backup
               image: {{ .Values.postgres.image }}
+              resources:
+                requests:
+                  cpu: 25m
+                  memory: 128Mi
+                limits:
+                  cpu: 200m
+                  memory: 256Mi
               command:
                 - /bin/sh
                 - -c
@@ -59,6 +73,13 @@ spec:
           containers:
             - name: maintenance-off
               image: {{ .Values.nextcloud.image }}
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 64Mi
+                limits:
+                  cpu: 100m
+                  memory: 128Mi
               command:
                 - php
                 - /var/www/html/occ
