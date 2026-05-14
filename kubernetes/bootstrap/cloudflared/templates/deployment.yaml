@@ -53,13 +53,6 @@ spec:
               mountPath: /etc/cloudflared/config.yaml
               subPath: config.yaml
               readOnly: true
-          livenessProbe:
-            httpGet:
-              path: /ready
-              port: 2000
-            initialDelaySeconds: 10
-            periodSeconds: 30
-            failureThreshold: 3
       volumes:
         - name: config
           configMap:

@@ -24,6 +24,10 @@ spec:
               set -e
               php /var/www/html/occ maintenance:repair --include-expensive --no-interaction
               php /var/www/html/occ db:add-missing-indices --no-interaction
+              php /var/www/html/occ config:system:set trusted_domains 1 \
+                --value={{ .Values.hostname }}
+              php /var/www/html/occ config:system:set trusted_domains 2 \
+                --value={{ .Values.publicHostname }}
               php /var/www/html/occ config:system:set maintenance_window_start \
                 --value={{ .Values.nextcloud.maintenanceWindowStart }} --type=integer
               php /var/www/html/occ config:system:set default_phone_region \
