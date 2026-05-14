@@ -97,6 +97,9 @@ spec:
               mountPath: /var/www/html
             - name: nextcloud-userdata
               mountPath: /var/www/html/data
+            - name: apache-config
+              mountPath: /etc/apache2/conf-enabled/servername.conf
+              subPath: servername.conf
       volumes:
         - name: nextcloud-app
           persistentVolumeClaim:
@@ -104,3 +107,6 @@ spec:
         - name: nextcloud-userdata
           persistentVolumeClaim:
             claimName: nextcloud-userdata
+        - name: apache-config
+          configMap:
+            name: nextcloud-apache-config

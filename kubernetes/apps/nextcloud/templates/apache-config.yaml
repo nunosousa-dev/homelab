@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nextcloud-apache-config
+  namespace: nextcloud
+data:
+  servername.conf: |
+    ServerName {{ .Values.hostname }}
