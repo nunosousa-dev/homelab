@@ -1,0 +1,75 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nextcloud-backup
+  namespace: nextcloud
+spec:
+  schedule: {{ .Values.backup.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          securityContext:
+            runAsUser: 33
+            runAsGroup: 33
+            fsGroup: 33
+            fsGroupChangePolicy: OnRootMismatch
+          initContainers:
+            - name: maintenance-on
+              image: {{ .Values.nextcloud.image }}
+              command:
+                - php
+                - /var/www/html/occ
+                - maintenance:mode
+                - --on
+              volumeMounts:
+                - name: nextcloud-app
+                  mountPath: /var/www/html
+            - name: backup
+              image: {{ .Values.postgres.image }}
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -e
+                  BACKUP_DIR="/backup/$(date +%F)"
+                  mkdir -p "$BACKUP_DIR"
+                  pg_dump -h nextcloud-postgres -U nextcloud nextcloud > "$BACKUP_DIR/nextcloud.sql"
+                  cp /var/www/html/config/config.php "$BACKUP_DIR/config.php"
+                  ls -dt /backup/*/ 2>/dev/null | tail -n +{{ add .Values.backup.retain 1 }} | xargs -r rm -rf
+                  echo "Backup complete: $BACKUP_DIR"
+              env:
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: nextcloud-secret
+                      key: POSTGRES_PASSWORD
+              volumeMounts:
+                - name: nextcloud-app
+                  mountPath: /var/www/html
+                  readOnly: true
+                - name: nextcloud-backup
+                  mountPath: /backup
+          containers:
+            - name: maintenance-off
+              image: {{ .Values.nextcloud.image }}
+              command:
+                - php
+                - /var/www/html/occ
+                - maintenance:mode
+                - --off
+              volumeMounts:
+                - name: nextcloud-app
+                  mountPath: /var/www/html
+          volumes:
+            - name: nextcloud-app
+              persistentVolumeClaim:
+                claimName: nextcloud-app
+            - name: nextcloud-backup
+              persistentVolumeClaim:
+                claimName: nextcloud-backup
+          restartPolicy: OnFailure

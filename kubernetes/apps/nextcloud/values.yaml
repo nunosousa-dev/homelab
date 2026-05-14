@@ -24,6 +24,13 @@ nextcloud:
     storageClassName: truenas-nfs-retain
     size: 100Gi
 
+backup:
+  schedule: "0 2 * * *"
+  retain: 7
+  storage:
+    storageClassName: truenas-nfs-retain
+    size: 20Gi
+
 postgres:
   image: postgres:16
   resources:
