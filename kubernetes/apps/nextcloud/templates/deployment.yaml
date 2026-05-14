@@ -64,10 +64,10 @@ spec:
               httpHeaders:
                 - name: Host
                   value: {{ .Values.hostname }}
-            initialDelaySeconds: 30
-            periodSeconds: 15
+            initialDelaySeconds: {{ .Values.nextcloud.startupProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.nextcloud.startupProbe.periodSeconds }}
             timeoutSeconds: 10
-            failureThreshold: 120
+            failureThreshold: {{ .Values.nextcloud.startupProbe.failureThreshold }}
           readinessProbe:
             httpGet:
               path: /status.php
