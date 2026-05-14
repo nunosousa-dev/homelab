@@ -29,6 +29,8 @@ spec:
               volumeMounts:
                 - name: nextcloud-app
                   mountPath: /var/www/html
+                - name: nextcloud-userdata
+                  mountPath: /var/www/html/data
             - name: backup
               image: {{ .Values.postgres.image }}
               command:
@@ -65,10 +67,15 @@ spec:
               volumeMounts:
                 - name: nextcloud-app
                   mountPath: /var/www/html
+                - name: nextcloud-userdata
+                  mountPath: /var/www/html/data
           volumes:
             - name: nextcloud-app
               persistentVolumeClaim:
                 claimName: nextcloud-app
+            - name: nextcloud-userdata
+              persistentVolumeClaim:
+                claimName: nextcloud-userdata
             - name: nextcloud-backup
               persistentVolumeClaim:
                 claimName: nextcloud-backup
