@@ -29,10 +29,15 @@ spec:
               php /var/www/html/occ config:system:set default_phone_region \
                 --value={{ .Values.nextcloud.defaultPhoneRegion }}
           volumeMounts:
-            - name: nextcloud-data
+            - name: nextcloud-app
               mountPath: /var/www/html
+            - name: nextcloud-userdata
+              mountPath: /var/www/html/data
       volumes:
-        - name: nextcloud-data
+        - name: nextcloud-app
           persistentVolumeClaim:
-            claimName: nextcloud-data
+            claimName: nextcloud-app
+        - name: nextcloud-userdata
+          persistentVolumeClaim:
+            claimName: nextcloud-userdata
       restartPolicy: OnFailure

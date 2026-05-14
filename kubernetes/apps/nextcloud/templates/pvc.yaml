@@ -1,12 +1,25 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: nextcloud-data
+  name: nextcloud-app
   namespace: nextcloud
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: {{ .Values.nextcloud.data.storageClassName }}
+  storageClassName: {{ .Values.nextcloud.app.storageClassName }}
   resources:
     requests:
-      storage: {{ .Values.nextcloud.data.size }}
+      storage: {{ .Values.nextcloud.app.size }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nextcloud-userdata
+  namespace: nextcloud
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: {{ .Values.nextcloud.userData.storageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.nextcloud.userData.size }}

@@ -16,7 +16,10 @@ nextcloud:
     limits:
       memory: "4Gi"
       cpu: "2000m"
-  data:
+  app:
+    storageClassName: truenas-iscsi-retain
+    size: 20Gi
+  userData:
     storageClassName: truenas-nfs-retain
     size: 100Gi
 
