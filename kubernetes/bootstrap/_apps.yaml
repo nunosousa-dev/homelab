@@ -12,21 +12,33 @@ spec:
   generators:
     - list:
         elements:
+          - name: gateway-api-crds
+            namespace: default
+            wave: "0"
+            sourceType: "directory"
+            externalRepo: "https://github.com/kubernetes-sigs/gateway-api.git"
+            externalPath: "config/crd/standard"
+            externalRevision: "v1.5.1"
           - name: cert-manager
             namespace: cert-manager
             wave: "0"
+            sourceType: "helm"
           - name: democratic-csi
             namespace: democratic-csi
             wave: "0"
+            sourceType: "helm"
           - name: traefik
             namespace: traefik
             wave: "1"
+            sourceType: "helm"
           - name: reflector
             namespace: reflector
             wave: "1"
+            sourceType: "helm"
           - name: monitoring
             namespace: monitoring
             wave: "2"
+            sourceType: "helm"
   template:
     metadata:
       name: "{{ .name }}"
@@ -52,3 +64,14 @@ spec:
           - CreateNamespace=true
           - ReplaceCRDs=true
           - ServerSideApply=true
+  templatePatch: |
+    {{- if eq .sourceType "directory" }}
+    spec:
+      source:
+        repoURL: "{{ .externalRepo }}"
+        targetRevision: "{{ .externalRevision }}"
+        path: "{{ .externalPath }}"
+        helm: null
+        directory:
+          recurse: false
+    {{- end }}

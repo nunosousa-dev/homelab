@@ -4,7 +4,7 @@ ipam:
 kubeProxyReplacement: true
 
 gatewayAPI:
-  enabled: true
+  enabled: false
 
 ingressController:
   enabled: false

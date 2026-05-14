@@ -15,12 +15,13 @@
     - [5. Verify](#5-verify)
   - [Kubernetes Bootstrap](#kubernetes-bootstrap)
     - [6. Install Cilium (CNI)](#6-install-cilium-cni)
-    - [7. Install Sealed Secrets controller](#7-install-sealed-secrets-controller)
-    - [8. Seal all secrets](#8-seal-all-secrets)
+    - [7. Install Gateway API CRDs](#7-install-gateway-api-crds)
+    - [8. Install Sealed Secrets controller](#8-install-sealed-secrets-controller)
+    - [9. Seal all secrets](#9-seal-all-secrets)
       - [Back up the master decryption key](#back-up-the-master-decryption-key)
-    - [9. Build Helm chart dependencies](#9-build-helm-chart-dependencies)
-    - [10. Install ArgoCD](#10-install-argocd)
-    - [11. Apply the ApplicationSet](#11-apply-the-applicationset)
+    - [10. Build Helm chart dependencies](#10-build-helm-chart-dependencies)
+    - [11. Install ArgoCD](#11-install-argocd)
+    - [12. Apply the ApplicationSet](#12-apply-the-applicationset)
   - [GitOps Structure](#gitops-structure)
   - [Storage](#storage)
     - [NFS](#nfs)
@@ -119,7 +120,7 @@ Manual installs are limited to:
 - Sealed Secrets controller
 - ArgoCD
 
-After applying the ApplicationSet, ArgoCD manages cert-manager, traefik, and the remaining bootstrap components.
+After applying the ApplicationSet, ArgoCD manages Gateway API CRDs, cert-manager, traefik, and the remaining bootstrap components.
 
 ### 6. Install Cilium (CNI)
 ```bash
@@ -128,6 +129,8 @@ helm upgrade --install cilium cilium/cilium \
   --namespace kube-system \
   -f kubernetes/bootstrap/cilium/values.yaml
 ```
+
+> **Note:** This setup uses Traefik as the Gateway API controller. Cilium is used for CNI, kube-proxy replacement, and L2/LB features.
 
 Apply Cilium L2 announcement policy and IP pool:
 ```bash
@@ -228,6 +231,10 @@ This single `ApplicationSet` resource auto-generates an ArgoCD `Application` for
 ```bash
 kubectl apply -f kubernetes/bootstrap/_apps.yaml
 ```
+
+This includes the `gateway-api-crds` application at sync wave `0`, before Traefik at wave `1`.
+
+Traefik is the Gateway API controller in this cluster, via `gatewayClassName: traefik`.
 
 Preflight checks after initial sync:
 ```bash
