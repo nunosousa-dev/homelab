@@ -17,6 +17,7 @@ spec:
     spec:
       securityContext:
         fsGroup: 33
+        fsGroupChangePolicy: OnRootMismatch
       containers:
         - name: nextcloud
           image: {{ .Values.nextcloud.image }}
