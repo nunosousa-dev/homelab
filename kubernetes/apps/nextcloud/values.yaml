@@ -1,4 +1,5 @@
 hostname: cloud.local.nunosousa.dev
+publicHostname: cloud.nunosousa.dev
 
 nextcloud:
   image: nextcloud:31-apache

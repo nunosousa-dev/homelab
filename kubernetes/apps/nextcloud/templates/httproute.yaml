@@ -12,6 +12,7 @@ spec:
       sectionName: websecure
   hostnames:
     - {{ .Values.hostname | quote }}
+    - {{ .Values.publicHostname | quote }}
   rules:
     - matches:
         - path:

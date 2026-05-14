@@ -39,6 +39,10 @@ spec:
             namespace: monitoring
             wave: "2"
             sourceType: "helm"
+          - name: cloudflared
+            namespace: cloudflared
+            wave: "2"
+            sourceType: "helm"
   template:
     metadata:
       name: "{{ .name }}"

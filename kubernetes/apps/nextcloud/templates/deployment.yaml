@@ -50,11 +50,11 @@ spec:
                   name: nextcloud-secret
                   key: NEXTCLOUD_ADMIN_PASSWORD
             - name: NEXTCLOUD_TRUSTED_DOMAINS
-              value: {{ .Values.hostname }}
+              value: {{ .Values.hostname }} {{ .Values.publicHostname }}
             - name: OVERWRITEPROTOCOL
               value: https
             - name: OVERWRITECLIURL
-              value: https://{{ .Values.hostname }}
+              value: https://{{ .Values.publicHostname }}
             - name: TRUSTED_PROXIES
               value: 10.0.0.0/8
             - name: NEXTCLOUD_DATA_DIR
