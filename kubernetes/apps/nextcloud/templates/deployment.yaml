@@ -57,22 +57,28 @@ spec:
               value: https://{{ .Values.hostname }}
             - name: TRUSTED_PROXIES
               value: 10.0.0.0/8
-          readinessProbe:
+          startupProbe:
             httpGet:
               path: /status.php
               port: 80
             initialDelaySeconds: 30
             periodSeconds: 15
             timeoutSeconds: 10
-            failureThreshold: 40
+            failureThreshold: 60
+          readinessProbe:
+            httpGet:
+              path: /status.php
+              port: 80
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
           livenessProbe:
             httpGet:
               path: /status.php
               port: 80
-            initialDelaySeconds: 60
             periodSeconds: 30
             timeoutSeconds: 10
-            failureThreshold: 5
+            failureThreshold: 3
           resources:
             {{- toYaml .Values.nextcloud.resources | nindent 12 }}
           volumeMounts:
