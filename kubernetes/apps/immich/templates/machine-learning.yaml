@@ -43,10 +43,18 @@ spec:
               mountPath: /cache
             - name: tmp
               mountPath: /tmp
+            - name: dot-config
+              mountPath: /.config
+            - name: dot-cache
+              mountPath: /.cache
       volumes:
         - name: cache
           emptyDir: {}
         - name: tmp
+          emptyDir: {}
+        - name: dot-config
+          emptyDir: {}
+        - name: dot-cache
           emptyDir: {}
 ---
 apiVersion: v1
