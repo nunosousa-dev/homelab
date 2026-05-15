@@ -63,6 +63,15 @@ kube-prometheus-stack:
         limits:
           cpu: 1000m
           memory: 2Gi
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            storageClassName: truenas-nfs-retain
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 20Gi
       serviceMonitorSelectorNilUsesHelmValues: false
       serviceMonitorSelector: {}
       serviceMonitorNamespaceSelector: {}
@@ -81,6 +90,10 @@ grafana:
 
 mimir:
   enabled: true
+  replicas: 3
+  replicationFactor: 3
+  memberlist:
+    port: 7946
   image:
     repository: grafana/mimir
     tag: 2.17.3

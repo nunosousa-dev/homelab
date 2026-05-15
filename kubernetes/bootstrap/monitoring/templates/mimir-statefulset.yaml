@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/name: mimir
     app.kubernetes.io/part-of: monitoring
 spec:
-  replicas: 1
+  replicas: {{ .Values.mimir.replicas }}
   serviceName: mimir
   selector:
     matchLabels:
@@ -27,11 +27,18 @@ spec:
           args:
             - -config.file=/etc/mimir/mimir.yaml
             - -target=all
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
           ports:
             - name: http
               containerPort: 9009
             - name: grpc
               containerPort: 9095
+            - name: memberlist
+              containerPort: {{ .Values.mimir.memberlist.port }}
           readinessProbe:
             httpGet:
               path: /ready
