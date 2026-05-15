@@ -14,10 +14,8 @@ spec:
         app: immich-machine-learning
     spec:
       securityContext:
-        runAsUser: 568
-        runAsGroup: 568
-        fsGroup: 568
         runAsNonRoot: true
+        fsGroup: 1000
         seccompProfile:
           type: RuntimeDefault
       containers:
