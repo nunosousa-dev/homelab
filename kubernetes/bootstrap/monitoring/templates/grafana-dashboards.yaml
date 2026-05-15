@@ -1,0 +1,16 @@
+{{- $files := .Files.Glob "dashboards/*.json" }}
+{{- range $path, $_ := $files }}
+{{- $name := $path | base | trimSuffix ".json" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-{{ $name }}
+  labels:
+    grafana_dashboard: "1"
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/part-of: monitoring
+data:
+  {{ $path | base }}: |-
+{{ $.Files.Get $path | indent 4 }}
+{{- end }}
