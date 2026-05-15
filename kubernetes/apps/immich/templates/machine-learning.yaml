@@ -55,6 +55,9 @@ spec:
               type: RuntimeDefault
             capabilities:
               drop: ["ALL"]
+          env:
+            - name: MPLCONFIGDIR
+              value: /tmp/matplotlib
           ports:
             - containerPort: 3003
           resources:
