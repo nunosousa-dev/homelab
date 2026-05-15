@@ -1,6 +1,6 @@
 {{- $files := .Files.Glob "dashboards/*.json" }}
 {{- range $path, $_ := $files }}
-{{- $name := $path | base | trimSuffix ".json" }}
+{{- $name := $path | base | trimSuffix ".json" | lower | replace "_" "-" }}
 ---
 apiVersion: v1
 kind: ConfigMap
