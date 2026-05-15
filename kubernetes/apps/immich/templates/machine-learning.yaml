@@ -62,10 +62,14 @@ spec:
           volumeMounts:
             - name: model-cache
               mountPath: /cache
+            - name: tmp
+              mountPath: /tmp
       volumes:
         - name: model-cache
           persistentVolumeClaim:
             claimName: immich-model-cache
+        - name: tmp
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
