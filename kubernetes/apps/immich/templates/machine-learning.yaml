@@ -32,8 +32,8 @@ spec:
             capabilities:
               drop: ["ALL"]
           env:
-            - name: MPLCONFIGDIR
-              value: /tmp/matplotlib
+            - name: MACHINE_LEARNING_CACHE_FOLDER
+              value: /cache
           ports:
             - containerPort: 3003
           resources:
