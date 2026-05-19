@@ -1,0 +1,62 @@
+{{- if .Values.loki.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: loki-config
+  labels:
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/part-of: monitoring
+data:
+  loki.yaml: |
+    auth_enabled: false
+
+    server:
+      http_listen_port: 3100
+      grpc_listen_port: 9096
+
+    memberlist:
+      join_members:
+        - dns+loki-headless:{{ .Values.loki.memberlist.port }}
+
+    common:
+      instance_addr: ${POD_IP}
+      path_prefix: /data/loki
+      replication_factor: {{ .Values.loki.replicationFactor }}
+      ring:
+        kvstore:
+          store: memberlist
+
+    schema_config:
+      configs:
+        - from: "2024-01-01"
+          store: tsdb
+          object_store: filesystem
+          schema: v13
+          index:
+            prefix: index_
+            period: 24h
+
+    storage_config:
+      filesystem:
+        directory: /data/loki/chunks
+      tsdb_shipper:
+        active_index_directory: /data/loki/tsdb-index
+        cache_location: /data/loki/tsdb-cache
+
+    limits_config:
+      retention_period: {{ .Values.loki.retention }}
+      reject_old_samples: true
+      reject_old_samples_max_age: 168h
+      max_query_series: 500
+      max_query_parallelism: 2
+
+    compactor:
+      working_directory: /data/loki/compactor
+      compaction_interval: 10m
+      retention_enabled: true
+      retention_delete_delay: 2h
+      delete_request_store: filesystem
+
+    analytics:
+      reporting_enabled: false
+{{- end }}

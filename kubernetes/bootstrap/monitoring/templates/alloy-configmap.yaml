@@ -1,0 +1,79 @@
+{{- if .Values.alloy.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alloy-config
+  labels:
+    app.kubernetes.io/name: alloy
+    app.kubernetes.io/part-of: monitoring
+data:
+  config.alloy: |
+    // Kubernetes pod log discovery
+    discovery.kubernetes "pods" {
+      role = "pod"
+    }
+
+    // Relabel discovered pods to extract useful labels
+    discovery.relabel "pods" {
+      targets = discovery.kubernetes.pods.targets
+
+      rule {
+        source_labels = ["__meta_kubernetes_namespace"]
+        target_label  = "namespace"
+      }
+
+      rule {
+        source_labels = ["__meta_kubernetes_pod_name"]
+        target_label  = "pod"
+      }
+
+      rule {
+        source_labels = ["__meta_kubernetes_pod_container_name"]
+        target_label  = "container"
+      }
+
+      rule {
+        source_labels = ["__meta_kubernetes_pod_node_name"]
+        target_label  = "node"
+      }
+
+      rule {
+        source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_name", "__meta_kubernetes_pod_container_name"]
+        separator     = "/"
+        target_label  = "job"
+      }
+
+      // Drop pods with annotation to opt out of log collection
+      rule {
+        source_labels = ["__meta_kubernetes_pod_annotation_logs_grafana_com_skip"]
+        regex         = "true"
+        action        = "drop"
+      }
+    }
+
+    // Collect logs from discovered pods
+    loki.source.kubernetes "pods" {
+      targets    = discovery.relabel.pods.output
+      forward_to = [loki.process.pods.receiver]
+    }
+
+    // Process and enrich logs
+    loki.process "pods" {
+      // Drop empty log lines
+      stage.match {
+        selector = "{}"
+        stage.drop {
+          expression = "^\\s*$"
+        }
+      }
+
+      forward_to = [loki.write.default.receiver]
+    }
+
+    // Write logs to Loki
+    loki.write "default" {
+      endpoint {
+        url = "http://loki.{{ .Release.Namespace }}.svc.cluster.local:3100/loki/api/v1/push"
+      }
+    }
+{{- end }}

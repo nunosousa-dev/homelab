@@ -1,0 +1,81 @@
+{{- if .Values.loki.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: loki
+  labels:
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/part-of: monitoring
+spec:
+  replicas: {{ .Values.loki.replicas }}
+  serviceName: loki-headless
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: loki
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: loki
+        app.kubernetes.io/part-of: monitoring
+    spec:
+      securityContext:
+        fsGroup: 10001
+      containers:
+        - name: loki
+          image: "{{ .Values.loki.image.repository }}:{{ .Values.loki.image.tag }}"
+          imagePullPolicy: {{ .Values.loki.image.pullPolicy }}
+          args:
+            - -config.file=/etc/loki/loki.yaml
+            - -target=all
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          ports:
+            - name: http
+              containerPort: 3100
+            - name: grpc
+              containerPort: 9096
+            - name: memberlist
+              containerPort: {{ .Values.loki.memberlist.port }}
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          resources:
+            {{- toYaml .Values.loki.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/loki
+              readOnly: true
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: config
+          configMap:
+            name: loki-config
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: data
+        labels:
+          app.kubernetes.io/name: loki
+          app.kubernetes.io/part-of: monitoring
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: {{ .Values.loki.storage.storageClassName | quote }}
+        resources:
+          requests:
+            storage: {{ .Values.loki.storage.size | quote }}
+{{- end }}
