@@ -14,9 +14,11 @@ data:
       http_listen_port: 3100
       grpc_listen_port: 9096
 
+    {{- if gt (int .Values.loki.replicas) 1 }}
     memberlist:
       join_members:
         - dns+loki-headless:{{ .Values.loki.memberlist.port }}
+    {{- end }}
 
     common:
       instance_addr: ${POD_IP}
@@ -24,7 +26,11 @@ data:
       replication_factor: {{ .Values.loki.replicationFactor }}
       ring:
         kvstore:
+          {{- if gt (int .Values.loki.replicas) 1 }}
           store: memberlist
+          {{- else }}
+          store: inmemory
+          {{- end }}
 
     schema_config:
       configs:
