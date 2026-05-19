@@ -21,6 +21,7 @@ rules:
       - nodes/proxy
       - namespaces
       - pods
+      - pods/log
       - endpoints
       - services
     verbs: ["get", "list", "watch"]
