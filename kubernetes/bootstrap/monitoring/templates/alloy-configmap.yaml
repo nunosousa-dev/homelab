@@ -60,11 +60,9 @@ data:
     // Process and enrich logs
     loki.process "pods" {
       // Drop empty log lines
-      stage.match {
-        selector = "{}"
-        stage.drop {
-          expression = "^\\s*$"
-        }
+      stage.drop {
+        expression  = "^\\s*$"
+        drop_reason = "empty"
       }
 
       forward_to = [loki.write.default.receiver]
