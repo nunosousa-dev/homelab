@@ -26,6 +26,7 @@ spec:
           imagePullPolicy: {{ .Values.loki.image.pullPolicy }}
           args:
             - -config.file=/etc/loki/loki.yaml
+            - -config.expand-env=true
             - -target=all
           env:
             - name: POD_IP
