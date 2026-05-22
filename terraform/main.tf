@@ -69,10 +69,10 @@ resource "proxmox_vm_qemu" "worker" {
   agent = 1
 
   cpu {
-    cores = "4"
+    cores = "8"
   }
 
-  memory = "16384"
+  memory = "20480"
 
   network {
     id        = 0
