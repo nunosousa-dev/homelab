@@ -188,6 +188,9 @@ resource "talos_machine_configuration_apply" "rpi_worker" {
         nodeLabels = {
           "homelab/node-type" = "rpi"
         }
+        nodeTaints = {
+          "homelab/node-type" = "rpi:NoSchedule"
+        }
         kubelet = {
           extraArgs = {
             rotate-server-certificates = true
