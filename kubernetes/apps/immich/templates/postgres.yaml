@@ -14,6 +14,8 @@ spec:
       labels:
         app: immich-postgres
     spec:
+      nodeSelector:
+        homelab/node-type: vm
       securityContext:
         runAsUser: 999
         runAsGroup: 999

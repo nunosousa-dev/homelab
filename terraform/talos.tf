@@ -140,6 +140,9 @@ resource "talos_machine_configuration_apply" "worker" {
   config_patches = [
     yamlencode({
       machine = {
+        nodeLabels = {
+          "homelab/node-type" = "vm"
+        }
         kubelet = {
           extraArgs = {
             rotate-server-certificates = true
@@ -166,6 +169,59 @@ resource "talos_machine_configuration_apply" "worker" {
         install = {
           disk  = "/dev/sda"
           image = local.talos_install_image
+        }
+      }
+    })
+  ]
+}
+
+resource "talos_machine_configuration_apply" "rpi_worker" {
+  count = length(var.rpi_workers)
+
+  client_configuration        = talos_machine_secrets.this.client_configuration
+  machine_configuration_input = data.talos_machine_configuration.worker.machine_configuration
+  node                        = var.rpi_workers[count.index].ip
+
+  config_patches = [
+    yamlencode({
+      machine = {
+        nodeLabels = {
+          "homelab/node-type" = "rpi"
+        }
+        kubelet = {
+          extraArgs = {
+            rotate-server-certificates = true
+            container-log-max-size     = "5Mi"
+            container-log-max-files    = "2"
+            image-gc-high-threshold    = "70"
+            image-gc-low-threshold     = "50"
+          }
+        }
+        network = {
+          nameservers = var.nameservers
+          interfaces = [
+            {
+              deviceSelector = {
+                driver = "bcmgenet"
+              }
+              dhcp      = false
+              addresses = ["${var.rpi_workers[count.index].ip}/${var.cidr_prefix}"]
+              routes = [
+                {
+                  network = "0.0.0.0/0"
+                  gateway = var.gateway
+                }
+              ]
+            }
+          ]
+        }
+        install = {
+          disk  = "/dev/mmcblk0"
+          image = "factory.talos.dev/installer/${var.rpi_workers[count.index].schematic_id}:${var.talos_version}"
+        }
+        sysctls = {
+          "vm.dirty_writeback_centisecs" = "6000"
+          "vm.dirty_ratio"              = "60"
         }
       }
     })

@@ -1,0 +1,85 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: paperless-ngx-superuser
+  namespace: paperless-ngx
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  template:
+    spec:
+      nodeSelector:
+        homelab/node-type: vm
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: superuser
+          image: {{ .Values.paperless.image }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              cpu: 10m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              python /usr/src/paperless/src/manage.py createsuperuser --no-input \
+                || echo "Superuser already exists, skipping."
+          env:
+            - name: DJANGO_SUPERUSER_USERNAME
+              value: {{ .Values.paperless.adminUser | quote }}
+            - name: DJANGO_SUPERUSER_EMAIL
+              value: {{ .Values.paperless.adminEmail | quote }}
+            - name: DJANGO_SUPERUSER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: paperless-ngx-secret
+                  key: PAPERLESS_ADMIN_PASSWORD
+            - name: PAPERLESS_REDIS
+              value: redis://paperless-ngx-redis:6379
+            - name: PAPERLESS_DBHOST
+              value: paperless-ngx-postgres
+            - name: PAPERLESS_DBNAME
+              value: paperless
+            - name: PAPERLESS_DBUSER
+              value: paperless
+            - name: PAPERLESS_DBPASS
+              valueFrom:
+                secretKeyRef:
+                  name: paperless-ngx-secret
+                  key: POSTGRES_PASSWORD
+            - name: PAPERLESS_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: paperless-ngx-secret
+                  key: PAPERLESS_SECRET_KEY
+            - name: PAPERLESS_DATA_DIR
+              value: /usr/src/paperless/data
+            - name: PAPERLESS_MEDIA_ROOT
+              value: /usr/src/paperless/media
+            - name: PAPERLESS_CONSUMPTION_DIR
+              value: /usr/src/paperless/consume
+          volumeMounts:
+            - name: paperless-data
+              mountPath: /usr/src/paperless/data
+      volumes:
+        - name: paperless-data
+          persistentVolumeClaim:
+            claimName: paperless-data
+      restartPolicy: OnFailure

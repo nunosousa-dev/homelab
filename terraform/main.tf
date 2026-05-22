@@ -57,7 +57,7 @@ resource "proxmox_vm_qemu" "worker" {
   count = length(var.worker_ips)
 
   vmid = 210 + count.index
-  name = "workernode-${count.index}"
+  name = "vm-worker-${count.index + 1}"
 
   target_node = var.proxmox_node
   scsihw      = "virtio-scsi-single"

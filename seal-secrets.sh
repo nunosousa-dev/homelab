@@ -31,6 +31,9 @@ fi
 : "${CLOUDFLARE_API_TOKEN:?CLOUDFLARE_API_TOKEN is required}"
 : "${IMMICH_DB_PASSWORD:?IMMICH_DB_PASSWORD is required}"
 : "${IMMICH_SECRET_KEY:?IMMICH_SECRET_KEY is required}"
+: "${PAPERLESS_DB_PASSWORD:?PAPERLESS_DB_PASSWORD is required}"
+: "${PAPERLESS_SECRET_KEY:?PAPERLESS_SECRET_KEY is required}"
+: "${PAPERLESS_ADMIN_PASSWORD:?PAPERLESS_ADMIN_PASSWORD is required}"
 : "${GITHUB_APP_ID:?GITHUB_APP_ID is required}"
 : "${GITHUB_APP_INSTALLATION_ID:?GITHUB_APP_INSTALLATION_ID is required}"
 : "${GITHUB_APP_PRIVATE_KEY_FILE:?GITHUB_APP_PRIVATE_KEY_FILE is required}"
@@ -153,6 +156,17 @@ kubectl create secret generic immich-secret \
   | $KUBESEAL \
   > kubernetes/apps/immich/templates/immich-secret.yaml
 echo "    -> kubernetes/apps/immich/templates/immich-secret.yaml"
+
+echo "==> Sealing paperless-ngx-secret..."
+kubectl create secret generic paperless-ngx-secret \
+  --namespace paperless-ngx \
+  --from-literal=POSTGRES_PASSWORD="${PAPERLESS_DB_PASSWORD}" \
+  --from-literal=PAPERLESS_SECRET_KEY="${PAPERLESS_SECRET_KEY}" \
+  --from-literal=PAPERLESS_ADMIN_PASSWORD="${PAPERLESS_ADMIN_PASSWORD}" \
+  --dry-run=client -o yaml \
+  | $KUBESEAL \
+  > kubernetes/apps/paperless-ngx/templates/paperless-secret.yaml
+echo "    -> kubernetes/apps/paperless-ngx/templates/paperless-secret.yaml"
 
 echo "==> Sealing argocd-repo-secret..."
 kubectl create secret generic argocd-repo-secret \

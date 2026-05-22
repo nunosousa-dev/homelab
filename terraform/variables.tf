@@ -84,3 +84,12 @@ variable "metrics_server_version" {
   description = "metrics-server version to be installed during talos bootstrap"
   type        = string
 }
+
+variable "rpi_workers" {
+  description = "List of bare-metal Raspberry Pi worker nodes"
+  type = list(object({
+    ip           = string
+    schematic_id = string
+  }))
+  default = []
+}

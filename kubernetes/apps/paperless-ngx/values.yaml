@@ -1,0 +1,52 @@
+hostname: docs.local.nunosousa.dev
+
+paperless:
+  image: ghcr.io/paperless-ngx/paperless-ngx:2.20.15
+  timezone: Europe/Lisbon
+  adminUser: admin
+  adminEmail: admin@example.com
+  startupProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 15
+    failureThreshold: 20
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "100m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+
+storage:
+  data:
+    storageClassName: truenas-iscsi-retain
+    size: 5Gi
+  media:
+    storageClassName: truenas-nfs-retain
+    size: 20Gi
+  consume:
+    storageClassName: truenas-nfs-retain
+    size: 5Gi
+
+postgres:
+  image: postgres:16
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "10m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+  storage:
+    storageClassName: truenas-iscsi-retain
+    size: 5Gi
+
+redis:
+  image: valkey/valkey:8-bookworm
+  resources:
+    requests:
+      memory: "16Mi"
+      cpu: "5m"
+    limits:
+      memory: "64Mi"
+      cpu: "50m"

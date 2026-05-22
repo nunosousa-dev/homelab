@@ -13,6 +13,8 @@ spec:
       labels:
         app: nextcloud-redis
     spec:
+      nodeSelector:
+        homelab/node-type: vm
       securityContext:
         runAsUser: 999
         runAsGroup: 999

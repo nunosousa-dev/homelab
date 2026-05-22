@@ -26,6 +26,8 @@ spec:
       labels:
         app: immich-machine-learning
     spec:
+      nodeSelector:
+        homelab/node-type: vm
       securityContext:
         seccompProfile:
           type: RuntimeDefault

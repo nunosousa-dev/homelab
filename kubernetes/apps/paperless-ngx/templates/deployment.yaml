@@ -1,0 +1,112 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paperless-ngx
+  namespace: paperless-ngx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: paperless-ngx
+  template:
+    metadata:
+      labels:
+        app: paperless-ngx
+    spec:
+      nodeSelector:
+        homelab/node-type: vm
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: paperless-ngx
+          image: {{ .Values.paperless.image }}
+          imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop: ["ALL"]
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          env:
+            - name: PAPERLESS_REDIS
+              value: redis://paperless-ngx-redis:6379
+            - name: PAPERLESS_DBHOST
+              value: paperless-ngx-postgres
+            - name: PAPERLESS_DBNAME
+              value: paperless
+            - name: PAPERLESS_DBUSER
+              value: paperless
+            - name: PAPERLESS_DBPASS
+              valueFrom:
+                secretKeyRef:
+                  name: paperless-ngx-secret
+                  key: POSTGRES_PASSWORD
+            - name: PAPERLESS_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: paperless-ngx-secret
+                  key: PAPERLESS_SECRET_KEY
+            - name: PAPERLESS_URL
+              value: https://{{ .Values.hostname }}
+            - name: PAPERLESS_ALLOWED_HOSTS
+              value: {{ .Values.hostname }}
+            - name: PAPERLESS_TIME_ZONE
+              value: {{ .Values.paperless.timezone }}
+            - name: PAPERLESS_DATA_DIR
+              value: /usr/src/paperless/data
+            - name: PAPERLESS_MEDIA_ROOT
+              value: /usr/src/paperless/media
+            - name: PAPERLESS_CONSUMPTION_DIR
+              value: /usr/src/paperless/consume
+            - name: PAPERLESS_OCR_LANGUAGE
+              value: eng
+          startupProbe:
+            httpGet:
+              path: /
+              port: 8000
+            initialDelaySeconds: {{ .Values.paperless.startupProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.paperless.startupProbe.periodSeconds }}
+            failureThreshold: {{ .Values.paperless.startupProbe.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8000
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8000
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.paperless.resources | nindent 12 }}
+          volumeMounts:
+            - name: paperless-data
+              mountPath: /usr/src/paperless/data
+            - name: paperless-media
+              mountPath: /usr/src/paperless/media
+            - name: paperless-consume
+              mountPath: /usr/src/paperless/consume
+      volumes:
+        - name: paperless-data
+          persistentVolumeClaim:
+            claimName: paperless-data
+        - name: paperless-media
+          persistentVolumeClaim:
+            claimName: paperless-media
+        - name: paperless-consume
+          persistentVolumeClaim:
+            claimName: paperless-consume

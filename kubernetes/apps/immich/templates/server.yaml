@@ -13,6 +13,8 @@ spec:
       labels:
         app: immich-server
     spec:
+      nodeSelector:
+        homelab/node-type: vm
       securityContext:
         fsGroup: 1000
         runAsUser: 1000

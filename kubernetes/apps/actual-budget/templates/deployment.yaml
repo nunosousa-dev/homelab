@@ -13,6 +13,8 @@ spec:
       labels:
         app: actual-budget
     spec:
+      nodeSelector:
+        homelab/node-type: vm
       containers:
         - name: actual-budget
           image: {{ .Values.image }}

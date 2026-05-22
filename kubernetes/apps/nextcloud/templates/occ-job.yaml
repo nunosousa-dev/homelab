@@ -9,6 +9,8 @@ metadata:
 spec:
   template:
     spec:
+      nodeSelector:
+        homelab/node-type: vm
       securityContext:
         runAsUser: 33
         runAsGroup: 33
