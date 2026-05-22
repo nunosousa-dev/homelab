@@ -4,6 +4,10 @@ nfs:
     name: "org.democratic-csi.truenas-nfs"
     fsGroupPolicy: File
 
+  node:
+    tolerations:
+      - operator: Exists
+
   storageClasses:
     - name: truenas-nfs-retain
       defaultClass: false
@@ -71,6 +75,8 @@ iscsi:
 
   node:
     hostPID: true
+    tolerations:
+      - operator: Exists
     driver:
       extraEnv:
         - name: ISCSIADM_HOST_STRATEGY

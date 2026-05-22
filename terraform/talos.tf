@@ -189,7 +189,7 @@ resource "talos_machine_configuration_apply" "rpi_worker" {
           "homelab/node-type" = "rpi"
         }
         nodeTaints = {
-          "homelab/node-type" = "rpi:NoSchedule"
+          "homelab/node-type" = "rpi:NoExecute"
         }
         kubelet = {
           extraArgs = {

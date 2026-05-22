@@ -2,6 +2,8 @@ kube-prometheus-stack:
   prometheus-node-exporter:
     hostNetwork: true
     hostPID: true
+    tolerations:
+      - operator: Exists
 
   alertmanager:
     alertmanagerSpec:
