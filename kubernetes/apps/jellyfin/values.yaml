@@ -17,4 +17,4 @@ config:
 media:
   nfsServer: 10.0.0.3
   nfsPath: /mnt/data/media
-  size: 1Ti
+  size: 500Gi
