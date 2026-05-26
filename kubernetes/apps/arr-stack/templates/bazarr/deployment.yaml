@@ -37,22 +37,19 @@ spec:
             - name: TZ
               value: Europe/Lisbon
           startupProbe:
-            httpGet:
-              path: /api/system/status
+            tcpSocket:
               port: 6767
             initialDelaySeconds: 15
             periodSeconds: 10
             failureThreshold: 30
           readinessProbe:
-            httpGet:
-              path: /api/system/status
+            tcpSocket:
               port: 6767
             periodSeconds: 15
             timeoutSeconds: 5
             failureThreshold: 3
           livenessProbe:
-            httpGet:
-              path: /api/system/status
+            tcpSocket:
               port: 6767
             periodSeconds: 30
             timeoutSeconds: 5
