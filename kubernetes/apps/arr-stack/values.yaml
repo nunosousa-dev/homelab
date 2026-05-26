@@ -6,6 +6,7 @@ hostnames:
   bazarr: bazarr.local.nunosousa.dev
   readarr: readarr.local.nunosousa.dev
   qbittorrent: qbittorrent.local.nunosousa.dev
+  tdarr: tdarr.local.nunosousa.dev
 
 sonarr:
   image: linuxserver/sonarr:4.0.14
@@ -97,6 +98,27 @@ qbittorrent:
   config:
     storageClassName: truenas-iscsi-retain
     size: 2Gi
+
+tdarr:
+  image: ghcr.io/haveagitgat/tdarr:2.42.01
+  nodeImage: ghcr.io/haveagitgat/tdarr_node:2.42.01
+  serverResources:
+    requests:
+      memory: "256Mi"
+      cpu: "50m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  nodeResources:
+    requests:
+      memory: "512Mi"
+      cpu: "100m"
+    limits:
+      memory: "2Gi"
+      cpu: "2000m"
+  config:
+    storageClassName: truenas-iscsi-retain
+    size: 5Gi
 
 media:
   nfsServer: 10.0.0.3

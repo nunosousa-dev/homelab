@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tdarr-node
+  namespace: arr-stack
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: tdarr-node
+  template:
+    metadata:
+      labels:
+        app: tdarr-node
+    spec:
+      nodeSelector:
+        homelab/node-type: rpi
+      tolerations:
+        - key: homelab/node-type
+          operator: Equal
+          value: rpi
+          effect: NoExecute
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+      containers:
+        - name: tdarr-node
+          image: {{ .Values.tdarr.nodeImage }}
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: Europe/Lisbon
+            - name: serverIP
+              value: "tdarr.arr-stack.svc"
+            - name: serverPort
+              value: "8266"
+            - name: inContainer
+              value: "true"
+            - name: ffmpegVersion
+              value: "6"
+            - name: nodeName
+              value: "rpi-node"
+          startupProbe:
+            exec:
+              command:
+                - pgrep
+                - -f
+                - Tdarr_Node
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            exec:
+              command:
+                - pgrep
+                - -f
+                - Tdarr_Node
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            exec:
+              command:
+                - pgrep
+                - -f
+                - Tdarr_Node
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+{{ toYaml .Values.tdarr.nodeResources | nindent 12 }}
+          volumeMounts:
+            - name: media
+              mountPath: /media
+            - name: transcode-cache
+              mountPath: /temp
+      volumes:
+        - name: media
+          persistentVolumeClaim:
+            claimName: arr-stack-media
+        - name: transcode-cache
+          emptyDir:
+            sizeLimit: 10Gi
