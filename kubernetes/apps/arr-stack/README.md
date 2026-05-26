@@ -21,15 +21,15 @@ This Helm chart deploys the following applications:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                           User Request                               │
-│                    "I want Movie X / Show Y"                         │
+│                           User Request                              │
+│                    "I want Movie X / Show Y"                        │
 └─────────────────────────────────────────────────────────────────────┘
                                     │
                                     ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│                           Prowlarr                                   │
-│              Central indexer manager for all *arr apps               │
-│         Searches torrent/usenet indexers for content                 │
+│                           Prowlarr                                  │
+│              Central indexer manager for all *arr apps              │
+│         Searches torrent/usenet indexers for content                │
 └─────────────────────────────────────────────────────────────────────┘
                                     │
             ┌───────────────────────┼───────────────────────┐
@@ -42,15 +42,15 @@ This Helm chart deploys the following applications:
             └───────────────────────┼───────────────────────┘
                                     ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│                         qBittorrent                                  │
-│                    Downloads the content                             │
-│              Saves to /media/downloads/{category}                    │
+│                         qBittorrent                                 │
+│                    Downloads the content                            │
+│              Saves to /media/downloads/{category}                   │
 └─────────────────────────────────────────────────────────────────────┘
                                     │
                                     ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│                      NFS Media Volume                                │
-│                   /media (shared mount)                              │
+│                      NFS Media Volume                               │
+│                   /media (shared mount)                             │
 │  ┌─────────────┬─────────────┬─────────────┬─────────────┐          │
 │  │  /movies    │    /tv      │   /music    │   /books    │          │
 │  └─────────────┴─────────────┴─────────────┴─────────────┘          │
