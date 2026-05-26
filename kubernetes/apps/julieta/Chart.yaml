@@ -1,0 +1,5 @@
+apiVersion: v2
+name: julieta
+description: Julieta's 3rd birthday party website
+version: 1.0.0
+type: application
