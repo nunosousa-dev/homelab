@@ -1,0 +1,104 @@
+hostnames:
+  sonarr: sonarr.local.nunosousa.dev
+  radarr: radarr.local.nunosousa.dev
+  prowlarr: prowlarr.local.nunosousa.dev
+  lidarr: lidarr.local.nunosousa.dev
+  bazarr: bazarr.local.nunosousa.dev
+  readarr: readarr.local.nunosousa.dev
+  qbittorrent: qbittorrent.local.nunosousa.dev
+
+sonarr:
+  image: linuxserver/sonarr:4.0.14
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "50m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  config:
+    storageClassName: truenas-iscsi-retain
+    size: 5Gi
+
+radarr:
+  image: linuxserver/radarr:5.23.3
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "50m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  config:
+    storageClassName: truenas-iscsi-retain
+    size: 5Gi
+
+prowlarr:
+  image: linuxserver/prowlarr:1.32.2
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "25m"
+    limits:
+      memory: "256Mi"
+      cpu: "250m"
+  config:
+    storageClassName: truenas-iscsi-retain
+    size: 2Gi
+
+lidarr:
+  image: linuxserver/lidarr:2.11.2
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "50m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  config:
+    storageClassName: truenas-iscsi-retain
+    size: 5Gi
+
+bazarr:
+  image: linuxserver/bazarr:1.5.1
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "25m"
+    limits:
+      memory: "256Mi"
+      cpu: "250m"
+  config:
+    storageClassName: truenas-iscsi-retain
+    size: 2Gi
+
+readarr:
+  image: linuxserver/readarr:0.4.15-develop
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "50m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  config:
+    storageClassName: truenas-iscsi-retain
+    size: 5Gi
+
+qbittorrent:
+  image: linuxserver/qbittorrent:5.0.4
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "50m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  config:
+    storageClassName: truenas-iscsi-retain
+    size: 2Gi
+
+media:
+  nfsServer: 10.0.0.3
+  nfsPath: /mnt/data/media
+  size: 500Gi

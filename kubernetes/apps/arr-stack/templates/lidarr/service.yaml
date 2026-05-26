@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: lidarr
+  namespace: arr-stack
+spec:
+  selector:
+    app: lidarr
+  ports:
+    - name: http
+      port: 8686
+      targetPort: 8686
+      protocol: TCP

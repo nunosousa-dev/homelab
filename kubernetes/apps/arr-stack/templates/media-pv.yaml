@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: arr-stack-media
+spec:
+  storageClassName: ""
+  capacity:
+    storage: {{ .Values.media.size }}
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: {{ .Values.media.nfsServer }}
+    path: {{ .Values.media.nfsPath }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: arr-stack-media
+  namespace: arr-stack
+spec:
+  storageClassName: ""
+  volumeName: arr-stack-media
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.media.size }}
