@@ -46,22 +46,19 @@ spec:
             - name: WEBUI_PORT
               value: "8080"
           startupProbe:
-            httpGet:
-              path: /api/v2/app/version
+            tcpSocket:
               port: 8080
             initialDelaySeconds: 30
             periodSeconds: 10
             failureThreshold: 30
           readinessProbe:
-            httpGet:
-              path: /api/v2/app/version
+            tcpSocket:
               port: 8080
             periodSeconds: 15
             timeoutSeconds: 5
             failureThreshold: 3
           livenessProbe:
-            httpGet:
-              path: /api/v2/app/version
+            tcpSocket:
               port: 8080
             periodSeconds: 30
             timeoutSeconds: 5

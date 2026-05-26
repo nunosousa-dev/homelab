@@ -38,22 +38,19 @@ spec:
             - name: TZ
               value: Europe/Lisbon
           startupProbe:
-            httpGet:
-              path: /api/v1/health
+            tcpSocket:
               port: 8686
             initialDelaySeconds: 30
             periodSeconds: 10
             failureThreshold: 30
           readinessProbe:
-            httpGet:
-              path: /api/v1/health
+            tcpSocket:
               port: 8686
             periodSeconds: 15
             timeoutSeconds: 5
             failureThreshold: 3
           livenessProbe:
-            httpGet:
-              path: /api/v1/health
+            tcpSocket:
               port: 8686
             periodSeconds: 30
             timeoutSeconds: 5
