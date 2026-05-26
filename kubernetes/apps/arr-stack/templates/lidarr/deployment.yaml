@@ -21,21 +21,11 @@ spec:
           value: rpi
           effect: NoExecute
       securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
-        seccompProfile:
-          type: RuntimeDefault
       containers:
         - name: lidarr
           image: {{ .Values.lidarr.image }}
-          securityContext:
-            allowPrivilegeEscalation: false
-            runAsNonRoot: true
-            capabilities:
-              drop:
-                - ALL
           ports:
             - name: http
               containerPort: 8686
