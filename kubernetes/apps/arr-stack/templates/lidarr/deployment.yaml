@@ -41,7 +41,7 @@ spec:
             httpGet:
               path: /api/v1/health
               port: 8686
-            initialDelaySeconds: 15
+            initialDelaySeconds: 30
             periodSeconds: 10
             failureThreshold: 30
           readinessProbe:
