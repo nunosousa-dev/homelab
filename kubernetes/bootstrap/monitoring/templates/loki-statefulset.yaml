@@ -20,6 +20,7 @@ spec:
     spec:
       securityContext:
         fsGroup: 10001
+        fsGroupChangePolicy: OnRootMismatch
       containers:
         - name: loki
           image: "{{ .Values.loki.image.repository }}:{{ .Values.loki.image.tag }}"
