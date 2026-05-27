@@ -70,6 +70,7 @@ resource "proxmox_vm_qemu" "worker" {
 
   cpu {
     cores = "8"
+    type  = "host"
   }
 
   memory = "20480"

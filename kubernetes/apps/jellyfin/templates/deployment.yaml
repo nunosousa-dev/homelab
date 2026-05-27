@@ -14,10 +14,10 @@ spec:
         app: jellyfin
     spec:
       nodeSelector:
-        homelab/node-type: rpi
+        homelab/node-type: vm
       tolerations:
         - key: homelab/node-type
-          value: rpi
+          value: vm
           effect: NoExecute
       securityContext:
         runAsUser: 1000
