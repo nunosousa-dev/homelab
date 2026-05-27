@@ -3,6 +3,11 @@ kind: Service
 metadata:
   name: qbittorrent
   namespace: arr-stack
+  {{- if .Values.metrics.enabled }}
+  labels:
+    app: qbittorrent
+    metrics: qbittorrent-exporter
+  {{- end }}
 spec:
   selector:
     app: qbittorrent
@@ -19,3 +24,9 @@ spec:
       port: 6881
       targetPort: 6881
       protocol: UDP
+    {{- if .Values.metrics.enabled }}
+    - name: metrics
+      port: 9022
+      targetPort: 9022
+      protocol: TCP
+    {{- end }}

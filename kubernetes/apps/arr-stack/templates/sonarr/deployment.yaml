@@ -63,6 +63,28 @@ spec:
               mountPath: /config
             - name: media
               mountPath: /media
+        {{- if .Values.metrics.enabled }}
+        - name: exportarr
+          image: {{ .Values.metrics.exportarr.image }}
+          args:
+            - sonarr
+          env:
+            - name: URL
+              value: "http://localhost:8989"
+            - name: PORT
+              value: "9707"
+            - name: APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: arr-stack-api-keys
+                  key: sonarr
+          ports:
+            - name: metrics
+              containerPort: 9707
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.metrics.exportarr.resources | nindent 12 }}
+        {{- end }}
       volumes:
         - name: config
           persistentVolumeClaim:

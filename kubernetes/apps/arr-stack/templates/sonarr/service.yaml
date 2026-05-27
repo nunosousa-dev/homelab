@@ -3,6 +3,11 @@ kind: Service
 metadata:
   name: sonarr
   namespace: arr-stack
+  {{- if .Values.metrics.enabled }}
+  labels:
+    app: sonarr
+    metrics: exportarr
+  {{- end }}
 spec:
   selector:
     app: sonarr
@@ -11,3 +16,9 @@ spec:
       port: 8989
       targetPort: 8989
       protocol: TCP
+    {{- if .Values.metrics.enabled }}
+    - name: metrics
+      port: 9707
+      targetPort: 9707
+      protocol: TCP
+    {{- end }}

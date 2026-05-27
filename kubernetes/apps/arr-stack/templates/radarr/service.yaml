@@ -3,6 +3,11 @@ kind: Service
 metadata:
   name: radarr
   namespace: arr-stack
+  {{- if .Values.metrics.enabled }}
+  labels:
+    app: radarr
+    metrics: exportarr
+  {{- end }}
 spec:
   selector:
     app: radarr
@@ -11,3 +16,9 @@ spec:
       port: 7878
       targetPort: 7878
       protocol: TCP
+    {{- if .Values.metrics.enabled }}
+    - name: metrics
+      port: 9707
+      targetPort: 9707
+      protocol: TCP
+    {{- end }}

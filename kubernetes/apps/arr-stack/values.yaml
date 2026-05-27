@@ -74,7 +74,7 @@ bazarr:
     size: 2Gi
 
 readarr:
-  image: linuxserver/readarr:0.4.15-develop
+  image: ghcr.io/pennydreadful/bookshelf:hardcover-v0.4.20.129
   resources:
     requests:
       memory: "256Mi"
@@ -119,6 +119,28 @@ tdarr:
   config:
     storageClassName: truenas-iscsi-retain
     size: 5Gi
+
+rreadingGlasses:
+  image: blampe/rreading-glasses:hardcover
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "10m"
+    limits:
+      memory: "128Mi"
+      cpu: "100m"
+  postgres:
+    image: postgres:17
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "25m"
+      limits:
+        memory: "256Mi"
+        cpu: "250m"
+    storage:
+      storageClassName: truenas-iscsi-retain
+      size: 5Gi
 
 flaresolverr:
   image: ghcr.io/flaresolverr/flaresolverr:v3.3.21

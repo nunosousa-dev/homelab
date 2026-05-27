@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rreading-glasses
+  namespace: arr-stack
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: rreading-glasses
+  template:
+    metadata:
+      labels:
+        app: rreading-glasses
+    spec:
+      nodeSelector:
+        homelab/node-type: rpi
+      tolerations:
+        - key: homelab/node-type
+          operator: Equal
+          value: rpi
+          effect: NoExecute
+      containers:
+        - name: rreading-glasses
+          image: {{ .Values.rreadingGlasses.image }}
+          command: ["/main", "serve"]
+          args:
+            - --verbose
+          ports:
+            - name: http
+              containerPort: 8788
+              protocol: TCP
+          env:
+            - name: HARDCOVER_AUTH
+              valueFrom:
+                secretKeyRef:
+                  name: rreading-glasses-credentials
+                  key: hardcover-auth
+            - name: POSTGRES_HOST
+              value: "rreading-glasses-db"
+            - name: POSTGRES_DATABASE
+              value: "rreading-glasses"
+            - name: POSTGRES_USER
+              value: "rreading-glasses"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: rreading-glasses-credentials
+                  key: postgres-password
+          startupProbe:
+            tcpSocket:
+              port: 8788
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            tcpSocket:
+              port: 8788
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: 8788
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.rreadingGlasses.resources | nindent 12 }}

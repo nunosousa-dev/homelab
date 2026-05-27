@@ -61,6 +61,28 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /config
+        {{- if .Values.metrics.enabled }}
+        - name: exportarr
+          image: {{ .Values.metrics.exportarr.image }}
+          args:
+            - prowlarr
+          env:
+            - name: URL
+              value: "http://localhost:9696"
+            - name: PORT
+              value: "9707"
+            - name: APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: arr-stack-api-keys
+                  key: prowlarr
+          ports:
+            - name: metrics
+              containerPort: 9707
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.metrics.exportarr.resources | nindent 12 }}
+        {{- end }}
       volumes:
         - name: config
           persistentVolumeClaim:

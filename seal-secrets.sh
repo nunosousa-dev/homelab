@@ -37,6 +37,14 @@ fi
 : "${GITHUB_APP_ID:?GITHUB_APP_ID is required}"
 : "${GITHUB_APP_INSTALLATION_ID:?GITHUB_APP_INSTALLATION_ID is required}"
 : "${GITHUB_APP_PRIVATE_KEY_FILE:?GITHUB_APP_PRIVATE_KEY_FILE is required}"
+: "${ARR_SONARR_API_KEY:?ARR_SONARR_API_KEY is required}"
+: "${ARR_RADARR_API_KEY:?ARR_RADARR_API_KEY is required}"
+: "${ARR_LIDARR_API_KEY:?ARR_LIDARR_API_KEY is required}"
+: "${ARR_READARR_API_KEY:?ARR_READARR_API_KEY is required}"
+: "${ARR_PROWLARR_API_KEY:?ARR_PROWLARR_API_KEY is required}"
+: "${ARR_BAZARR_API_KEY:?ARR_BAZARR_API_KEY is required}"
+: "${ARR_QBITTORRENT_USER:?ARR_QBITTORRENT_USER is required}"
+: "${ARR_QBITTORRENT_PASS:?ARR_QBITTORRENT_PASS is required}"
 
 KUBESEAL="kubeseal --controller-name sealed-secrets-controller --controller-namespace kube-system --format yaml"
 
@@ -181,6 +189,22 @@ kubectl create secret generic argocd-repo-secret \
   | $KUBESEAL \
   > kubernetes/bootstrap/argocd/templates/repo-secret.yaml
 echo "    -> kubernetes/bootstrap/argocd/templates/repo-secret.yaml"
+
+echo "==> Sealing arr-stack-api-keys..."
+kubectl create secret generic arr-stack-api-keys \
+  --namespace arr-stack \
+  --from-literal=sonarr="${ARR_SONARR_API_KEY}" \
+  --from-literal=radarr="${ARR_RADARR_API_KEY}" \
+  --from-literal=lidarr="${ARR_LIDARR_API_KEY}" \
+  --from-literal=readarr="${ARR_READARR_API_KEY}" \
+  --from-literal=prowlarr="${ARR_PROWLARR_API_KEY}" \
+  --from-literal=bazarr="${ARR_BAZARR_API_KEY}" \
+  --from-literal=qbittorrent-user="${ARR_QBITTORRENT_USER}" \
+  --from-literal=qbittorrent-pass="${ARR_QBITTORRENT_PASS}" \
+  --dry-run=client -o yaml \
+  | $KUBESEAL \
+  > kubernetes/apps/arr-stack/templates/arr-stack-api-keys-sealed.yaml
+echo "    -> kubernetes/apps/arr-stack/templates/arr-stack-api-keys-sealed.yaml"
 
 echo ""
 echo "==> Done. Commit the updated sealed secret files:"
