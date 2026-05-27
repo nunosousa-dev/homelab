@@ -169,7 +169,7 @@ metrics:
         memory: "64Mi"
         cpu: "50m"
   qbittorrentExporter:
-    image: caseyscarborough/qbittorrent-exporter:v1.3.0
+    image: ghcr.io/esanchezm/prometheus-qbittorrent-exporter:latest
     resources:
       requests:
         memory: "32Mi"
