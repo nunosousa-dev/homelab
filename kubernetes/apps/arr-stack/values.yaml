@@ -120,6 +120,16 @@ tdarr:
     storageClassName: truenas-iscsi-retain
     size: 5Gi
 
+flaresolverr:
+  image: ghcr.io/flaresolverr/flaresolverr:v3.3.21
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "25m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
 media:
   nfsServer: 10.0.0.3
   nfsPath: /mnt/data/media

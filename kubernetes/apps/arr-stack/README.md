@@ -16,6 +16,7 @@ This Helm chart deploys the following applications:
 | **Bazarr** | Subtitle management | 6767 | bazarr.local.nunosousa.dev |
 | **qBittorrent** | Download client | 8080 | qbittorrent.local.nunosousa.dev |
 | **Tdarr** | Automated transcoding | 8265 | tdarr.local.nunosousa.dev |
+| **FlareSolverr** | Cloudflare bypass proxy | 8191 | (internal only) |
 
 ## Architecture
 
@@ -107,8 +108,14 @@ All applications share the same NFS volume mounted at `/media`:
 
 1. Access Prowlarr at `https://prowlarr.local.nunosousa.dev`
 2. Complete initial setup (create username/password)
-3. **Add Indexers**: Settings → Indexers → Add your torrent/usenet indexers
-4. **Connect to *arr apps**: Settings → Apps → Add:
+3. **Add FlareSolverr** (for Cloudflare-protected indexers):
+   - Settings → Indexers → Add Indexer Proxy
+   - Select "FlareSolverr"
+   - Host: `http://flaresolverr.arr-stack.svc:8191`
+   - Tag: `flaresolverr`
+4. **Add Indexers**: Settings → Indexers → Add your torrent/usenet indexers
+   - For Cloudflare-protected indexers, add the `flaresolverr` tag
+5. **Connect to *arr apps**: Settings → Apps → Add:
 
    | Application | Prowlarr Server | App Server | API Key |
    |-------------|-----------------|------------|---------|
@@ -349,6 +356,7 @@ All apps communicate via Kubernetes DNS:
 | qBittorrent | `http://qbittorrent.arr-stack.svc:8080` |
 | Tdarr | `http://tdarr.arr-stack.svc:8265` |
 | Tdarr Server | `http://tdarr.arr-stack.svc:8266` |
+| FlareSolverr | `http://flaresolverr.arr-stack.svc:8191` |
 
 ## Resource Requirements
 
@@ -363,7 +371,8 @@ All apps communicate via Kubernetes DNS:
 | qBittorrent | 256Mi | 512Mi | ~150Mi idle |
 | Tdarr Server | 256Mi | 512Mi | ~200Mi idle |
 | Tdarr Node | 512Mi | 2Gi | ~1GB during transcode |
-| **Total** | **2.2GB** | **5.5GB** | ~2GB typical |
+| FlareSolverr | 128Mi | 512Mi | ~200Mi when solving |
+| **Total** | **2.4GB** | **6GB** | ~2.2GB typical |
 
 Suitable for Raspberry Pi 4B (8GB) or similar.
 

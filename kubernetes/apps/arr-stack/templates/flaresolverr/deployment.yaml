@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flaresolverr
+  namespace: arr-stack
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: flaresolverr
+  template:
+    metadata:
+      labels:
+        app: flaresolverr
+    spec:
+      nodeSelector:
+        homelab/node-type: rpi
+      tolerations:
+        - key: homelab/node-type
+          operator: Equal
+          value: rpi
+          effect: NoExecute
+      containers:
+        - name: flaresolverr
+          image: {{ .Values.flaresolverr.image }}
+          ports:
+            - name: http
+              containerPort: 8191
+              protocol: TCP
+          env:
+            - name: TZ
+              value: Europe/Lisbon
+            - name: LOG_LEVEL
+              value: info
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8191
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8191
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8191
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+{{ toYaml .Values.flaresolverr.resources | nindent 12 }}
