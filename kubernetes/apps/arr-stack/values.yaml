@@ -22,7 +22,7 @@ sonarr:
     size: 5Gi
 
 radarr:
-  image: linuxserver/radarr:5.23.3
+  image: linuxserver/radarr:6.1.1
   resources:
     requests:
       memory: "256Mi"
@@ -134,3 +134,24 @@ media:
   nfsServer: 10.0.0.3
   nfsPath: /mnt/data/media
   size: 500Gi
+
+metrics:
+  enabled: true
+  exportarr:
+    image: ghcr.io/onedr0p/exportarr:v2.1.0
+    resources:
+      requests:
+        memory: "32Mi"
+        cpu: "5m"
+      limits:
+        memory: "64Mi"
+        cpu: "50m"
+  qbittorrentExporter:
+    image: caseyscarborough/qbittorrent-exporter:v1.3.0
+    resources:
+      requests:
+        memory: "32Mi"
+        cpu: "5m"
+      limits:
+        memory: "64Mi"
+        cpu: "50m"
