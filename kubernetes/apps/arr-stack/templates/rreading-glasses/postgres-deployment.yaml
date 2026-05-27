@@ -42,6 +42,8 @@ spec:
                 secretKeyRef:
                   name: rreading-glasses-credentials
                   key: postgres-password
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
           startupProbe:
             exec:
               command:
