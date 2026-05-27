@@ -7,6 +7,7 @@ resource "talos_image_factory_schematic" "this" {
           "siderolabs/util-linux-tools",
           "siderolabs/qemu-guest-agent",
           "siderolabs/nfs-utils",
+          "siderolabs/i915",
         ]
       }
     }

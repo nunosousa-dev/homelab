@@ -5,6 +5,8 @@ metadata:
   namespace: jellyfin
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: jellyfin
@@ -23,6 +25,7 @@ spec:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
+        supplementalGroups: [44, 109]
         fsGroupChangePolicy: OnRootMismatch
         seccompProfile:
           type: RuntimeDefault
@@ -37,6 +40,11 @@ spec:
               type: RuntimeDefault
             capabilities:
               drop: ["ALL"]
+          env:
+            - name: JELLYFIN_FFmpeg__probesize
+              value: "50000000"
+            - name: JELLYFIN_FFmpeg__analyzeduration
+              value: "200000000"
           ports:
             - name: http
               containerPort: 8096
@@ -73,6 +81,8 @@ spec:
               mountPath: /config/transcodes
             - name: cache
               mountPath: /config/cache
+            - name: dri
+              mountPath: /dev/dri
       volumes:
         - name: config
           persistentVolumeClaim:
@@ -84,3 +94,7 @@ spec:
           emptyDir: {}
         - name: cache
           emptyDir: {}
+        - name: dri
+          hostPath:
+            path: /dev/dri
+            type: Directory

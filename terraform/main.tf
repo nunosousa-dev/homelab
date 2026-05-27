@@ -107,4 +107,8 @@ resource "proxmox_vm_qemu" "worker" {
   }
 
   depends_on = [null_resource.talos_iso_download]
+
+  lifecycle {
+    ignore_changes = [hostpci]
+  }
 }

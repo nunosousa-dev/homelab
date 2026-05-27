@@ -5,10 +5,10 @@ jellyfin:
   resources:
     requests:
       memory: "256Mi"
-      cpu: "50m"
+      cpu: "500m"
     limits:
-      memory: "1Gi"
-      cpu: "2000m"
+      memory: "4Gi"
+      cpu: "6000m"
 
 config:
   storageClassName: truenas-iscsi-retain
