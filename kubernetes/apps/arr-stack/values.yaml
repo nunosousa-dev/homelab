@@ -8,7 +8,7 @@ hostnames:
   tdarr: tdarr.local.nunosousa.dev
 
 sonarr:
-  image: linuxserver/sonarr:4.0.14
+  image: linuxserver/sonarr:4.0.17
   resources:
     requests:
       memory: "256Mi"
@@ -34,7 +34,7 @@ radarr:
     size: 5Gi
 
 prowlarr:
-  image: linuxserver/prowlarr:1.32.2
+  image: linuxserver/prowlarr:2.3.5
   resources:
     requests:
       memory: "128Mi"
@@ -47,7 +47,7 @@ prowlarr:
     size: 2Gi
 
 lidarr:
-  image: linuxserver/lidarr:2.11.2
+  image: linuxserver/lidarr:3.0.1
   resources:
     requests:
       memory: "256Mi"
@@ -60,7 +60,7 @@ lidarr:
     size: 5Gi
 
 bazarr:
-  image: linuxserver/bazarr:1.5.1
+  image: linuxserver/bazarr:1.5.6
   resources:
     requests:
       memory: "128Mi"
@@ -73,7 +73,7 @@ bazarr:
     size: 2Gi
 
 qbittorrent:
-  image: linuxserver/qbittorrent:5.0.4
+  image: linuxserver/qbittorrent:5.2.1
   resources:
     requests:
       memory: "256Mi"
