@@ -6,6 +6,7 @@ hostnames:
   bazarr: bazarr.local.nunosousa.dev
   qbittorrent: qbittorrent.local.nunosousa.dev
   tdarr: tdarr.local.nunosousa.dev
+  whisparr: whisparr.local.nunosousa.dev
 
 sonarr:
   image: linuxserver/sonarr:4.0.17
@@ -102,6 +103,19 @@ tdarr:
     limits:
       memory: "2Gi"
       cpu: "2000m"
+  config:
+    storageClassName: truenas-iscsi-retain
+    size: 5Gi
+
+whisparr:
+  image: ghcr.io/hotio/whisparr:v3
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "50m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
   config:
     storageClassName: truenas-iscsi-retain
     size: 5Gi
