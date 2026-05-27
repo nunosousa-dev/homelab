@@ -4,7 +4,6 @@ hostnames:
   prowlarr: prowlarr.local.nunosousa.dev
   lidarr: lidarr.local.nunosousa.dev
   bazarr: bazarr.local.nunosousa.dev
-  readarr: readarr.local.nunosousa.dev
   qbittorrent: qbittorrent.local.nunosousa.dev
   tdarr: tdarr.local.nunosousa.dev
 
@@ -73,19 +72,6 @@ bazarr:
     storageClassName: truenas-iscsi-retain
     size: 2Gi
 
-readarr:
-  image: ghcr.io/pennydreadful/bookshelf:hardcover-v0.4.20.129
-  resources:
-    requests:
-      memory: "256Mi"
-      cpu: "50m"
-    limits:
-      memory: "512Mi"
-      cpu: "500m"
-  config:
-    storageClassName: truenas-iscsi-retain
-    size: 5Gi
-
 qbittorrent:
   image: linuxserver/qbittorrent:5.0.4
   resources:
@@ -119,28 +105,6 @@ tdarr:
   config:
     storageClassName: truenas-iscsi-retain
     size: 5Gi
-
-rreadingGlasses:
-  image: blampe/rreading-glasses:hardcover
-  resources:
-    requests:
-      memory: "64Mi"
-      cpu: "10m"
-    limits:
-      memory: "128Mi"
-      cpu: "100m"
-  postgres:
-    image: postgres:17
-    resources:
-      requests:
-        memory: "128Mi"
-        cpu: "25m"
-      limits:
-        memory: "256Mi"
-        cpu: "250m"
-    storage:
-      storageClassName: truenas-iscsi-retain
-      size: 5Gi
 
 flaresolverr:
   image: ghcr.io/flaresolverr/flaresolverr:v3.3.21

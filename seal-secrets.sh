@@ -40,7 +40,6 @@ fi
 : "${ARR_SONARR_API_KEY:?ARR_SONARR_API_KEY is required}"
 : "${ARR_RADARR_API_KEY:?ARR_RADARR_API_KEY is required}"
 : "${ARR_LIDARR_API_KEY:?ARR_LIDARR_API_KEY is required}"
-: "${ARR_READARR_API_KEY:?ARR_READARR_API_KEY is required}"
 : "${ARR_PROWLARR_API_KEY:?ARR_PROWLARR_API_KEY is required}"
 : "${ARR_BAZARR_API_KEY:?ARR_BAZARR_API_KEY is required}"
 : "${ARR_QBITTORRENT_USER:?ARR_QBITTORRENT_USER is required}"
@@ -196,7 +195,6 @@ kubectl create secret generic arr-stack-api-keys \
   --from-literal=sonarr="${ARR_SONARR_API_KEY}" \
   --from-literal=radarr="${ARR_RADARR_API_KEY}" \
   --from-literal=lidarr="${ARR_LIDARR_API_KEY}" \
-  --from-literal=readarr="${ARR_READARR_API_KEY}" \
   --from-literal=prowlarr="${ARR_PROWLARR_API_KEY}" \
   --from-literal=bazarr="${ARR_BAZARR_API_KEY}" \
   --from-literal=qbittorrent-user="${ARR_QBITTORRENT_USER}" \
