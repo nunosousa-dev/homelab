@@ -83,6 +83,8 @@ spec:
               mountPath: /config/cache
             - name: dri
               mountPath: /dev/dri
+            - name: shm
+              mountPath: /dev/shm
       volumes:
         - name: config
           persistentVolumeClaim:
@@ -98,3 +100,7 @@ spec:
           hostPath:
             path: /dev/dri
             type: Directory
+        - name: shm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 2Gi
