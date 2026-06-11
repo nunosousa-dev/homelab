@@ -1,10 +1,9 @@
-intel-device-plugins-gpu:
-  sharedDevNum: 1
-  nodeFeatureRule: false
-  resources:
-    requests:
-      cpu: 10m
-      memory: 32Mi
-    limits:
-      cpu: 100m
-      memory: 64Mi
+image: intel/intel-gpu-plugin:0.31.0
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    cpu: 100m
+    memory: 64Mi
