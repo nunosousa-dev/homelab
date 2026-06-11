@@ -28,7 +28,7 @@ spec:
         supplementalGroups: [44, 109]
         fsGroupChangePolicy: OnRootMismatch
         seccompProfile:
-          type: Unconfined
+          type: RuntimeDefault
       containers:
         - name: jellyfin
           image: {{ .Values.jellyfin.image }}
@@ -37,7 +37,7 @@ spec:
             allowPrivilegeEscalation: false
             runAsNonRoot: true
             seccompProfile:
-              type: Unconfined
+              type: RuntimeDefault
             capabilities:
               drop: ["ALL"]
           env:
@@ -72,6 +72,8 @@ spec:
             failureThreshold: 3
           resources:
             {{- toYaml .Values.jellyfin.resources | nindent 12 }}
+            limits:
+              gpu.intel.com/i915: "1"
           volumeMounts:
             - name: config
               mountPath: /config
@@ -81,8 +83,6 @@ spec:
               mountPath: /config/transcodes
             - name: cache
               mountPath: /config/cache
-            - name: dri
-              mountPath: /dev/dri
             - name: shm
               mountPath: /dev/shm
       volumes:
@@ -96,10 +96,6 @@ spec:
           emptyDir: {}
         - name: cache
           emptyDir: {}
-        - name: dri
-          hostPath:
-            path: /dev/dri
-            type: Directory
         - name: shm
           emptyDir:
             medium: Memory

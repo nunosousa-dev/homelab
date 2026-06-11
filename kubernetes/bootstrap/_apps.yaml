@@ -39,6 +39,10 @@ spec:
             namespace: monitoring
             wave: "2"
             sourceType: "helm"
+          - name: intel-gpu-plugin
+            namespace: intel-gpu-plugin
+            wave: "1"
+            sourceType: "helm"
           - name: cloudflared
             namespace: cloudflared
             wave: "2"
