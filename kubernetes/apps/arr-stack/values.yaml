@@ -22,7 +22,7 @@ sonarr:
     size: 5Gi
 
 radarr:
-  image: linuxserver/radarr:6.1.1
+  image: linuxserver/radarr:6.2.1
   resources:
     requests:
       memory: "256Mi"
@@ -35,7 +35,7 @@ radarr:
     size: 5Gi
 
 prowlarr:
-  image: linuxserver/prowlarr:2.3.5
+  image: linuxserver/prowlarr:2.4.0
   resources:
     requests:
       memory: "128Mi"
