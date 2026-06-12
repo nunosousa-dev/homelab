@@ -63,7 +63,7 @@ kube-prometheus-stack:
 
   prometheus:
     prometheusSpec:
-      retention: 30d
+      retention: 7d
       resources:
         requests:
           cpu: 100m
@@ -128,7 +128,7 @@ loki:
     repository: grafana/loki
     tag: 3.4.2
     pullPolicy: IfNotPresent
-  retention: 720h
+  retention: 168h
   storage:
     storageClassName: truenas-nfs-retain
     size: 20Gi
