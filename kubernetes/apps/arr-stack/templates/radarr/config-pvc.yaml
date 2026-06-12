@@ -3,6 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: radarr-config
   namespace: arr-stack
+  annotations:
+    "helm.sh/resource-policy": keep
 spec:
   storageClassName: {{ .Values.radarr.config.storageClassName }}
   accessModes:

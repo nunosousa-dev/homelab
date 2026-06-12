@@ -3,6 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: tdarr-config
   namespace: arr-stack
+  annotations:
+    "helm.sh/resource-policy": keep
 spec:
   storageClassName: {{ .Values.tdarr.config.storageClassName }}
   accessModes:

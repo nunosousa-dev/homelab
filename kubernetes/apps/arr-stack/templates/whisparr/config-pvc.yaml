@@ -3,6 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: whisparr-config
   namespace: arr-stack
+  annotations:
+    "helm.sh/resource-policy": keep
 spec:
   storageClassName: {{ .Values.whisparr.config.storageClassName }}
   accessModes:

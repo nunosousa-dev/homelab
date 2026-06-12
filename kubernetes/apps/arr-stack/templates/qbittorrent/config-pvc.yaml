@@ -3,6 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: qbittorrent-config
   namespace: arr-stack
+  annotations:
+    "helm.sh/resource-policy": keep
 spec:
   storageClassName: {{ .Values.qbittorrent.config.storageClassName }}
   accessModes:

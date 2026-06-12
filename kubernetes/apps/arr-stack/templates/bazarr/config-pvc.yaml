@@ -3,6 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: bazarr-config
   namespace: arr-stack
+  annotations:
+    "helm.sh/resource-policy": keep
 spec:
   storageClassName: {{ .Values.bazarr.config.storageClassName }}
   accessModes:
