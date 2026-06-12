@@ -25,6 +25,7 @@ spec:
           image: {{ .Values.paperless.image }}
           imagePullPolicy: Always
           securityContext:
+            runAsUser: 0
             seccompProfile:
               type: RuntimeDefault
             capabilities:
