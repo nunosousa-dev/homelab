@@ -15450,14 +15450,18 @@
   "templating": {
     "list": [
       {
-        "current": {},
+        "current": {
+          "selected": true,
+          "text": "Prometheus",
+          "value": "prometheus"
+        },
         "includeAll": false,
         "label": "Datasource",
         "name": "ds_prometheus",
         "options": [],
         "query": "prometheus",
         "refresh": 1,
-        "regex": "",
+        "regex": "/^(?!.*Mimir).*$/",
         "type": "datasource"
       },
       {
