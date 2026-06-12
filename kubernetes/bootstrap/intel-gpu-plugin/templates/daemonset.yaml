@@ -45,6 +45,8 @@ spec:
               readOnly: true
             - name: kubeletsockets
               mountPath: /var/lib/kubelet/device-plugins
+            - name: cdi
+              mountPath: /var/run/cdi
       volumes:
         - name: devfs
           hostPath:
@@ -55,3 +57,5 @@ spec:
         - name: kubeletsockets
           hostPath:
             path: /var/lib/kubelet/device-plugins
+        - name: cdi
+          emptyDir: {}
