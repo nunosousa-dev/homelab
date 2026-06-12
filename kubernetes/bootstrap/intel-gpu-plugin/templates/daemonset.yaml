@@ -58,4 +58,5 @@ spec:
           hostPath:
             path: /var/lib/kubelet/device-plugins
         - name: cdi
-          emptyDir: {}
+          hostPath:
+            path: /var/run/cdi
