@@ -24,6 +24,8 @@ spec:
         - name: gpu-plugin
           image: {{ .Values.image }}
           imagePullPolicy: IfNotPresent
+          args:
+            - -shared-dev-num={{ .Values.sharedDevNum }}
           securityContext:
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false

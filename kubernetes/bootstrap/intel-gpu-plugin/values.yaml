@@ -1,5 +1,7 @@
 image: intel/intel-gpu-plugin:0.31.0
 
+sharedDevNum: 2
+
 resources:
   requests:
     cpu: 10m
