@@ -16,8 +16,6 @@ spec:
       nodeSelector:
         homelab/node-type: vm
       securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
         seccompProfile:
@@ -27,12 +25,11 @@ spec:
           image: {{ .Values.paperless.image }}
           imagePullPolicy: Always
           securityContext:
-            allowPrivilegeEscalation: false
-            runAsNonRoot: true
             seccompProfile:
               type: RuntimeDefault
             capabilities:
               drop: ["ALL"]
+              add: ["CHOWN", "DAC_OVERRIDE", "FOWNER", "SETGID", "SETUID"]
           ports:
             - name: http
               containerPort: 8000
