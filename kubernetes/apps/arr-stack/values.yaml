@@ -135,24 +135,3 @@ media:
   nfsServer: 10.0.0.3
   nfsPath: /mnt/data/media
   size: 500Gi
-
-metrics:
-  enabled: true
-  exportarr:
-    image: ghcr.io/onedr0p/exportarr:v2.1.0
-    resources:
-      requests:
-        memory: "32Mi"
-        cpu: "5m"
-      limits:
-        memory: "64Mi"
-        cpu: "50m"
-  qbittorrentExporter:
-    image: ghcr.io/esanchezm/prometheus-qbittorrent-exporter:latest
-    resources:
-      requests:
-        memory: "32Mi"
-        cpu: "5m"
-      limits:
-        memory: "64Mi"
-        cpu: "50m"

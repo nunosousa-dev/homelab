@@ -72,35 +72,6 @@ spec:
               mountPath: /config
             - name: media
               mountPath: /media
-        {{- if .Values.metrics.enabled }}
-        - name: exporter
-          image: {{ .Values.metrics.qbittorrentExporter.image }}
-          env:
-            - name: QBITTORRENT_HOST
-              value: "localhost"
-            - name: QBITTORRENT_PORT
-              value: "8080"
-            - name: QBITTORRENT_USER
-              valueFrom:
-                secretKeyRef:
-                  name: arr-stack-api-keys
-                  key: qbittorrent-user
-                  optional: true
-            - name: QBITTORRENT_PASS
-              valueFrom:
-                secretKeyRef:
-                  name: arr-stack-api-keys
-                  key: qbittorrent-pass
-                  optional: true
-            - name: EXPORTER_PORT
-              value: "9022"
-          ports:
-            - name: metrics
-              containerPort: 9022
-              protocol: TCP
-          resources:
-            {{- toYaml .Values.metrics.qbittorrentExporter.resources | nindent 12 }}
-        {{- end }}
       volumes:
         - name: config
           persistentVolumeClaim:

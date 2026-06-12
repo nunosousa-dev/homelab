@@ -3,11 +3,6 @@ kind: Service
 metadata:
   name: prowlarr
   namespace: arr-stack
-  {{- if .Values.metrics.enabled }}
-  labels:
-    app: prowlarr
-    metrics: exportarr
-  {{- end }}
 spec:
   selector:
     app: prowlarr
@@ -16,9 +11,3 @@ spec:
       port: 9696
       targetPort: 9696
       protocol: TCP
-    {{- if .Values.metrics.enabled }}
-    - name: metrics
-      port: 9707
-      targetPort: 9707
-      protocol: TCP
-    {{- end }}

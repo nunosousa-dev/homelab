@@ -3,11 +3,6 @@ kind: Service
 metadata:
   name: bazarr
   namespace: arr-stack
-  {{- if .Values.metrics.enabled }}
-  labels:
-    app: bazarr
-    metrics: exportarr
-  {{- end }}
 spec:
   selector:
     app: bazarr
@@ -16,9 +11,3 @@ spec:
       port: 6767
       targetPort: 6767
       protocol: TCP
-    {{- if .Values.metrics.enabled }}
-    - name: metrics
-      port: 9707
-      targetPort: 9707
-      protocol: TCP
-    {{- end }}
