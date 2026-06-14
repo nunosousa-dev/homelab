@@ -16,10 +16,10 @@ spec:
         app: sonarr
     spec:
       nodeSelector:
-        homelab/node-type: rpi
+        homelab/node-type: vm
       tolerations:
         - key: homelab/node-type
-          value: rpi
+          value: vm
           effect: NoExecute
       securityContext:
         fsGroup: 1000
