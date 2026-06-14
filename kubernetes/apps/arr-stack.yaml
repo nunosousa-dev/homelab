@@ -15,6 +15,11 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: arr-stack
+  ignoreDifferences:
+    - group: ""
+      kind: PersistentVolumeClaim
+      jsonPointers:
+        - /spec/volumeName
   syncPolicy:
     automated:
       prune: true
@@ -22,3 +27,4 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
+      - RespectIgnoreDifferences=true
