@@ -22,11 +22,3 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
-      - RespectIgnoreDifferences=true
-  ignoreDifferences:
-    - group: ""
-      kind: PersistentVolumeClaim
-      jqPathExpressions:
-        - .spec.volumeName
-        - .spec.volumeMode
-        - .spec.dataSource

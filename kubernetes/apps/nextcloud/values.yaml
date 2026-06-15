@@ -1,6 +1,10 @@
 hostname: cloud.local.nunosousa.dev
 publicHostname: cloud.nunosousa.dev
 
+nfs:
+  server: 10.0.0.3
+  basePath: /mnt/data/nextcloud
+
 nextcloud:
   image: nextcloud:31-apache
   adminUser: admin
@@ -21,14 +25,12 @@ nextcloud:
     storageClassName: truenas-iscsi-retain
     size: 20Gi
   userData:
-    storageClassName: truenas-nfs-retain
     size: 100Gi
 
 backup:
   schedule: "0 2 * * *"
   retain: 7
   storage:
-    storageClassName: truenas-nfs-retain
     size: 20Gi
 
 postgres:

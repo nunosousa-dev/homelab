@@ -12,18 +12,3 @@ spec:
   resources:
     requests:
       storage: {{ .Values.nextcloud.app.size }}
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: nextcloud-userdata
-  namespace: nextcloud
-  annotations:
-    argocd.argoproj.io/sync-options: ServerSideApply=false
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: {{ .Values.nextcloud.userData.storageClassName }}
-  resources:
-    requests:
-      storage: {{ .Values.nextcloud.userData.size }}
