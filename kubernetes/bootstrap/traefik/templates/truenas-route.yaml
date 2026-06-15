@@ -3,9 +3,6 @@ kind: Service
 metadata:
   name: truenas-external
   namespace: traefik
-  annotations:
-    traefik.io/service.serversscheme: https
-    traefik.io/service.serverstransport: traefik-truenas-transport@kubernetescrd
 spec:
   ports:
     - port: 443
@@ -20,28 +17,19 @@ metadata:
 spec:
   insecureSkipVerify: true
 ---
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
 metadata:
   name: truenas
   namespace: traefik
 spec:
-  parentRefs:
-    - group: gateway.networking.k8s.io
-      kind: Gateway
-      name: homelab
-      namespace: traefik
-      sectionName: websecure
-  hostnames:
-    - "data.local.nunosousa.dev"
-  rules:
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /
-      backendRefs:
-        - group: ""
-          kind: Service
-          name: truenas-external
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`data.local.nunosousa.dev`)
+      kind: Rule
+      services:
+        - name: truenas-external
           port: 443
-          weight: 1
+          scheme: https
+          serversTransport: truenas-transport
