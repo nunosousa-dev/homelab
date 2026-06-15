@@ -7,6 +7,7 @@ metadata:
     "helm.sh/resource-policy": keep
 spec:
   storageClassName: {{ .Values.sonarr.config.storageClassName }}
+  volumeName: {{ .Values.sonarr.config.volumeName }}
   accessModes:
     - ReadWriteOnce
   resources:

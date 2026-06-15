@@ -7,6 +7,7 @@ metadata:
     "helm.sh/resource-policy": keep
 spec:
   storageClassName: {{ .Values.bazarr.config.storageClassName }}
+  volumeName: {{ .Values.bazarr.config.volumeName }}
   accessModes:
     - ReadWriteOnce
   resources:

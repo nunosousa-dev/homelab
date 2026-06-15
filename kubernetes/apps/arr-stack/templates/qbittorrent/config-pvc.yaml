@@ -7,6 +7,7 @@ metadata:
     "helm.sh/resource-policy": keep
 spec:
   storageClassName: {{ .Values.qbittorrent.config.storageClassName }}
+  volumeName: {{ .Values.qbittorrent.config.volumeName }}
   accessModes:
     - ReadWriteOnce
   resources:

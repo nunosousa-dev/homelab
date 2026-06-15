@@ -20,6 +20,7 @@ sonarr:
   config:
     storageClassName: truenas-iscsi-retain
     size: 5Gi
+    volumeName: pvc-cddb4772-5599-4598-a6a9-e4496ea69b63
 
 radarr:
   image: linuxserver/radarr:6.2.1
@@ -33,6 +34,7 @@ radarr:
   config:
     storageClassName: truenas-iscsi-retain
     size: 5Gi
+    volumeName: pvc-b5ea236c-2c3b-43ca-b2a1-c0019f9a3868
 
 prowlarr:
   image: linuxserver/prowlarr:2.4.0
@@ -46,6 +48,7 @@ prowlarr:
   config:
     storageClassName: truenas-iscsi-retain
     size: 2Gi
+    volumeName: pvc-fff0ef5b-895b-4d4e-8de2-85297b3d1b84
 
 lidarr:
   image: linuxserver/lidarr:3.1.0
@@ -59,6 +62,7 @@ lidarr:
   config:
     storageClassName: truenas-iscsi-retain
     size: 5Gi
+    volumeName: pvc-7b7ff9bb-81ef-4f75-b63e-a15a3d1a4c7a
 
 bazarr:
   image: linuxserver/bazarr:1.5.6
@@ -72,6 +76,7 @@ bazarr:
   config:
     storageClassName: truenas-iscsi-retain
     size: 2Gi
+    volumeName: pvc-3ef12a0e-b58d-402b-a48a-b56b5a3a3b23
 
 qbittorrent:
   image: linuxserver/qbittorrent:5.2.1
@@ -85,6 +90,7 @@ qbittorrent:
   config:
     storageClassName: truenas-iscsi-retain
     size: 2Gi
+    volumeName: pvc-68eafea9-61d0-432a-80a4-27c805d8cb07
 
 tdarr:
   image: ghcr.io/haveagitgat/tdarr:2.42.01
@@ -107,6 +113,7 @@ tdarr:
   config:
     storageClassName: truenas-iscsi-retain
     size: 5Gi
+    volumeName: pvc-4271ab67-0354-40e9-aeaa-5160280fa8c7
 
 whisparr:
   image: ghcr.io/hotio/whisparr:v3
@@ -120,6 +127,7 @@ whisparr:
   config:
     storageClassName: truenas-iscsi-retain
     size: 5Gi
+    volumeName: pvc-d9c47191-2c4d-40fe-af52-4e1cacef72f0
 
 flaresolverr:
   image: ghcr.io/flaresolverr/flaresolverr:v3.3.21
