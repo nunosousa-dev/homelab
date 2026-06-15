@@ -3,6 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: nextcloud-app
   namespace: nextcloud
+  annotations:
+    argocd.argoproj.io/sync-options: ServerSideApply=false
 spec:
   accessModes:
     - ReadWriteOnce
@@ -16,6 +18,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: nextcloud-userdata
   namespace: nextcloud
+  annotations:
+    argocd.argoproj.io/sync-options: ServerSideApply=false
 spec:
   accessModes:
     - ReadWriteOnce

@@ -3,6 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: nextcloud-backup
   namespace: nextcloud
+  annotations:
+    argocd.argoproj.io/sync-options: ServerSideApply=false
 spec:
   accessModes:
     - ReadWriteOnce
