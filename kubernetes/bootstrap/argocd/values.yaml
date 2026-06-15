@@ -1,16 +1,4 @@
 argo-cd:
-  configs:
-    cm:
-      resource.exclusions: |
-        - apiGroups:
-            - ""
-          kinds:
-            - Endpoints
-          clusters:
-            - "*"
-          namespaces:
-            - "!traefik"
-
   controller:
     resources:
       requests:
