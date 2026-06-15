@@ -3,11 +3,22 @@ kind: Service
 metadata:
   name: truenas-external
   namespace: traefik
+  annotations:
+    traefik.io/service.serversscheme: https
+    traefik.io/service.serverstransport: traefik-truenas-transport@kubernetescrd
 spec:
   ports:
     - port: 443
       targetPort: 443
       protocol: TCP
+---
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: truenas-transport
+  namespace: traefik
+spec:
+  insecureSkipVerify: true
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
