@@ -4,7 +4,6 @@ metadata:
   name: truenas-external
   namespace: traefik
 spec:
-  clusterIP: None
   ports:
     - port: 443
       targetPort: 443
