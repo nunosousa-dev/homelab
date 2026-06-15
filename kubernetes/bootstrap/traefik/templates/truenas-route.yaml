@@ -16,7 +16,9 @@ metadata:
   namespace: traefik
 spec:
   parentRefs:
-    - name: homelab
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: homelab
       namespace: traefik
       sectionName: websecure
   hostnames:
@@ -27,6 +29,8 @@ spec:
             type: PathPrefix
             value: /
       backendRefs:
-        - kind: Service
+        - group: ""
+          kind: Service
           name: truenas-external
           port: 443
+          weight: 1
