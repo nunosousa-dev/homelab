@@ -22,3 +22,11 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
+      - RespectIgnoreDifferences=true
+  ignoreDifferences:
+    - group: ""
+      kind: PersistentVolumeClaim
+      name: nextcloud-app
+      jqPathExpressions:
+        - .spec.volumeName
+        - .spec.volumeMode
