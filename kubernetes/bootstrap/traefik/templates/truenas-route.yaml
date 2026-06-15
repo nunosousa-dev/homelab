@@ -4,25 +4,25 @@ metadata:
   name: truenas-external
   namespace: traefik
 spec:
+  clusterIP: None
   ports:
     - port: 443
       targetPort: 443
       protocol: TCP
 ---
-apiVersion: discovery.k8s.io/v1
-kind: EndpointSlice
+apiVersion: v1
+kind: Endpoints
 metadata:
-  name: truenas-external-1
+  name: truenas-external
   namespace: traefik
-  labels:
-    kubernetes.io/service-name: truenas-external
-addressType: IPv4
-ports:
-  - port: 443
-    protocol: TCP
-endpoints:
+  annotations:
+    argocd.argoproj.io/compare-options: IgnoreExtraneous
+subsets:
   - addresses:
-      - "10.0.0.3"
+      - ip: 10.0.0.3
+    ports:
+      - port: 443
+        protocol: TCP
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
