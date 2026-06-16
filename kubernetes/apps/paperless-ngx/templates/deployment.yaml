@@ -57,7 +57,7 @@ spec:
             - name: PAPERLESS_URL
               value: https://{{ .Values.hostname }}
             - name: PAPERLESS_ALLOWED_HOSTS
-              value: {{ .Values.hostname }}
+              value: "*"
             - name: PAPERLESS_TIME_ZONE
               value: {{ .Values.paperless.timezone }}
             - name: PAPERLESS_DATA_DIR
