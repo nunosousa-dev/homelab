@@ -58,6 +58,8 @@ spec:
               value: https://{{ .Values.hostname }}
             - name: PAPERLESS_ALLOWED_HOSTS
               value: "*"
+            - name: PAPERLESS_CSRF_TRUSTED_ORIGINS
+              value: https://{{ .Values.hostname }}
             - name: PAPERLESS_TIME_ZONE
               value: {{ .Values.paperless.timezone }}
             - name: PAPERLESS_DATA_DIR
@@ -72,6 +74,9 @@ spec:
             httpGet:
               path: /
               port: 8000
+              httpHeaders:
+                - name: Host
+                  value: {{ .Values.hostname }}
             initialDelaySeconds: {{ .Values.paperless.startupProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.paperless.startupProbe.periodSeconds }}
             failureThreshold: {{ .Values.paperless.startupProbe.failureThreshold }}
@@ -79,6 +84,9 @@ spec:
             httpGet:
               path: /
               port: 8000
+              httpHeaders:
+                - name: Host
+                  value: {{ .Values.hostname }}
             periodSeconds: 15
             timeoutSeconds: 5
             failureThreshold: 3
@@ -86,6 +94,9 @@ spec:
             httpGet:
               path: /
               port: 8000
+              httpHeaders:
+                - name: Host
+                  value: {{ .Values.hostname }}
             periodSeconds: 30
             timeoutSeconds: 5
             failureThreshold: 3
