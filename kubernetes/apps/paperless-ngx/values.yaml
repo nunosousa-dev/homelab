@@ -18,15 +18,27 @@ paperless:
       cpu: "500m"
 
 storage:
+  nfsServer: 10.0.0.3
   data:
-    storageClassName: truenas-iscsi-retain
-    size: 5Gi
+    nfsPath: /mnt/data/paperless-data
+    size: 10Gi
   media:
-    storageClassName: truenas-nfs-retain
-    size: 20Gi
+    nfsPath: /mnt/data/paperless-media
+    size: 50Gi
   consume:
-    storageClassName: truenas-nfs-retain
+    nfsPath: /mnt/data/paperless-consume
     size: 5Gi
+
+pgBackup:
+  schedule: "0 2 * * *"
+  retentionDays: 7
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "10m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
 
 postgres:
   image: postgres:16

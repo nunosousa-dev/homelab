@@ -1,0 +1,64 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: paperless-ngx-pg-backup
+  namespace: paperless-ngx
+spec:
+  schedule: {{ .Values.pgBackup.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          nodeSelector:
+            homelab/node-type: vm
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: pg-backup
+              image: {{ .Values.postgres.image }}
+              securityContext:
+                allowPrivilegeEscalation: false
+                runAsNonRoot: true
+                seccompProfile:
+                  type: RuntimeDefault
+                capabilities:
+                  drop: ["ALL"]
+              resources:
+                {{- toYaml .Values.pgBackup.resources | nindent 16 }}
+              env:
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: paperless-ngx-secret
+                      key: POSTGRES_PASSWORD
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -e
+                  BACKUP_DIR="/backup/db-backups"
+                  mkdir -p "$BACKUP_DIR"
+                  FILENAME="paperless-db-$(date +%Y%m%d-%H%M%S).sql.gz"
+                  echo "Starting pg_dump..."
+                  pg_dump -h paperless-ngx-postgres -U paperless -d paperless | gzip > "$BACKUP_DIR/$FILENAME"
+                  echo "Backup created: $FILENAME"
+                  echo "Cleaning up backups older than {{ .Values.pgBackup.retentionDays }} days..."
+                  find "$BACKUP_DIR" -name "paperless-db-*.sql.gz" -mtime +{{ .Values.pgBackup.retentionDays }} -delete
+                  echo "Done. Current backups:"
+                  ls -lh "$BACKUP_DIR"
+              volumeMounts:
+                - name: paperless-data
+                  mountPath: /backup
+          volumes:
+            - name: paperless-data
+              persistentVolumeClaim:
+                claimName: paperless-data
+          restartPolicy: OnFailure
