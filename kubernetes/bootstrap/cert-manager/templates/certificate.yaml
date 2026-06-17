@@ -15,3 +15,10 @@ spec:
   dnsNames:
     - "local.nunosousa.dev"
     - "*.local.nunosousa.dev"
+    # Public hostname for OpenCloud. Needed on the Traefik gateway cert because
+    # OpenCloud's proxy validates OIDC tokens by calling its own issuer
+    # (OC_URL=https://cloud.nunosousa.dev) over an in-cluster loopback to Traefik.
+    # Without a matching cert Traefik serves its default self-signed cert and
+    # token verification fails ("Not logged in"). Also fixes internal (split-DNS)
+    # browser cert warnings for this host.
+    - "cloud.nunosousa.dev"
