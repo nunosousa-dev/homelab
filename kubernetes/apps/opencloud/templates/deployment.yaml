@@ -133,6 +133,9 @@ spec:
             - name: wopi
               containerPort: 9300
               protocol: TCP
+            - name: wopi-debug
+              containerPort: 9304
+              protocol: TCP
           env:
             - name: OC_CONFIG_DIR
               value: /etc/opencloud
@@ -149,6 +152,10 @@ spec:
               value: 127.0.0.1:9233
             - name: COLLABORATION_HTTP_ADDR
               value: 0.0.0.0:9300
+            # Expose the debug/health server (default binds to 127.0.0.1) so the
+            # kubelet readiness probe can reach /readyz from the pod IP.
+            - name: COLLABORATION_DEBUG_ADDR
+              value: 0.0.0.0:9304
             # Public URL of this WOPI service (what Collabora calls back to).
             - name: COLLABORATION_WOPI_SRC
               value: https://{{ .Values.collaboration.hostname }}
@@ -156,9 +163,13 @@ spec:
               value: Collabora
             - name: COLLABORATION_APP_PRODUCT
               value: Collabora
-            # Public URL of the Collabora CODE editor.
+            # Server-to-server discovery URL. Use the in-cluster Collabora Service
+            # to avoid hair-pinning out through Cloudflare and to remove the
+            # dependency on external DNS/cert. Collabora's server_name still makes
+            # the discovery document return public https://collabora.* editor URLs
+            # for the browser.
             - name: COLLABORATION_APP_ADDR
-              value: https://{{ .Values.collabora.hostname }}
+              value: http://collabora.{{ .Release.Namespace }}.svc.cluster.local
             - name: COLLABORATION_APP_INSECURE
               value: {{ .Values.opencloud.insecure | quote }}
             - name: COLLABORATION_WOPI_SECRET
@@ -168,8 +179,8 @@ spec:
                   key: COLLABORATION_WOPI_SECRET
           readinessProbe:
             httpGet:
-              path: /
-              port: wopi
+              path: /readyz
+              port: wopi-debug
             initialDelaySeconds: 20
             periodSeconds: 15
             timeoutSeconds: 10
