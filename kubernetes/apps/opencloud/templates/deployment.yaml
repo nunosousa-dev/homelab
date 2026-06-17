@@ -137,6 +137,10 @@ spec:
                 echo "waiting for Collabora discovery at $COLLABORATION_APP_ADDR"
                 sleep 5
               done
+              until opencloud gateway health >/dev/null 2>&1 && opencloud app-provider health >/dev/null 2>&1; do
+                echo "waiting for OpenCloud gateway and app-provider services"
+                sleep 5
+              done
               exec opencloud collaboration server
           ports:
             - name: wopi
@@ -181,7 +185,7 @@ spec:
             # the discovery document return public https://collabora.* editor URLs
             # for the browser.
             - name: COLLABORATION_APP_ADDR
-              value: http://collabora.{{ .Release.Namespace }}.svc.cluster.local
+              value: http://collabora.opencloud.svc.cluster.local
             - name: COLLABORATION_APP_INSECURE
               value: {{ .Values.opencloud.insecure | quote }}
             - name: COLLABORATION_WOPI_SECRET

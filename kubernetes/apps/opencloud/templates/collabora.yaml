@@ -44,7 +44,7 @@ spec:
             # the proxy. security.capabilities=false avoids the SYS_ADMIN/bwrap
             # requirement so the pod runs without elevated privileges.
             - name: extra_params
-              value: "--o:ssl.enable=false --o:ssl.termination=true --o:security.capabilities=false"
+              value: "--o:ssl.enable=false --o:ssl.termination=true --o:security.capabilities=false --o:net.frame_ancestors=https://{{ .Values.publicHostname }}"
             - name: DONT_GEN_SSL_CERT
               value: "YES"
           readinessProbe:
