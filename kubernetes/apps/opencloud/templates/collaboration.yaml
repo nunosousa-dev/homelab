@@ -18,6 +18,7 @@ spec:
       name: http
   selector:
     {{- include "opencloud.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: server
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute

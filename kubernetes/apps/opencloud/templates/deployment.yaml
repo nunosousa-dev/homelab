@@ -12,10 +12,12 @@ spec:
   selector:
     matchLabels:
       {{- include "opencloud.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: server
   template:
     metadata:
       labels:
         {{- include "opencloud.labels" . | nindent 8 }}
+        app.kubernetes.io/component: server
     spec:
       nodeSelector:
         homelab/node-type: vm
