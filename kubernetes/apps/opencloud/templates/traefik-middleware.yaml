@@ -10,6 +10,13 @@ spec:
     stsPreload: true
     contentTypeNosniff: true
     browserXssFilter: true
+    # The Cloudflare tunnel terminates public TLS at the edge and forwards plain
+    # HTTP to Traefik, so Traefik would otherwise pass X-Forwarded-Proto: http to
+    # OpenCloud. With OC_URL set to https, OpenCloud's proxy then 308-redirects
+    # http->https on every request, causing an infinite loop. Force the header to
+    # https (the original public/edge scheme is always https) to break the loop.
+    customRequestHeaders:
+      X-Forwarded-Proto: "https"
     customResponseHeaders:
       X-Frame-Options: "SAMEORIGIN"
       Referrer-Policy: "no-referrer"
