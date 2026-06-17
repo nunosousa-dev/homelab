@@ -34,6 +34,7 @@ fi
 : "${PAPERLESS_DB_PASSWORD:?PAPERLESS_DB_PASSWORD is required}"
 : "${PAPERLESS_SECRET_KEY:?PAPERLESS_SECRET_KEY is required}"
 : "${PAPERLESS_ADMIN_PASSWORD:?PAPERLESS_ADMIN_PASSWORD is required}"
+: "${OPENCLOUD_ADMIN_PASSWORD:?OPENCLOUD_ADMIN_PASSWORD is required}"
 : "${GITHUB_APP_ID:?GITHUB_APP_ID is required}"
 : "${GITHUB_APP_INSTALLATION_ID:?GITHUB_APP_INSTALLATION_ID is required}"
 : "${GITHUB_APP_PRIVATE_KEY_FILE:?GITHUB_APP_PRIVATE_KEY_FILE is required}"
@@ -174,6 +175,37 @@ kubectl create secret generic paperless-ngx-secret \
   | $KUBESEAL \
   > kubernetes/apps/paperless-ngx/templates/paperless-secret.yaml
 echo "    -> kubernetes/apps/paperless-ngx/templates/paperless-secret.yaml"
+
+echo "==> Sealing opencloud-secret..."
+kubectl create secret generic opencloud-secret \
+  --namespace opencloud \
+  --from-literal=IDM_ADMIN_PASSWORD="${OPENCLOUD_ADMIN_PASSWORD}" \
+  --dry-run=client -o yaml \
+  | $KUBESEAL \
+  > kubernetes/apps/opencloud/templates/opencloud-secret.yaml
+echo "    -> kubernetes/apps/opencloud/templates/opencloud-secret.yaml"
+
+# Legacy Nextcloud secret (optional).
+#
+# Nextcloud uses two keys in `nextcloud-secret`:
+# - POSTGRES_PASSWORD
+# - NEXTCLOUD_ADMIN_PASSWORD
+#
+# This block is intentionally optional so running this script does not fail when
+# Nextcloud is not active. Set both vars to regenerate the SealedSecret.
+if [[ -n "${NEXTCLOUD_POSTGRES_PASSWORD:-}" && -n "${NEXTCLOUD_ADMIN_PASSWORD:-}" ]]; then
+  echo "==> Sealing nextcloud-secret..."
+  kubectl create secret generic nextcloud-secret \
+    --namespace nextcloud \
+    --from-literal=POSTGRES_PASSWORD="${NEXTCLOUD_POSTGRES_PASSWORD}" \
+    --from-literal=NEXTCLOUD_ADMIN_PASSWORD="${NEXTCLOUD_ADMIN_PASSWORD}" \
+    --dry-run=client -o yaml \
+    | $KUBESEAL \
+    > kubernetes/apps/nextcloud/templates/nextcloud-secret.yaml
+  echo "    -> kubernetes/apps/nextcloud/templates/nextcloud-secret.yaml"
+else
+  echo "==> Skipping nextcloud-secret (set NEXTCLOUD_POSTGRES_PASSWORD and NEXTCLOUD_ADMIN_PASSWORD to enable)"
+fi
 
 echo "==> Sealing argocd-repo-secret..."
 kubectl create secret generic argocd-repo-secret \

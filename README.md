@@ -208,7 +208,6 @@ helm dependency update kubernetes/bootstrap/traefik
 helm dependency update kubernetes/bootstrap/reflector
 helm dependency update kubernetes/bootstrap/democratic-csi
 helm dependency update kubernetes/bootstrap/monitoring
-helm dependency update kubernetes/apps/nextcloud-aio
 ```
 
 ### 10. Install ArgoCD
@@ -268,7 +267,7 @@ kubernetes/
   apps/               # User-facing application Helm charts
     immich/           # Immich photo server
     actual-budget/    # Actual Budget finance app
-    nextcloud-aio/    # Nextcloud All-in-One
+    opencloud/        # OpenCloud content collaboration
 ```
 
 Sync waves control deployment order: wave 0 (infra) → wave 1 (ingress) → wave 2 (apps) → wave 3 (ArgoCD HTTPRoute).

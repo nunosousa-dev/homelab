@@ -1,0 +1,41 @@
+hostname: cloud.local.nunosousa.dev
+publicHostname: cloud.nunosousa.dev
+
+# Static NFS export backing the OpenCloud data + metadata directory.
+# Keep ALL of /var/lib/opencloud (blobs + metadata index) on this single
+# dataset so TrueNAS ZFS snapshots capture a consistent, restorable state.
+nfs:
+  server: 10.0.0.3
+  basePath: /mnt/data/opencloud
+
+opencloud:
+  image: opencloudeu/opencloud-rolling:3
+  # Run as www-data to match NFS dataset ownership when using UID/GID 33.
+  securityContext:
+    runAsUser: 33
+    runAsGroup: 33
+    fsGroup: 33
+  # Insecure mode disables TLS verification between internal services.
+  # We terminate TLS at Traefik and serve plain HTTP on 9200, so this stays false.
+  insecure: false
+  logLevel: info
+  # decomposed (default) storage driver with the messagepack metadata backend,
+  # which does NOT rely on filesystem extended attributes and is therefore safe
+  # on NFS. Do not switch to the xattrs backend on NFS.
+  metadataBackend: messagepack
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "100m"
+    limits:
+      memory: "2Gi"
+      cpu: "2000m"
+  # Configuration directory (/etc/opencloud) holds the generated config and
+  # service secrets. Small and rarely changes; kept on iSCSI block storage.
+  config:
+    storageClassName: truenas-iscsi-retain
+    size: 1Gi
+  # Data directory (/var/lib/opencloud) holds all user blobs and metadata.
+  # Backed by the static NFS PV above.
+  data:
+    size: 250Gi

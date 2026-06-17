@@ -1,0 +1,120 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opencloud
+  namespace: opencloud
+  labels:
+    {{- include "opencloud.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "opencloud.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "opencloud.labels" . | nindent 8 }}
+    spec:
+      nodeSelector:
+        homelab/node-type: vm
+      securityContext:
+        runAsUser: {{ .Values.opencloud.securityContext.runAsUser }}
+        runAsGroup: {{ .Values.opencloud.securityContext.runAsGroup }}
+        fsGroup: {{ .Values.opencloud.securityContext.fsGroup }}
+        fsGroupChangePolicy: OnRootMismatch
+      initContainers:
+        # Generate the OpenCloud configuration and service secrets in
+        # /etc/opencloud on first boot. `|| true` makes it idempotent so the
+        # pod can restart without overwriting the existing config.
+        - name: init
+          image: {{ .Values.opencloud.image }}
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-c"]
+          args:
+            - opencloud init --insecure {{ .Values.opencloud.insecure }} || true
+          env:
+            - name: OC_CONFIG_DIR
+              value: /etc/opencloud
+            - name: IDM_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: opencloud-secret
+                  key: IDM_ADMIN_PASSWORD
+          volumeMounts:
+            - name: config
+              mountPath: /etc/opencloud
+      containers:
+        - name: opencloud
+          image: {{ .Values.opencloud.image }}
+          imagePullPolicy: Always
+          command: ["opencloud", "server"]
+          ports:
+            - name: http
+              containerPort: 9200
+              protocol: TCP
+          env:
+            - name: OC_URL
+              value: https://{{ .Values.publicHostname }}
+            - name: OC_CONFIG_DIR
+              value: /etc/opencloud
+            - name: OC_BASE_DATA_PATH
+              value: /var/lib/opencloud
+            # Bind the proxy on all interfaces so the Service can reach it.
+            - name: PROXY_HTTP_ADDR
+              value: 0.0.0.0:9200
+            # TLS is terminated at Traefik; serve plain HTTP internally.
+            - name: PROXY_TLS
+              value: "false"
+            - name: OC_INSECURE
+              value: {{ .Values.opencloud.insecure | quote }}
+            - name: OC_LOG_LEVEL
+              value: {{ .Values.opencloud.logLevel | quote }}
+            - name: IDM_CREATE_DEMO_USERS
+              value: "false"
+            # Use the messagepack metadata backend so OpenCloud does not rely on
+            # NFS extended attributes for the decomposed storage driver.
+            - name: STORAGE_USERS_DECOMPOSED_METADATA_BACKEND
+              value: {{ .Values.opencloud.metadataBackend | quote }}
+            - name: IDM_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: opencloud-secret
+                  key: IDM_ADMIN_PASSWORD
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 40
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.opencloud.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/opencloud
+            - name: data
+              mountPath: /var/lib/opencloud
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: opencloud-config
+        - name: data
+          persistentVolumeClaim:
+            claimName: opencloud-data
