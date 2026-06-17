@@ -22,11 +22,3 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
-      - RespectIgnoreDifferences=true
-  ignoreDifferences:
-    - group: ""
-      kind: PersistentVolumeClaim
-      name: opencloud-data
-      jqPathExpressions:
-        - .spec.volumeName
-        - .spec.volumeMode
