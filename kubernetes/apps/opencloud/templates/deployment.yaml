@@ -78,6 +78,12 @@ spec:
             # NOTE: the env var must include 'FS' — DECOMPOSEDFS not DECOMPOSED.
             - name: STORAGE_USERS_DECOMPOSEDFS_METADATA_BACKEND
               value: {{ .Values.opencloud.metadataBackend | quote }}
+{{- if .Values.collabora.enabled }}
+            # Custom Content-Security-Policy so the OpenCloud Web UI is allowed to
+            # frame Collabora and talk to the WOPI service on their own subdomains.
+            - name: PROXY_CSP_CONFIG_FILE_LOCATION
+              value: /etc/opencloud-csp/csp.yaml
+{{- end }}
             - name: IDM_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -112,6 +118,68 @@ spec:
               mountPath: /etc/opencloud
             - name: data
               mountPath: /var/lib/opencloud
+{{- if .Values.collabora.enabled }}
+            - name: csp
+              mountPath: /etc/opencloud-csp
+              readOnly: true
+        # OpenCloud collaboration (WOPI) service. Runs in the same pod so it
+        # shares the generated /etc/opencloud secrets and reaches the in-pod nats
+        # service registry over localhost.
+        - name: collaboration
+          image: {{ .Values.opencloud.image }}
+          imagePullPolicy: Always
+          command: ["opencloud", "collaboration", "server"]
+          ports:
+            - name: wopi
+              containerPort: 9300
+              protocol: TCP
+          env:
+            - name: OC_CONFIG_DIR
+              value: /etc/opencloud
+            - name: OC_URL
+              value: https://{{ .Values.publicHostname }}
+            - name: OC_INSECURE
+              value: {{ .Values.opencloud.insecure | quote }}
+            - name: OC_LOG_LEVEL
+              value: {{ .Values.opencloud.logLevel | quote }}
+            # Discover the in-pod OpenCloud services via the shared nats registry.
+            - name: MICRO_REGISTRY
+              value: nats-js-kv
+            - name: MICRO_REGISTRY_ADDRESS
+              value: 127.0.0.1:9233
+            - name: COLLABORATION_HTTP_ADDR
+              value: 0.0.0.0:9300
+            # Public URL of this WOPI service (what Collabora calls back to).
+            - name: COLLABORATION_WOPI_SRC
+              value: https://{{ .Values.collaboration.hostname }}
+            - name: COLLABORATION_APP_NAME
+              value: Collabora
+            - name: COLLABORATION_APP_PRODUCT
+              value: Collabora
+            # Public URL of the Collabora CODE editor.
+            - name: COLLABORATION_APP_ADDR
+              value: https://{{ .Values.collabora.hostname }}
+            - name: COLLABORATION_APP_INSECURE
+              value: {{ .Values.opencloud.insecure | quote }}
+            - name: COLLABORATION_WOPI_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: opencloud-secret
+                  key: COLLABORATION_WOPI_SECRET
+          readinessProbe:
+            httpGet:
+              path: /
+              port: wopi
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 6
+          resources:
+            {{- toYaml .Values.collaboration.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/opencloud
+{{- end }}
       volumes:
         - name: config
           persistentVolumeClaim:
@@ -119,3 +187,8 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: opencloud-data
+{{- if .Values.collabora.enabled }}
+        - name: csp
+          configMap:
+            name: opencloud-csp
+{{- end }}

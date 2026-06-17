@@ -38,3 +38,37 @@ opencloud:
   data:
     storageClassName: truenas-iscsi-retain
     size: 250Gi
+
+# Online document editing with Collabora Online (CODE).
+#
+# OpenCloud talks to Collabora through the WOPI protocol, brokered by OpenCloud's
+# own "collaboration" service. Both the editor and the broker need their own
+# public hostnames because the browser AND the two services reach each other by
+# URL (all over HTTPS, terminated at Traefik):
+#   - collabora.hostname : the Collabora CODE editor server
+#   - collaboration.hostname (WOPI src): OpenCloud's collaboration/WOPI service
+collabora:
+  enabled: true
+  hostname: collabora.nunosousa.dev
+  # Collabora CODE image. Update this tag to roll the editor version.
+  image: collabora/code:24.04.13.1.1
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "2Gi"
+      cpu: "2000m"
+
+# OpenCloud collaboration (WOPI) service. Runs as a sidecar in the OpenCloud pod
+# so it shares the generated /etc/opencloud secrets and reaches the in-pod nats
+# service registry over localhost.
+collaboration:
+  hostname: wopi.nunosousa.dev
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "50m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"

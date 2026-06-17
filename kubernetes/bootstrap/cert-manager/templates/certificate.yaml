@@ -22,3 +22,8 @@ spec:
     # token verification fails ("Not logged in"). Also fixes internal (split-DNS)
     # browser cert warnings for this host.
     - "cloud.nunosousa.dev"
+    # Collabora Online editor and OpenCloud WOPI service. The collaboration
+    # service and Collabora verify each other's TLS over the same loopback to
+    # Traefik, so both hostnames must be on the gateway cert.
+    - "collabora.nunosousa.dev"
+    - "wopi.nunosousa.dev"

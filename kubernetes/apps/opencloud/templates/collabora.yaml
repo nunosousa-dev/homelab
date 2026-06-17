@@ -1,0 +1,126 @@
+{{- if .Values.collabora.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: collabora
+  namespace: opencloud
+  labels:
+    {{- include "opencloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: collabora
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "opencloud.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: collabora
+  template:
+    metadata:
+      labels:
+        {{- include "opencloud.labels" . | nindent 8 }}
+        app.kubernetes.io/component: collabora
+    spec:
+      nodeSelector:
+        homelab/node-type: vm
+      containers:
+        - name: collabora
+          image: {{ .Values.collabora.image }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 9980
+              protocol: TCP
+          env:
+            # aliasgroup1 whitelists the WOPI host (the collaboration service)
+            # that is allowed to drive this Collabora instance.
+            - name: aliasgroup1
+              value: https://{{ .Values.collaboration.hostname }}
+            # server_name must match the public hostname so Collabora generates
+            # correct URLs while running behind Traefik.
+            - name: server_name
+              value: {{ .Values.collabora.hostname | quote }}
+            # TLS is terminated at Traefik; Collabora serves plain HTTP and trusts
+            # the proxy. security.capabilities=false avoids the SYS_ADMIN/bwrap
+            # requirement so the pod runs without elevated privileges.
+            - name: extra_params
+              value: "--o:ssl.enable=false --o:ssl.termination=true --o:security.capabilities=false"
+            - name: DONT_GEN_SSL_CERT
+              value: "YES"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.collabora.resources | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: collabora
+  namespace: opencloud
+  labels:
+    {{- include "opencloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: collabora
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "opencloud.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: collabora
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: collabora
+  namespace: opencloud
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: homelab
+      namespace: traefik
+      sectionName: web
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: homelab
+      namespace: traefik
+      sectionName: websecure
+  hostnames:
+    - {{ .Values.collabora.hostname | quote }}
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      filters:
+        # Forward the original https scheme; do NOT set X-Frame-Options here, or
+        # the browser would refuse to embed Collabora inside the OpenCloud UI
+        # (which is served from a different subdomain).
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: opencloud-fwd-proto
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: collabora
+          port: 80
+          weight: 1
+{{- end }}
