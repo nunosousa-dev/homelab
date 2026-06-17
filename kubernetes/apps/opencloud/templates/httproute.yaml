@@ -16,7 +16,10 @@ spec:
       namespace: traefik
       sectionName: websecure
   hostnames:
-    - {{ .Values.hostname | quote }}
+    # Single canonical hostname for both internal and public access (split-horizon
+    # DNS resolves this to the internal Traefik LB on the LAN). OpenCloud bakes
+    # OC_URL into the Web UI config and enforces a same-origin CSP, so it can only
+    # serve one hostname. See OC_URL in deployment.yaml.
     - {{ .Values.publicHostname | quote }}
   rules:
     - matches:

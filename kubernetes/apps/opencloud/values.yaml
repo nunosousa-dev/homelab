@@ -1,4 +1,7 @@
-hostname: cloud.local.nunosousa.dev
+# Single canonical external URL. OpenCloud bakes this into the Web UI config
+# and enforces a same-origin CSP, so the instance serves exactly one hostname.
+# Internal LAN access uses split-horizon DNS pointing this name at the internal
+# Traefik LB IP; public access goes through the router/Cloudflare.
 publicHostname: cloud.nunosousa.dev
 
 opencloud:
