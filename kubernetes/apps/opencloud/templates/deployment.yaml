@@ -130,13 +130,23 @@ spec:
         - name: collaboration
           image: {{ .Values.opencloud.image }}
           imagePullPolicy: Always
-          command: ["opencloud", "collaboration", "server"]
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              until wget -qO- "$COLLABORATION_APP_ADDR/hosting/discovery" >/dev/null; do
+                echo "waiting for Collabora discovery at $COLLABORATION_APP_ADDR"
+                sleep 5
+              done
+              exec opencloud collaboration server
           ports:
             - name: wopi
               containerPort: 9300
               protocol: TCP
             - name: wopi-debug
               containerPort: 9304
+              protocol: TCP
+            - name: wopi-grpc
+              containerPort: 9301
               protocol: TCP
           env:
             - name: OC_CONFIG_DIR
