@@ -19,9 +19,10 @@ opencloud:
   # We terminate TLS at Traefik and serve plain HTTP on 9200, so this stays false.
   insecure: false
   logLevel: info
-  # decomposed (default) storage driver with the messagepack metadata backend,
+  # decomposedfs (default) storage driver with the messagepack metadata backend,
   # which does NOT rely on filesystem extended attributes and is therefore safe
   # on NFS. Do not switch to the xattrs backend on NFS.
+  # Env var: STORAGE_USERS_DECOMPOSEDFS_METADATA_BACKEND (note: DECOMPOSEDFS, not DECOMPOSED).
   metadataBackend: messagepack
   resources:
     requests:

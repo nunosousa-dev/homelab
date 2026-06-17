@@ -74,8 +74,9 @@ spec:
             - name: IDM_CREATE_DEMO_USERS
               value: "false"
             # Use the messagepack metadata backend so OpenCloud does not rely on
-            # NFS extended attributes for the decomposed storage driver.
-            - name: STORAGE_USERS_DECOMPOSED_METADATA_BACKEND
+            # NFS extended attributes for the decomposedfs storage driver.
+            # NOTE: the env var must include 'FS' — DECOMPOSEDFS not DECOMPOSED.
+            - name: STORAGE_USERS_DECOMPOSEDFS_METADATA_BACKEND
               value: {{ .Values.opencloud.metadataBackend | quote }}
             - name: IDM_ADMIN_PASSWORD
               valueFrom:
