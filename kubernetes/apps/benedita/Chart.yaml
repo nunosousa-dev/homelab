@@ -1,0 +1,5 @@
+apiVersion: v2
+name: benedita
+description: Benedita's 11th birthday party invitation website
+version: 1.0.0
+type: application
