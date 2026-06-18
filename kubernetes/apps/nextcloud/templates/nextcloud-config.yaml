@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nextcloud-config
+  namespace: nextcloud
+  labels:
+    {{- include "nextcloud.labels" . | nindent 4 }}
+data:
+  POSTGRES_HOST: nextcloud-postgres
+  POSTGRES_DB: nextcloud
+  POSTGRES_USER: nextcloud
+  REDIS_HOST: nextcloud-redis
+  REDIS_PORT: "6379"
+  NEXTCLOUD_ADMIN_USER: {{ .Values.nextcloud.adminUser | quote }}
+  NEXTCLOUD_TRUSTED_DOMAINS: {{ printf "%s %s" .Values.hostname .Values.publicHostname | quote }}
+  OVERWRITEPROTOCOL: https
+  OVERWRITECLIURL: {{ printf "https://%s" .Values.publicHostname | quote }}
+  TRUSTED_PROXIES: 10.0.0.0/8
+  NEXTCLOUD_DATA_DIR: /var/www/html/data

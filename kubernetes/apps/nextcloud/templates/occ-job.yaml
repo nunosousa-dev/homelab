@@ -41,6 +41,10 @@ spec:
                 --value={{ .Values.nextcloud.maintenanceWindowStart }} --type=integer
               php /var/www/html/occ config:system:set default_phone_region \
                 --value={{ .Values.nextcloud.defaultPhoneRegion }}
+              php /var/www/html/occ config:system:set skeletondirectory \
+                --value=""
+              php /var/www/html/occ config:system:set templatedirectory \
+                --value=""
           volumeMounts:
             - name: nextcloud-app
               mountPath: /var/www/html
