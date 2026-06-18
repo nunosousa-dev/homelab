@@ -1,0 +1,9 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: rsvp-admin-auth
+  namespace: benedita
+spec:
+  basicAuth:
+    secret: rsvp-admin-auth
+    realm: Benedita RSVP Admin

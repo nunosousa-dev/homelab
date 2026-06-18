@@ -1,0 +1,19 @@
+# Hostnames are shared with the static benedita site. The API is served on both
+# the internal and public hostnames; the /admin backoffice is exposed only on the
+# internal hostname and protected by Traefik basic auth.
+internalHostname: benedita.local.nunosousa.dev
+publicHostname: benedita.nunosousa.dev
+
+image: ghcr.io/nunosousa-dev/rsvp-api:latest
+
+resources:
+  requests:
+    memory: "64Mi"
+    cpu: "10m"
+  limits:
+    memory: "128Mi"
+    cpu: "200m"
+
+storage:
+  storageClassName: truenas-iscsi-retain
+  size: 1Gi

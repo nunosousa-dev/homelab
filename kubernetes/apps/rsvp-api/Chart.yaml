@@ -1,0 +1,5 @@
+apiVersion: v2
+name: rsvp-api
+description: Benedita RSVP backend API and admin backoffice
+version: 1.0.0
+type: application
