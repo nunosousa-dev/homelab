@@ -226,25 +226,6 @@ kubectl create secret generic arr-stack-api-keys \
   > kubernetes/apps/arr-stack/templates/arr-stack-api-keys-sealed.yaml
 echo "    -> kubernetes/apps/arr-stack/templates/arr-stack-api-keys-sealed.yaml"
 
-# RSVP admin basic-auth secret (optional).
-#
-# Protects the Benedita RSVP /admin backoffice behind Traefik basic auth.
-# The secret holds an htpasswd-style `users` entry consumed by the Traefik
-# Middleware `rsvp-admin-auth`. Set both vars to regenerate the SealedSecret.
-if [[ -n "${RSVP_ADMIN_USER:-}" && -n "${RSVP_ADMIN_PASSWORD:-}" ]]; then
-  echo "==> Sealing rsvp-admin-auth..."
-  RSVP_HTPASSWD="${RSVP_ADMIN_USER}:$(openssl passwd -apr1 "${RSVP_ADMIN_PASSWORD}")"
-  kubectl create secret generic rsvp-admin-auth \
-    --namespace benedita \
-    --from-literal=users="${RSVP_HTPASSWD}" \
-    --dry-run=client -o yaml \
-    | $KUBESEAL \
-    > kubernetes/apps/rsvp-api/templates/rsvp-admin-secret.yaml
-  echo "    -> kubernetes/apps/rsvp-api/templates/rsvp-admin-secret.yaml"
-else
-  echo "==> Skipping rsvp-admin-auth (set RSVP_ADMIN_USER and RSVP_ADMIN_PASSWORD to enable)"
-fi
-
 echo ""
 echo "==> Done. Commit the updated sealed secret files:"
 echo "    git add kubernetes/apps/*/templates/*secret*.yaml kubernetes/apps/democratic-csi/templates/truenas-*-config.yaml"

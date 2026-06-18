@@ -16,7 +16,7 @@ spec:
       namespace: traefik
       sectionName: websecure
   # Internal hostname only — the Cloudflare tunnel does not forward this host,
-  # so /admin is unreachable from the public internet.
+  # so /admin is reachable only from the local network.
   hostnames:
     - {{ .Values.internalHostname | quote }}
   rules:
@@ -24,12 +24,6 @@ spec:
         - path:
             type: PathPrefix
             value: /admin
-      filters:
-        - type: ExtensionRef
-          extensionRef:
-            group: traefik.io
-            kind: Middleware
-            name: rsvp-admin-auth
       backendRefs:
         - group: ""
           kind: Service
