@@ -1,6 +1,0 @@
-apiVersion: v2
-name: opencloud
-description: OpenCloud self-hosted content collaboration platform (single binary, built-in IDM)
-version: 1.0.0
-type: application
-appVersion: "4.0"

@@ -8,10 +8,6 @@ data:
     ingress:
       - hostname: cloud.nunosousa.dev
         service: http://traefik.traefik.svc.cluster.local:443
-      - hostname: collabora.nunosousa.dev
-        service: http://traefik.traefik.svc.cluster.local:443
-      - hostname: wopi.nunosousa.dev
-        service: http://traefik.traefik.svc.cluster.local:443
       - hostname: julieta.nunosousa.dev
         service: http://traefik.traefik.svc.cluster.local:443
       - service: http_status:404

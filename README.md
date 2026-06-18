@@ -267,7 +267,6 @@ kubernetes/
   apps/               # User-facing application Helm charts
     immich/           # Immich photo server
     actual-budget/    # Actual Budget finance app
-    opencloud/        # OpenCloud content collaboration
 ```
 
 Sync waves control deployment order: wave 0 (infra) → wave 1 (ingress) → wave 2 (apps) → wave 3 (ArgoCD HTTPRoute).
