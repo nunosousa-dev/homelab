@@ -7,7 +7,7 @@ server:
       memory: "512Mi"
       cpu: "50m"
     limits:
-      memory: "1Gi"
+      memory: "2Gi"
       cpu: "1000m"
 
 machineLearning:
@@ -17,7 +17,7 @@ machineLearning:
       memory: "384Mi"
       cpu: "50m"
     limits:
-      memory: "1Gi"
+      memory: "2Gi"
       cpu: "2000m"
   modelCache:
     storageClassName: truenas-nfs-retain
