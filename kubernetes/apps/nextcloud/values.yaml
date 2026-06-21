@@ -6,7 +6,7 @@ nfs:
   basePath: /mnt/data/nextcloud
 
 nextcloud:
-  image: nextcloud:31-apache
+  image: nextcloud:34-apache
   adminUser: admin
   defaultPhoneRegion: PT
   maintenanceWindowStart: 1
