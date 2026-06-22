@@ -50,6 +50,29 @@ spec:
               value: /cache/matplotlib-config
           ports:
             - containerPort: 3003
+          # Without probes a hung gunicorn worker stays "Ready" and silently
+          # fails every ML job. /ping detects a stuck/unbooted worker.
+          startupProbe:
+            httpGet:
+              path: /ping
+              port: 3003
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 3003
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 3003
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 5
           resources:
             {{- toYaml .Values.machineLearning.resources | nindent 12 }}
           volumeMounts:
