@@ -48,17 +48,36 @@ spec:
               value: /cache/huggingface-xet
             - name: MPLCONFIGDIR
               value: /cache/matplotlib-config
+            # The single gunicorn worker forks the native ML stack
+            # (onnxruntime/OpenMP/BLAS) which intermittently deadlocks on a
+            # futex at boot. Capping native threads to the CPU limit reduces
+            # that contention and right-sizes for the 2-core limit.
+            - name: MACHINE_LEARNING_REQUEST_THREADS
+              value: "4"
+            - name: OMP_NUM_THREADS
+              value: "2"
+            - name: MKL_NUM_THREADS
+              value: "2"
+            - name: OPENBLAS_NUM_THREADS
+              value: "2"
+            # gunicorn reboots a stuck/unbooted worker after this timeout,
+            # recovering a deadlocked boot in-container before the probe.
+            - name: MACHINE_LEARNING_WORKER_TIMEOUT
+              value: "90"
           ports:
             - containerPort: 3003
           # Without probes a hung gunicorn worker stays "Ready" and silently
           # fails every ML job. /ping detects a stuck/unbooted worker.
+          # /ping needs no model, so a healthy worker answers within seconds.
+          # ~2min budget tolerates a slow boot but restarts a deadlocked
+          # worker quickly so a fresh (usually clean) boot can succeed.
           startupProbe:
             httpGet:
               path: /ping
               port: 3003
             periodSeconds: 10
             timeoutSeconds: 5
-            failureThreshold: 30
+            failureThreshold: 12
           readinessProbe:
             httpGet:
               path: /ping
