@@ -5,10 +5,13 @@ server:
   resources:
     requests:
       memory: "512Mi"
-      cpu: "50m"
+      cpu: "250m"
     limits:
+      # 1 core caused ~98% CPU throttling during uploads (thumbnailing,
+      # transcoding, import) -> liveness timeouts, crash-loops, 504s, and
+      # ML jobs running before ConfigInit ("repository not been setup").
       memory: "3Gi"
-      cpu: "1000m"
+      cpu: "4000m"
 
 machineLearning:
   image: ghcr.io/immich-app/immich-machine-learning:v2.7.5
