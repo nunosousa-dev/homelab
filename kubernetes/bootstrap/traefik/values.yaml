@@ -18,12 +18,28 @@ traefik:
     type: LoadBalancer
   gateway:
     enabled: false
+  # Raise backend (Traefik -> service) response timeout for slow uploads
+  # (e.g. Immich writing large assets to NFS-backed storage).
+  additionalArguments:
+    - "--serversTransport.forwardingTimeouts.responseHeaderTimeout=600s"
   ports:
     web:
       port: 80
       expose:
         default: true
+      transport:
+        respondingTimeouts:
+          readTimeout: 600s
+          writeTimeout: 600s
+          idleTimeout: 600s
     websecure:
       port: 443
       expose:
         default: true
+      # Default readTimeout is 60s, which causes 504s on large immich-go
+      # uploads. Increase client<->Traefik timeouts to 10 minutes.
+      transport:
+        respondingTimeouts:
+          readTimeout: 600s
+          writeTimeout: 600s
+          idleTimeout: 600s
