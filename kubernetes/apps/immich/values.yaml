@@ -7,7 +7,7 @@ server:
       memory: "512Mi"
       cpu: "50m"
     limits:
-      memory: "2Gi"
+      memory: "3Gi"
       cpu: "1000m"
 
 machineLearning:
