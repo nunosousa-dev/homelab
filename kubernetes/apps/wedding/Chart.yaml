@@ -1,0 +1,5 @@
+apiVersion: v2
+name: wedding
+description: Débora & Nuno's wedding website (31 July 2026)
+version: 1.0.0
+type: application

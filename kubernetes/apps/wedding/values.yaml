@@ -1,0 +1,12 @@
+hostname: wedding.local.nunosousa.dev
+publicHostname: wedding.nunosousa.dev
+
+image: ghcr.io/nunosousa-dev/wedding:latest
+
+resources:
+  requests:
+    memory: "32Mi"
+    cpu: "10m"
+  limits:
+    memory: "64Mi"
+    cpu: "100m"
