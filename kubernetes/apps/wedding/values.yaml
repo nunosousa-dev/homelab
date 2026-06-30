@@ -1,5 +1,5 @@
 hostname: wedding.local.nunosousa.dev
-publicHostname: wedding.nunosousa.dev
+publicHostname: denu.pt
 
 image: ghcr.io/nunosousa-dev/wedding:latest
 
