@@ -1,7 +1,7 @@
 hostname: immich.local.nunosousa.dev
 
 server:
-  image: ghcr.io/immich-app/immich-server:v2.7.5
+  image: ghcr.io/immich-app/immich-server:v3.1.0
   resources:
     requests:
       memory: "512Mi"
@@ -14,7 +14,7 @@ server:
       cpu: "4000m"
 
 machineLearning:
-  image: ghcr.io/immich-app/immich-machine-learning:v2.7.5
+  image: ghcr.io/immich-app/immich-machine-learning:v3.1.0
   resources:
     requests:
       memory: "384Mi"
