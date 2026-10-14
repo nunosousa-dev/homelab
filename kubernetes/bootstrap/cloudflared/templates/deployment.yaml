@@ -10,8 +10,6 @@ spec:
       app: cloudflared
   template:
     metadata:
-      annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/config.yaml") . | sha256sum }}
       labels:
         app: cloudflared
     spec:

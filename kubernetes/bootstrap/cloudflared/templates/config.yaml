@@ -12,8 +12,6 @@ data:
         service: http://traefik.traefik.svc.cluster.local:80
       - hostname: benedita.nunosousa.dev
         service: http://traefik.traefik.svc.cluster.local:80
-      - hostname: amigo-secreto.nunosousa.dev
-        service: http://traefik.traefik.svc.cluster.local:80
       - hostname: denu.pt
         service: http://traefik.traefik.svc.cluster.local:80
       - service: http_status:404
