@@ -1,0 +1,37 @@
+image:
+  repository: ghcr.io/nunosousa-dev/secret-santa
+  # Required: set the published immutable tag, for example sha-<full-commit-sha>.
+  tag: sha-a3a140925ee46aca42eaa05a877b887d5769095f
+  pullPolicy: IfNotPresent
+imagePullSecrets: []
+
+# Confirmed family hostname; keep it stable for printed QR cards.
+hostname: amigo-secreto.nunosousa.dev
+admin:
+  existingSecret: secret-santa-admin
+  secretKey: ADMIN_PASSWORD_HASH
+storage:
+  storageClassName: truenas-iscsi-retain
+  size: 1Gi
+gateway:
+  name: homelab
+  namespace: traefik
+  # Cloudflare terminates public HTTPS and tunnels to Traefik's HTTP listener.
+  sectionNames: [web]
+nodeSelector:
+  homelab/node-type: vm
+  kubernetes.io/arch: amd64
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 1000m
+    memory: 768Mi
+
+backup:
+  enabled: true
+  schedule: "0 3 * * *"
+  timeZone: Europe/Lisbon
+  storageClassName: truenas-nfs-retain
+  size: 5Gi

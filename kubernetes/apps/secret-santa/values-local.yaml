@@ -1,0 +1,5 @@
+# Local-first deployment. Apply after values.yaml; retain the same database/PVCs.
+# Promotion removes this override and restores the public hostname and HTTP listener.
+hostname: amigo-secreto.local.nunosousa.dev
+gateway:
+  sectionNames: [websecure]
