@@ -71,7 +71,7 @@ bazarr:
       memory: "128Mi"
       cpu: "25m"
     limits:
-      memory: "256Mi"
+      memory: "512Mi"
       cpu: "250m"
   config:
     storageClassName: truenas-iscsi-retain
