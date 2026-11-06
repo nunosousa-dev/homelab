@@ -35,6 +35,12 @@ kube-prometheus-stack:
 
   grafana:
     enabled: true
+    grafana.ini:
+      auth.anonymous:
+        enabled: true
+        org_role: Viewer
+      auth:
+        disable_login_form: true
     resources:
       requests:
         cpu: 25m
