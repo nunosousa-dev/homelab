@@ -116,7 +116,7 @@
         {"refId": "D", "expr": "wg_peer_transmit_bytes_total{job=\"wireguard\",instance=\"$server\",interface=\"$interface\"} and on(job,instance) (wg_collection_success{job=\"wireguard\",instance=\"$server\"} == 1 and on(job,instance) (up{job=\"wireguard\",instance=\"$server\"} == 1))", "format": "table", "instant": true, "range": false}
       ],
       "transformations": [
-        {"id": "joinByField", "options": {"byField": "peer_id", "mode": "outerTabular"}},
+        {"id": "joinByField", "options": {"byField": "peer_id", "mode": "outer"}},
         {"id": "organize", "options": {"excludeByName": {"Time": true, "Time 1": true, "Time 2": true, "Time 3": true, "Time 4": true, "__name__": true, "job": true, "job 1": true, "job 2": true, "job 3": true, "job 4": true, "instance": true, "instance 1": true, "instance 2": true, "instance 3": true, "instance 4": true, "interface": true, "interface 1": true, "interface 2": true, "interface 3": true, "interface 4": true, "Value #A": true}, "indexByName": {"name": 0, "allowed_ips": 1, "Value #B": 2, "Value #C": 3, "Value #D": 4, "peer_id": 5}, "renameByName": {"name": "Device", "allowed_ips": "VPN addresses", "Value #B": "Last handshake age", "Value #C": "Server received", "Value #D": "Server sent", "peer_id": "Peer fingerprint"}}}
       ],
       "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "custom": {"align": "left", "cellOptions": {"type": "auto"}, "filterable": true}, "noValue": "Unknown"}, "overrides": [
