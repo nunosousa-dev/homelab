@@ -1,0 +1,170 @@
+{
+  "uid": "wireguard-overview",
+  "title": "WireGuard / Andromeda",
+  "description": "Read-only WireGuard observations. Handshakes and traffic are not login sessions or proof of connectivity. Traffic totals are sampled estimates, not billing records.",
+  "tags": ["wireguard", "homelab", "network"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "graphTooltip": 1,
+  "refresh": "30s",
+  "time": {"from": "now-1h", "to": "now"},
+  "timepicker": {"refresh_intervals": ["30s", "1m", "5m"]},
+  "annotations": {"list": []},
+  "links": [],
+  "templating": {
+    "list": [
+      {
+        "name": "datasource", "label": "Data source", "type": "datasource",
+        "query": "prometheus", "regex": "/^Prometheus$/", "refresh": 1,
+        "current": {"text": "Prometheus", "value": "Prometheus"}, "options": []
+      },
+      {
+        "name": "server", "label": "Server", "type": "query",
+        "datasource": {"type": "prometheus", "uid": "${datasource}"},
+        "query": {"query": "label_values(up{job=\"wireguard\"}, instance)", "refId": "ServerVariable"},
+        "refresh": 1, "sort": 1, "multi": false, "includeAll": false,
+        "current": {"text": "10.0.0.10:9586", "value": "10.0.0.10:9586"}, "options": []
+      },
+      {
+        "name": "interface", "label": "Interface", "type": "query",
+        "datasource": {"type": "prometheus", "uid": "${datasource}"},
+        "query": {"query": "label_values(wg_peer_info{job=\"wireguard\",instance=\"$server\"}, interface)", "refId": "InterfaceVariable"},
+        "refresh": 1, "sort": 1, "multi": false, "includeAll": false,
+        "current": {"text": "wg0", "value": "wg0"}, "options": []
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1, "type": "stat", "title": "Exporter reachable",
+      "gridPos": {"x": 0, "y": 0, "w": 4, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "targets": [{"refId": "A", "expr": "up{job=\"wireguard\",instance=\"$server\"}", "instant": true, "range": false}],
+      "fieldConfig": {"defaults": {"noValue": "Unavailable", "color": {"mode": "thresholds"}, "mappings": [{"type": "value", "options": {"0": {"text": "Unreachable", "color": "red"}, "1": {"text": "Reachable", "color": "green"}}}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}, "overrides": []},
+      "options": {"colorMode": "value", "graphMode": "none", "textMode": "value", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}}
+    },
+    {
+      "id": 2, "type": "stat", "title": "WireGuard collection",
+      "gridPos": {"x": 4, "y": 0, "w": 4, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "targets": [{"refId": "A", "expr": "wg_collection_success{job=\"wireguard\",instance=\"$server\"} and on(job,instance) (up{job=\"wireguard\",instance=\"$server\"} == 1)", "instant": true, "range": false}],
+      "fieldConfig": {"defaults": {"noValue": "Unavailable", "color": {"mode": "thresholds"}, "mappings": [{"type": "value", "options": {"0": {"text": "Failed", "color": "red"}, "1": {"text": "Healthy", "color": "green"}}}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}, "overrides": []},
+      "options": {"colorMode": "value", "graphMode": "none", "textMode": "value", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}}
+    },
+    {
+      "id": 3, "type": "stat", "title": "Configured peers",
+      "gridPos": {"x": 8, "y": 0, "w": 4, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "targets": [{"refId": "A", "expr": "(count(wg_peer_info{job=\"wireguard\",instance=\"$server\",interface=\"$interface\"}) or vector(0)) and on() (wg_collection_success{job=\"wireguard\",instance=\"$server\"} == 1 and on(job,instance) (up{job=\"wireguard\",instance=\"$server\"} == 1))", "instant": true, "range": false}],
+      "fieldConfig": {"defaults": {"unit": "short", "decimals": 0, "noValue": "Unavailable", "color": {"mode": "fixed", "fixedColor": "blue"}}, "overrides": []},
+      "options": {"colorMode": "value", "graphMode": "none", "textMode": "value", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}}
+    },
+    {
+      "id": 4, "type": "stat", "title": "Recently seen / 3 min",
+      "description": "Successful handshake within three minutes. This is not a connected-device count.",
+      "gridPos": {"x": 12, "y": 0, "w": 4, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "targets": [{"refId": "A", "expr": "(sum((time() - wg_peer_last_handshake_timestamp_seconds{job=\"wireguard\",instance=\"$server\",interface=\"$interface\"} < bool 180) * (wg_peer_last_handshake_timestamp_seconds{job=\"wireguard\",instance=\"$server\",interface=\"$interface\"} > bool 0)) or vector(0)) and on() (wg_collection_success{job=\"wireguard\",instance=\"$server\"} == 1 and on(job,instance) (up{job=\"wireguard\",instance=\"$server\"} == 1))", "instant": true, "range": false}],
+      "fieldConfig": {"defaults": {"unit": "short", "decimals": 0, "noValue": "Unavailable", "color": {"mode": "fixed", "fixedColor": "cyan"}}, "overrides": []},
+      "options": {"colorMode": "value", "graphMode": "none", "textMode": "value", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}}
+    },
+    {
+      "id": 5, "type": "stat", "title": "Server receive / now",
+      "description": "Traffic from devices to the VPN server, averaged over the rate interval.",
+      "gridPos": {"x": 16, "y": 0, "w": 4, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "targets": [{"refId": "A", "expr": "(sum(rate(wg_peer_receive_bytes_total{job=\"wireguard\",instance=\"$server\",interface=\"$interface\"}[$__rate_interval])) * 8) and on() (wg_collection_success{job=\"wireguard\",instance=\"$server\"} == 1 and on(job,instance) (up{job=\"wireguard\",instance=\"$server\"} == 1))", "instant": true, "range": false}],
+      "fieldConfig": {"defaults": {"unit": "bps", "decimals": 1, "noValue": "Unavailable", "color": {"mode": "fixed", "fixedColor": "blue"}}, "overrides": []},
+      "options": {"colorMode": "value", "graphMode": "none", "textMode": "value", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}}
+    },
+    {
+      "id": 6, "type": "stat", "title": "Server transmit / now",
+      "description": "Traffic from the VPN server to devices, averaged over the rate interval.",
+      "gridPos": {"x": 20, "y": 0, "w": 4, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "targets": [{"refId": "A", "expr": "(sum(rate(wg_peer_transmit_bytes_total{job=\"wireguard\",instance=\"$server\",interface=\"$interface\"}[$__rate_interval])) * 8) and on() (wg_collection_success{job=\"wireguard\",instance=\"$server\"} == 1 and on(job,instance) (up{job=\"wireguard\",instance=\"$server\"} == 1))", "instant": true, "range": false}],
+      "fieldConfig": {"defaults": {"unit": "bps", "decimals": 1, "noValue": "Unavailable", "color": {"mode": "fixed", "fixedColor": "green"}}, "overrides": []},
+      "options": {"colorMode": "value", "graphMode": "none", "textMode": "value", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}}
+    },
+    {
+      "id": 7, "type": "timeseries", "title": "Device to server / receive bandwidth",
+      "gridPos": {"x": 0, "y": 4, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "targets": [{"refId": "A", "expr": "((rate(wg_peer_receive_bytes_total{job=\"wireguard\",instance=\"$server\",interface=\"$interface\"}[$__rate_interval]) * 8) * on(job,instance,interface,peer_id) group_left(device) (label_replace(wg_peer_info{job=\"wireguard\",instance=\"$server\",interface=\"$interface\",name=\"\"},\"device\",\"$1\",\"allowed_ips\",\"(.*)\") or label_replace(wg_peer_info{job=\"wireguard\",instance=\"$server\",interface=\"$interface\",name!=\"\"},\"device\",\"$1\",\"name\",\"(.*)\"))) and on(job,instance) (wg_collection_success{job=\"wireguard\",instance=\"$server\"} == 1 and on(job,instance) (up{job=\"wireguard\",instance=\"$server\"} == 1))", "legendFormat": "{{device}}", "range": true, "instant": false}],
+      "fieldConfig": {"defaults": {"unit": "bps", "min": 0, "color": {"mode": "palette-classic"}, "custom": {"drawStyle": "line", "lineInterpolation": "linear", "lineWidth": 2, "fillOpacity": 12, "showPoints": "never", "spanNulls": false, "axisLabel": "bits / second", "axisBorderShow": false}}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}}
+    },
+    {
+      "id": 8, "type": "timeseries", "title": "Server to device / transmit bandwidth",
+      "gridPos": {"x": 12, "y": 4, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "targets": [{"refId": "A", "expr": "((rate(wg_peer_transmit_bytes_total{job=\"wireguard\",instance=\"$server\",interface=\"$interface\"}[$__rate_interval]) * 8) * on(job,instance,interface,peer_id) group_left(device) (label_replace(wg_peer_info{job=\"wireguard\",instance=\"$server\",interface=\"$interface\",name=\"\"},\"device\",\"$1\",\"allowed_ips\",\"(.*)\") or label_replace(wg_peer_info{job=\"wireguard\",instance=\"$server\",interface=\"$interface\",name!=\"\"},\"device\",\"$1\",\"name\",\"(.*)\"))) and on(job,instance) (wg_collection_success{job=\"wireguard\",instance=\"$server\"} == 1 and on(job,instance) (up{job=\"wireguard\",instance=\"$server\"} == 1))", "legendFormat": "{{device}}", "range": true, "instant": false}],
+      "fieldConfig": {"defaults": {"unit": "bps", "min": 0, "color": {"mode": "palette-classic"}, "custom": {"drawStyle": "line", "lineInterpolation": "linear", "lineWidth": 2, "fillOpacity": 12, "showPoints": "never", "spanNulls": false, "axisLabel": "bits / second", "axisBorderShow": false}}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}}
+    },
+    {
+      "id": 9, "type": "table", "title": "Peer inventory / current observation",
+      "description": "Counters are raw totals since peer/interface creation. Never seen means WireGuard has no recorded handshake. Missing rows during an outage are not disconnected devices.",
+      "gridPos": {"x": 0, "y": 12, "w": 24, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "targets": [
+        {"refId": "A", "expr": "wg_peer_info{job=\"wireguard\",instance=\"$server\",interface=\"$interface\"} and on(job,instance) (wg_collection_success{job=\"wireguard\",instance=\"$server\"} == 1 and on(job,instance) (up{job=\"wireguard\",instance=\"$server\"} == 1))", "format": "table", "instant": true, "range": false},
+        {"refId": "B", "expr": "((time() - (wg_peer_last_handshake_timestamp_seconds{job=\"wireguard\",instance=\"$server\",interface=\"$interface\"} > 0)) or ((wg_peer_last_handshake_timestamp_seconds{job=\"wireguard\",instance=\"$server\",interface=\"$interface\"} == 0) - 1)) and on(job,instance) (wg_collection_success{job=\"wireguard\",instance=\"$server\"} == 1 and on(job,instance) (up{job=\"wireguard\",instance=\"$server\"} == 1))", "format": "table", "instant": true, "range": false},
+        {"refId": "C", "expr": "wg_peer_receive_bytes_total{job=\"wireguard\",instance=\"$server\",interface=\"$interface\"} and on(job,instance) (wg_collection_success{job=\"wireguard\",instance=\"$server\"} == 1 and on(job,instance) (up{job=\"wireguard\",instance=\"$server\"} == 1))", "format": "table", "instant": true, "range": false},
+        {"refId": "D", "expr": "wg_peer_transmit_bytes_total{job=\"wireguard\",instance=\"$server\",interface=\"$interface\"} and on(job,instance) (wg_collection_success{job=\"wireguard\",instance=\"$server\"} == 1 and on(job,instance) (up{job=\"wireguard\",instance=\"$server\"} == 1))", "format": "table", "instant": true, "range": false}
+      ],
+      "transformations": [
+        {"id": "joinByField", "options": {"byField": "peer_id", "mode": "outerTabular"}},
+        {"id": "organize", "options": {"excludeByName": {"Time": true, "Time 1": true, "Time 2": true, "Time 3": true, "Time 4": true, "__name__": true, "job": true, "job 1": true, "job 2": true, "job 3": true, "job 4": true, "instance": true, "instance 1": true, "instance 2": true, "instance 3": true, "instance 4": true, "interface": true, "interface 1": true, "interface 2": true, "interface 3": true, "interface 4": true, "Value #A": true}, "indexByName": {"name": 0, "allowed_ips": 1, "Value #B": 2, "Value #C": 3, "Value #D": 4, "peer_id": 5}, "renameByName": {"name": "Device", "allowed_ips": "VPN addresses", "Value #B": "Last handshake age", "Value #C": "Server received", "Value #D": "Server sent", "peer_id": "Peer fingerprint"}}}
+      ],
+      "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "custom": {"align": "left", "cellOptions": {"type": "auto"}, "filterable": true}, "noValue": "Unknown"}, "overrides": [
+        {"matcher": {"id": "byName", "options": "Device"}, "properties": [{"id": "noValue", "value": "Unnamed"}, {"id": "custom.width", "value": 160}]},
+        {"matcher": {"id": "byName", "options": "VPN addresses"}, "properties": [{"id": "custom.width", "value": 190}]},
+        {"matcher": {"id": "byName", "options": "Last handshake age"}, "properties": [{"id": "unit", "value": "s"}, {"id": "decimals", "value": 0}, {"id": "custom.width", "value": 190}, {"id": "custom.cellOptions", "value": {"type": "color-text"}}, {"id": "mappings", "value": [{"type": "value", "options": {"-1": {"text": "Never seen", "color": "text"}}}]}, {"id": "thresholds", "value": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 180}, {"color": "text", "value": 900}]}}]},
+        {"matcher": {"id": "byRegexp", "options": "^Server (received|sent)$"}, "properties": [{"id": "unit", "value": "bytes"}, {"id": "decimals", "value": 2}, {"id": "custom.width", "value": 170}]},
+        {"matcher": {"id": "byName", "options": "Peer fingerprint"}, "properties": [{"id": "custom.width", "value": 250}]}
+      ]},
+      "options": {"showHeader": true, "cellHeight": "md", "sortBy": [{"displayName": "VPN addresses", "desc": false}], "footer": {"show": false}}
+    },
+    {
+      "id": 10, "type": "barchart", "title": "Traffic observed / selected time range",
+      "description": "Sampled, extrapolated traffic estimates over the selected time range; includes activity before any collection outage. Counter resets are handled by increase().",
+      "gridPos": {"x": 0, "y": 19, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "targets": [
+        {"refId": "A", "expr": "sum by(device) (increase(wg_peer_receive_bytes_total{job=\"wireguard\",instance=\"$server\",interface=\"$interface\"}[$__range]) * on(job,instance,interface,peer_id) group_left(device) (label_replace(wg_peer_info{job=\"wireguard\",instance=\"$server\",interface=\"$interface\",name=\"\"},\"device\",\"$1\",\"allowed_ips\",\"(.*)\") or label_replace(wg_peer_info{job=\"wireguard\",instance=\"$server\",interface=\"$interface\",name!=\"\"},\"device\",\"$1\",\"name\",\"(.*)\")))", "format": "table", "instant": true, "range": false},
+        {"refId": "B", "expr": "sum by(device) (increase(wg_peer_transmit_bytes_total{job=\"wireguard\",instance=\"$server\",interface=\"$interface\"}[$__range]) * on(job,instance,interface,peer_id) group_left(device) (label_replace(wg_peer_info{job=\"wireguard\",instance=\"$server\",interface=\"$interface\",name=\"\"},\"device\",\"$1\",\"allowed_ips\",\"(.*)\") or label_replace(wg_peer_info{job=\"wireguard\",instance=\"$server\",interface=\"$interface\",name!=\"\"},\"device\",\"$1\",\"name\",\"(.*)\")))", "format": "table", "instant": true, "range": false}
+      ],
+      "transformations": [{"id": "joinByField", "options": {"byField": "device", "mode": "outerTabular"}}, {"id": "organize", "options": {"excludeByName": {"Time": true, "Time 1": true, "Time 2": true}, "renameByName": {"device": "Device", "Value #A": "Server received", "Value #B": "Server sent"}}}],
+      "fieldConfig": {"defaults": {"unit": "bytes", "decimals": 1, "color": {"mode": "palette-classic"}, "custom": {"fillOpacity": 85, "lineWidth": 0, "axisBorderShow": false}}, "overrides": [{"matcher": {"id": "byName", "options": "Server received"}, "properties": [{"id": "color", "value": {"mode": "fixed", "fixedColor": "blue"}}]}, {"matcher": {"id": "byName", "options": "Server sent"}, "properties": [{"id": "color", "value": {"mode": "fixed", "fixedColor": "green"}}]}]},
+      "options": {"orientation": "horizontal", "xField": "Device", "stacking": "none", "showValue": "auto", "groupWidth": 0.7, "barWidth": 0.8, "barRadius": 0, "legend": {"displayMode": "list", "placement": "bottom", "calcs": []}, "tooltip": {"mode": "multi", "sort": "desc"}}
+    },
+    {
+      "id": 11, "type": "timeseries", "title": "Handshake age / observed peers",
+      "description": "Seconds since a successful handshake. Peers with no recorded handshake are excluded, and monitoring outages create gaps. This is not a connectivity test.",
+      "gridPos": {"x": 12, "y": 19, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "targets": [{"refId": "A", "expr": "((time() - (wg_peer_last_handshake_timestamp_seconds{job=\"wireguard\",instance=\"$server\",interface=\"$interface\"} > 0)) * on(job,instance,interface,peer_id) group_left(device) (label_replace(wg_peer_info{job=\"wireguard\",instance=\"$server\",interface=\"$interface\",name=\"\"},\"device\",\"$1\",\"allowed_ips\",\"(.*)\") or label_replace(wg_peer_info{job=\"wireguard\",instance=\"$server\",interface=\"$interface\",name!=\"\"},\"device\",\"$1\",\"name\",\"(.*)\"))) and on(job,instance) (wg_collection_success{job=\"wireguard\",instance=\"$server\"} == 1 and on(job,instance) (up{job=\"wireguard\",instance=\"$server\"} == 1))", "legendFormat": "{{device}}", "range": true, "instant": false}],
+      "fieldConfig": {"defaults": {"unit": "s", "min": 0, "color": {"mode": "palette-classic"}, "custom": {"drawStyle": "line", "lineInterpolation": "linear", "lineWidth": 2, "fillOpacity": 0, "showPoints": "never", "spanNulls": false, "axisBorderShow": false}}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull"]}, "tooltip": {"mode": "multi", "sort": "desc"}}
+    },
+    {
+      "id": 12, "type": "timeseries", "title": "Collector / read duration",
+      "gridPos": {"x": 0, "y": 27, "w": 12, "h": 6},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "targets": [{"refId": "A", "expr": "wg_collection_duration_seconds{job=\"wireguard\",instance=\"$server\"}", "legendFormat": "Collection duration", "range": true, "instant": false}],
+      "fieldConfig": {"defaults": {"unit": "s", "min": 0, "color": {"mode": "fixed", "fixedColor": "cyan"}, "custom": {"lineWidth": 2, "fillOpacity": 8, "showPoints": "never", "spanNulls": false, "axisBorderShow": false}}, "overrides": []},
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "calcs": ["lastNotNull", "max"]}, "tooltip": {"mode": "single"}}
+    },
+    {
+      "id": 13, "type": "timeseries", "title": "Collector / last successful observation age",
+      "gridPos": {"x": 12, "y": 27, "w": 12, "h": 6},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "targets": [{"refId": "A", "expr": "time() - (wg_collection_last_success_timestamp_seconds{job=\"wireguard\",instance=\"$server\"} > 0)", "legendFormat": "Observation age", "range": true, "instant": false}],
+      "fieldConfig": {"defaults": {"unit": "s", "min": 0, "color": {"mode": "fixed", "fixedColor": "yellow"}, "custom": {"lineWidth": 2, "fillOpacity": 8, "showPoints": "never", "spanNulls": false, "axisBorderShow": false}}, "overrides": []},
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "calcs": ["lastNotNull", "max"]}, "tooltip": {"mode": "single"}}
+    }
+  ]
+}
