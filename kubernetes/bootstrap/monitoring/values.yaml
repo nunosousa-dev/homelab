@@ -64,6 +64,13 @@ kube-prometheus-stack:
   prometheus:
     prometheusSpec:
       retention: 7d
+      additionalScrapeConfigs:
+        - job_name: wireguard
+          scrape_interval: 30s
+          scrape_timeout: 10s
+          static_configs:
+            - targets:
+                - "10.0.0.10:9586"
       resources:
         requests:
           cpu: 100m
