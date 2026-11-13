@@ -9,7 +9,7 @@ hostnames:
   whisparr: whisparr.local.nunosousa.dev
 
 sonarr:
-  image: linuxserver/sonarr:4.0.17
+  image: linuxserver/sonarr:4.0.20
   resources:
     requests:
       memory: "256Mi"
@@ -23,7 +23,7 @@ sonarr:
     volumeName: pvc-cddb4772-5599-4598-a6a9-e4496ea69b63
 
 radarr:
-  image: linuxserver/radarr:6.2.1
+  image: linuxserver/radarr:6.4.4
   resources:
     requests:
       memory: "256Mi"
@@ -37,7 +37,7 @@ radarr:
     volumeName: pvc-b5ea236c-2c3b-43ca-b2a1-c0019f9a3868
 
 prowlarr:
-  image: linuxserver/prowlarr:2.4.0
+  image: linuxserver/prowlarr:2.7.0
   resources:
     requests:
       memory: "128Mi"
@@ -65,7 +65,7 @@ lidarr:
     volumeName: pvc-7b7ff9bb-81ef-4f75-b63e-a15a3d1a4c7a
 
 bazarr:
-  image: linuxserver/bazarr:1.5.6
+  image: linuxserver/bazarr:1.6.2
   resources:
     requests:
       memory: "128Mi"
@@ -79,7 +79,7 @@ bazarr:
     volumeName: pvc-3ef12a0e-b58d-402b-a48a-b56b5a3a3b23
 
 qbittorrent:
-  image: linuxserver/qbittorrent:5.2.1
+  image: linuxserver/qbittorrent:5.3.0
   resources:
     requests:
       memory: "512Mi"
@@ -93,8 +93,8 @@ qbittorrent:
     volumeName: pvc-68eafea9-61d0-432a-80a4-27c805d8cb07
 
 tdarr:
-  image: ghcr.io/haveagitgat/tdarr:2.42.01
-  nodeImage: ghcr.io/haveagitgat/tdarr_node:2.42.01
+  image: ghcr.io/haveagitgat/tdarr:2.96.01
+  nodeImage: ghcr.io/haveagitgat/tdarr_node:2.96.01
   serverResources:
     requests:
       memory: "256Mi"
@@ -130,7 +130,7 @@ whisparr:
     volumeName: pvc-d9c47191-2c4d-40fe-af52-4e1cacef72f0
 
 flaresolverr:
-  image: ghcr.io/flaresolverr/flaresolverr:v3.3.21
+  image: ghcr.io/flaresolverr/flaresolverr:v3.5.2
   resources:
     requests:
       memory: "128Mi"
