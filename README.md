@@ -267,9 +267,26 @@ kubernetes/
   apps/               # User-facing application Helm charts
     immich/           # Immich photo server
     actual-budget/    # Actual Budget finance app
+    nunosousa-website/ # Static portfolio, local-only Gateway route
 ```
 
 Sync waves control deployment order: wave 0 (infra) → wave 1 (ingress) → wave 2 (apps) → wave 3 (ArgoCD HTTPRoute).
+
+### Nuno Sousa website (local-only)
+
+The website repository builds a static Nginx image and publishes it to `ghcr.io/nunosousa-dev/website`. The Helm chart routes only to `nunosousa.local.nunosousa.dev` through the existing Traefik Gateway and local wildcard certificate. It does not configure Cloudflare Tunnel or public DNS.
+
+Before syncing the app, publish the website image once and change the GHCR container package visibility to public in GitHub Packages. The source repository can remain private. The chart uses anonymous image pulls and does not need a registry secret.
+
+Register the ArgoCD Application when ready to deploy:
+
+```bash
+kubectl apply -f kubernetes/apps/nunosousa-website.yaml
+```
+
+The Application auto-syncs the chart after registration. For later releases, use the immutable `sha-<commit>` image tag emitted by the website repository's container workflow in `values.yaml`; changing that tag makes ArgoCD roll out the new image. The default `latest` tag is intended only for the first local smoke test.
+
+Verify the route at `https://nunosousa.local.nunosousa.dev`. Public promotion is intentionally separate and requires an explicit Cloudflare Tunnel and DNS change.
 
 ## Storage
 
@@ -489,4 +506,3 @@ After bootstrapping or adding nodes, kubelet serving certificates may be pending
 ```bash
 kubectl get csr --no-headers | awk '/Pending/ {print $1}' | xargs kubectl certificate approve
 ```
-

@@ -1,0 +1,22 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/nunosousa-dev/website
+  tag: latest
+  pullPolicy: Always
+
+# This deployment uses the public GHCR package, so no image-pull secret is needed.
+imagePullSecrets: []
+
+hostname: nunosousa.local.nunosousa.dev
+
+nodeSelector:
+  homelab/node-type: vm
+
+resources:
+  requests:
+    memory: 32Mi
+    cpu: 10m
+  limits:
+    memory: 64Mi
+    cpu: 100m

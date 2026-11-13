@@ -1,0 +1,6 @@
+apiVersion: v2
+name: nunosousa-website
+description: Static Astro portfolio served by unprivileged Nginx
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
