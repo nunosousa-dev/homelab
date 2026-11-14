@@ -267,26 +267,28 @@ kubernetes/
   apps/               # User-facing application Helm charts
     immich/           # Immich photo server
     actual-budget/    # Actual Budget finance app
-    nunosousa-website/ # Static portfolio, local-only Gateway route
+    nunosousa-website/ # Static portfolio: nunosousa.dev + local hostname
 ```
 
 Sync waves control deployment order: wave 0 (infra) → wave 1 (ingress) → wave 2 (apps) → wave 3 (ArgoCD HTTPRoute).
 
-### Nuno Sousa website (local-only)
+### Nuno Sousa website
 
-The website repository builds a static Nginx image and publishes it to `ghcr.io/nunosousa-dev/website`. The Helm chart routes only to `nunosousa.local.nunosousa.dev` through the existing Traefik Gateway and local wildcard certificate. It does not configure Cloudflare Tunnel or public DNS.
+The website repository builds a static Nginx image and publishes it publicly to `ghcr.io/nunosousa-dev/website` (anonymous pulls; no registry secret). The chart serves:
 
-Before syncing the app, publish the website image once and change the GHCR container package visibility to public in GitHub Packages. The source repository can remain private. The chart uses anonymous image pulls and does not need a registry secret.
+- `https://nunosousa.dev` — public, via Cloudflare Tunnel → Traefik `web` listener.
+- `https://www.nunosousa.dev` — permanently redirected (301) to `https://nunosousa.dev` by a Gateway `RequestRedirect` route.
+- `https://nunosousa.local.nunosousa.dev` — LAN/VPN, via the `websecure` listener and the local wildcard certificate.
 
-Register the ArgoCD Application when ready to deploy:
+Both public hostnames need proxied Cloudflare DNS records pointing at the `homelab` tunnel (see [`docs/agents/deploy-website.md`](docs/agents/deploy-website.md), step 6). Keep the existing iCloud `MX` records on the apex untouched.
+
+Register the ArgoCD Application once:
 
 ```bash
 kubectl apply -f kubernetes/apps/nunosousa-website.yaml
 ```
 
-The Application auto-syncs the chart after registration. For later releases, use the immutable `sha-<commit>` image tag emitted by the website repository's container workflow in `values.yaml`; changing that tag makes ArgoCD roll out the new image. The default `latest` tag is intended only for the first local smoke test.
-
-Verify the route at `https://nunosousa.local.nunosousa.dev`. Public promotion is intentionally separate and requires an explicit Cloudflare Tunnel and DNS change.
+To release a new version, set `image.tag` in `kubernetes/apps/nunosousa-website/values.yaml` to the immutable `sha-<short commit>` tag published by the website repository's container workflow; ArgoCD rolls it out after merge.
 
 ## Storage
 

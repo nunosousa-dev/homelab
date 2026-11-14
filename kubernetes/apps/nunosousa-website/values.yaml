@@ -2,13 +2,18 @@ replicaCount: 1
 
 image:
   repository: ghcr.io/nunosousa-dev/website
-  tag: latest
-  pullPolicy: Always
+  # Immutable tag from the website repo's container workflow (sha-<short commit>).
+  # Bump it to release a new version; ArgoCD rolls out the change.
+  tag: sha-bf28aa9
+  pullPolicy: IfNotPresent
 
 # This deployment uses the public GHCR package, so no image-pull secret is needed.
 imagePullSecrets: []
 
 hostname: nunosousa.local.nunosousa.dev
+publicHostname: nunosousa.dev
+# Permanently redirected to publicHostname.
+wwwHostname: www.nunosousa.dev
 
 nodeSelector:
   homelab/node-type: vm

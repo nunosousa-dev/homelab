@@ -14,4 +14,8 @@ data:
         service: http://traefik.traefik.svc.cluster.local:80
       - hostname: denu.pt
         service: http://traefik.traefik.svc.cluster.local:80
+      - hostname: nunosousa.dev
+        service: http://traefik.traefik.svc.cluster.local:80
+      - hostname: www.nunosousa.dev
+        service: http://traefik.traefik.svc.cluster.local:80
       - service: http_status:404
