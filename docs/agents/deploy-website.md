@@ -89,6 +89,8 @@ Local + public (as in `wedding`): add a second `parentRefs` entry identical exce
 
 If the app builds absolute URLs (e.g. an `APP_URL` env var), it has one canonical origin. Set it to the hostname users will actually use; `secret-santa` switches it with an overlay `values-local.yaml`.
 
+Write every HTTPRoute field the Gateway API CRD defaults, as in the template above: each rule's `matches`, plus `group`/`kind` on refs and `weight` on backend refs. Rules are compared whole, so a rule missing a defaulted field (e.g. a redirect-only rule without `matches`) stays OutOfSync in ArgoCD forever.
+
 ### 4. Create the ArgoCD Application
 
 User apps are **not** in the ApplicationSet `kubernetes/bootstrap/_apps.yaml` (that one is bootstrap-only). Each app has its own `kubernetes/apps/<name>.yaml`; copy `kubernetes/apps/wedding.yaml`, replacing `name`, `path`, and `destination.namespace`. Keep `targetRevision: main`, automated `prune`/`selfHeal`, and `CreateNamespace=true`, `ServerSideApply=true`.
@@ -174,4 +176,5 @@ Commit only `SealedSecret` manifests, never plaintext. Seal against the cluster 
 | Local hostname cert error | Hostname is more than one label below `local.nunosousa.dev` |
 | HTTPRoute `Accepted=False` | Wrong Gateway name/namespace/sectionName |
 | Application missing in ArgoCD | `kubectl apply -f kubernetes/apps/<name>.yaml` not run |
+| HTTPRoute permanently OutOfSync in ArgoCD, re-sync doesn't help | A rule omits a CRD-defaulted field (usually `matches`); write the default explicitly |
 | Pod `CrashLoopBackOff` with permission errors | Read-only root: add an `emptyDir` for the written path, or fix `runAsUser` |

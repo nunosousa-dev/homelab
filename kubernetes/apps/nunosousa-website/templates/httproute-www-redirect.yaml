@@ -13,7 +13,12 @@ spec:
   hostnames:
     - {{ .Values.wwwHostname | quote }}
   rules:
-    - filters:
+    # Explicit form of the CRD default; omitting it makes ArgoCD report drift.
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      filters:
         - type: RequestRedirect
           requestRedirect:
             scheme: https
