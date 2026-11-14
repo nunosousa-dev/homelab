@@ -9,9 +9,15 @@ spec:
       kind: Gateway
       name: homelab
       namespace: traefik
+      sectionName: web
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: homelab
+      namespace: traefik
       sectionName: websecure
   hostnames:
     - {{ .Values.hostname | quote }}
+    - {{ .Values.publicHostname | quote }}
   rules:
     - matches:
         - path:
