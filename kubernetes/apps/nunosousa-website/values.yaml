@@ -4,7 +4,7 @@ image:
   repository: ghcr.io/nunosousa-dev/website
   # Immutable tag from the website repo's container workflow (sha-<short commit>).
   # Bump it to release a new version; ArgoCD rolls out the change.
-  tag: sha-bf28aa9
+  tag: sha-7460957
   pullPolicy: IfNotPresent
 
 # This deployment uses the public GHCR package, so no image-pull secret is needed.
