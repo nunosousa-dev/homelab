@@ -8,3 +8,6 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- define "secret-santa.image" -}}
 {{ .Values.image.repository }}:{{ required "Set image.tag to a published immutable image tag" .Values.image.tag }}
 {{- end -}}
+{{- define "secret-santa.appUrl" -}}
+https://{{ .Values.publicHostname | default .Values.hostname }}
+{{- end -}}

@@ -1,12 +1,15 @@
 image:
   repository: ghcr.io/nunosousa-dev/secret-santa
   # Required: set the published immutable tag, for example sha-<full-commit-sha>.
-  tag: sha-a3a140925ee46aca42eaa05a877b887d5769095f
+  tag: sha-ecd5ecb47d54646c37bc2a664827ca9dd04b1d2d
   pullPolicy: IfNotPresent
 imagePullSecrets: []
 
-# Confirmed family hostname; keep it stable for printed QR cards.
-hostname: amigo-secreto.nunosousa.dev
+# Home-network hostname (LAN/VPN). With a public hostname, it is the only way into /admin.
+hostname: amigo-secreto.local.nunosousa.dev
+# Public hostname through the Cloudflare tunnel. When set, it is the canonical APP_URL used by
+# editing links and printed QR codes; keep it stable once cards are printed. Empty = local only.
+publicHostname: amigo-secreto.nunosousa.dev
 admin:
   existingSecret: secret-santa-admin
   secretKey: ADMIN_PASSWORD_HASH
@@ -16,8 +19,10 @@ storage:
 gateway:
   name: homelab
   namespace: traefik
+  # Serves the local wildcard certificate.
+  localSectionName: websecure
   # Cloudflare terminates public HTTPS and tunnels to Traefik's HTTP listener.
-  sectionNames: [web]
+  publicSectionName: web
 nodeSelector:
   homelab/node-type: vm
   kubernetes.io/arch: amd64

@@ -268,6 +268,7 @@ kubernetes/
     immich/           # Immich photo server
     actual-budget/    # Actual Budget finance app
     nunosousa-website/ # Static portfolio: nunosousa.dev + local hostname
+    secret-santa/     # Family Secret Santa: amigo-secreto.nunosousa.dev + local hostname (admin local only)
 ```
 
 Sync waves control deployment order: wave 0 (infra) → wave 1 (ingress) → wave 2 (apps) → wave 3 (ArgoCD HTTPRoute).
