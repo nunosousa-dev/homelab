@@ -44,7 +44,11 @@ spec:
               containerPort: 3000
           env:
             - name: APP_URL
+              value: {{ include "secret-santa.appUrl" . | quote }}
+            {{- if .Values.publicHostname }}
+            - name: ADDITIONAL_ORIGINS
               value: {{ printf "https://%s" .Values.hostname | quote }}
+            {{- end }}
             - name: DATABASE_PATH
               value: /data/family.sqlite
             - name: ADMIN_PASSWORD_HASH
