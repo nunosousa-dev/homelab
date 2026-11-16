@@ -53,7 +53,27 @@ kubectl --context admin@homelab -n secret-santa logs job/secret-santa-backup-ini
 
 Verify a snapshot exists on the backup PVC, then test restoring a copy onto a fresh writable volume. Keep the production volume separate from that test. The app and backup job share the live RWO volume on the same node; a pending app can also delay its backup. NFS permissions and actual CSI recovery still require acceptance in the cluster.
 
-Use [the application's recovery instructions](https://github.com/nunosousa-dev/secret-santa/blob/main/deploy/README.md#backups-and-recovery) for maintenance, schema compatibility and session/token considerations. Snapshots include avatars and access records and need protection. The live SQLite database must stay on iSCSI.
+Snapshots include avatars and access records and need protection. The live SQLite database must stay on iSCSI.
+
+## Backups and recovery
+
+The CronJob runs daily at 03:00 in `Europe/Lisbon`, with `concurrencyPolicy: Forbid`. It runs on the application's node to share the RWO volume; if the app is unscheduled, the backup may remain pending. There is no automatic snapshot deletion or off-site copy.
+
+The image includes `node scripts/backup.mjs`. It uses SQLite's online backup API against the active database mounted read-only and writes a consistent snapshot to `/backups`. This includes committed WAL data and avatars, without running migrations. Use this mechanism rather than copying a live database file.
+
+To restore:
+
+1. Suspend automated sync/reconciliation during maintenance so Argo CD cannot recreate the app replica.
+2. Suspend the CronJob and stop the application; preserve the previous volume for recovery.
+3. Copy the chosen snapshot to a writable iSCSI volume at `/data/family.sqlite`, owned by UID/GID 1001. Keep old WAL/SHM files separate. Run from the writable copy rather than the NFS backup volume.
+4. Start an image compatible with the restored schema, pointing at that volume.
+5. Confirm readiness, login, profiles and avatars; resume backups and reconciliation.
+
+Snapshots include editing-token hashes and sessions. Protect access to them. Recovery can reintroduce access that existed when the snapshot was taken; rotate links/credentials when needed.
+
+## Upgrades
+
+Create and verify a backup before upgrading. Review migrations and update the immutable image tag in `values.yaml`. Migrations run on startup; Recreate prevents overlapping app replicas and causes brief downtime. Rolling back only the image is safe when the previous version accepts the current schema; otherwise restore the matching snapshot as well.
 
 ## Family pilot
 
