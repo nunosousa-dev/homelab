@@ -1,7 +1,7 @@
 image:
   repository: ghcr.io/nunosousa-dev/secret-santa
   # Required: set the published immutable tag, for example sha-<full-commit-sha>.
-  tag: sha-ecd5ecb47d54646c37bc2a664827ca9dd04b1d2d
+  tag: "1.0.1"
   pullPolicy: IfNotPresent
 imagePullSecrets: []
 
